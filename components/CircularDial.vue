@@ -1,11 +1,16 @@
 <template>
     <div class="flex justify-center items-center h-screen">
       <div ref="dial" class="relative w-48 h-48 rounded-full border-4 border-gray-300">
-        <div class="absolute inset-0 flex justify-center items-center text-xl font-bold">
-          {{ bpm }}
+        <div class="absolute inset-0 flex flex-col justify-center items-center">
+          <div class="text-5xl font-bold">
+            {{ bpm }}
+          </div>
+          <div class="text-lg">
+            BPM
+          </div>
         </div>
         <div
-          class="absolute w-6 h-6 bg-white rounded-full cursor-pointer"
+          class="absolute w-6 h-6 bg-gray-700 dark:bg-white rounded-full cursor-pointer"
           :style="knobStyle"
           @mousedown="startDrag"
         ></div>

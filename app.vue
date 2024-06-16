@@ -1,13 +1,14 @@
 <template>
-  <div>
+  <div class="relative flex justify-center items-center h-screen">
     <!-- Toggle switch -->
     <div class="absolute top-0 right-0 m-4 p-2">
       <label class="swap swap-flip">
         <input type="checkbox" class="toggle" @click="toggleTheme" />
       </label>
     </div>
-
-    <CircularDial />
+    <Card>
+      <CircularDial />
+    </Card>
 
     <!-- Your app content here -->
   </div>
@@ -22,7 +23,13 @@ export default defineComponent({
 });
 <script>
 import CircularDial from './components/CircularDial.vue';
+import Card from './components/Card.vue';
+
 export default {
+  components: {
+    CircularDial,
+    Card
+  },
   data() {
     return {
       theme: 'dark'
@@ -31,9 +38,6 @@ export default {
   mounted() {
     // Initially set the theme
     this.setTheme(this.theme);
-  },
-  components: {
-    CircularDial
   },
   methods: {
     toggleTheme() {
