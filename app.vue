@@ -7,11 +7,21 @@
       </label>
     </div>
 
+    <CircularDial />
+
     <!-- Your app content here -->
   </div>
 </template>
 
+
+export default defineComponent({
+  name: 'App',
+  components: {
+    CircularDial,
+  },
+});
 <script>
+import CircularDial from './components/CircularDial.vue';
 export default {
   data() {
     return {
@@ -21,6 +31,9 @@ export default {
   mounted() {
     // Initially set the theme
     this.setTheme(this.theme);
+  },
+  components: {
+    CircularDial
   },
   methods: {
     toggleTheme() {
