@@ -1,6 +1,6 @@
 <template>
-    <div class="flex justify-center items-center h-screen">
-      <div ref="dial" class="relative w-48 h-48 rounded-full border-4 border-gray-300">
+    <div class="flex justify-center items-center shadow-lg rounded-lg p-4 w-80 h-96">
+      <div ref="dial" class="relative w-48 h-48 rounded-full border-4 ">
         <div class="absolute inset-0 flex flex-col justify-center items-center">
           <div class="text-5xl font-bold">
             {{ bpm }}
@@ -9,23 +9,30 @@
             BPM
           </div>
         </div>
-        <div
-          class="absolute w-6 h-6 bg-gray-700 dark:bg-white rounded-full cursor-pointer"
+        <div class="absolute w-6 h-6 rounded-full cursor-pointer bg-gray-700 dark:bg-white"
           :style="knobStyle"
           @mousedown="startDrag"
-        ></div>
+        >
+    </div>
       </div>
     </div>
   </template>
   
   <script lang="ts">
-  import { defineComponent, ref, computed, onMounted, onUnmounted } from 'vue';
+  import { defineComponent, ref, computed, onMounted, onUnmounted, watch } from 'vue';
   
   export default defineComponent({
     name: 'CircularDial',
-    setup() {
+    props: {
+        initialBpm: {
+        type: Number,
+        default: 60
+        }
+    },
+    emits: ['update:bpm'],
+    setup(props, { emit }) {
       const angle = ref(0);
-      const bpm = ref(60);
+      const bpm = ref(props.initialBpm);
       const dragging = ref(false);
       const dial = ref<HTMLElement | null>(null);
   
@@ -57,6 +64,8 @@
         } else if (delta < 0) {
           bpm.value = Math.max(20, bpm.value - 1);
         }
+        emit('update:bpm', bpm.value);
+
       };
   
       const stopDrag = () => {
@@ -84,6 +93,10 @@
   
       onUnmounted(() => {
         document.removeEventListener('mouseup', stopDrag);
+      });
+
+      watch(bpm, (newBpm) => {
+        emit('update:bpm', newBpm);
       });
   
       return {

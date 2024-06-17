@@ -6,29 +6,20 @@
         <input type="checkbox" class="toggle" @click="toggleTheme" />
       </label>
     </div>
-    <Card>
-      <CircularDial />
-    </Card>
+    <Metronome/>
 
     <!-- Your app content here -->
   </div>
 </template>
 
-
-export default defineComponent({
-  name: 'App',
-  components: {
-    CircularDial,
-  },
-});
 <script>
 import CircularDial from './components/CircularDial.vue';
-import Card from './components/Card.vue';
+import Metronome from './components/Metronome.vue';
 
 export default {
   components: {
     CircularDial,
-    Card
+    Metronome
   },
   data() {
     return {
