@@ -7,7 +7,6 @@
       </label>
     </div>
     <Metronome/>
-
     <!-- Your app content here -->
   </div>
 </template>
@@ -23,7 +22,7 @@ export default {
   },
   data() {
     return {
-      theme: 'dark'
+      theme: 'night'
     };
   },
   mounted() {
@@ -32,7 +31,7 @@ export default {
   },
   methods: {
     toggleTheme() {
-      this.theme = this.theme === 'dark' ? 'light' : 'dark';
+      this.theme = this.theme === 'night' ? 'winter' : 'night';
       this.setTheme(this.theme);
     },
     setTheme(theme) {
