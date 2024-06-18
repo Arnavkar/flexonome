@@ -11,32 +11,24 @@
   </div>
 </template>
 
-<script>
-import CircularDial from './components/CircularDial.vue';
+<script setup lang="ts">
+import { themes } from './constants'
+import { onMounted } from 'vue';
 import Metronome from './components/Metronome.vue';
 
-export default {
-  components: {
-    CircularDial,
-    Metronome
-  },
-  data() {
-    return {
-      theme: 'night'
-    };
-  },
-  mounted() {
-    // Initially set the theme
-    this.setTheme(this.theme);
-  },
-  methods: {
-    toggleTheme() {
-      this.theme = this.theme === 'night' ? 'winter' : 'night';
-      this.setTheme(this.theme);
-    },
-    setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-    }
-  }
+
+function toggleTheme(){
+  const theme = document.documentElement.getAttribute('data-theme');
+  setTheme(theme === themes[0] ? themes[1] : themes[0]);
 };
+
+function setTheme(theme: string){
+  document.documentElement.setAttribute('data-theme', theme);
+};
+
+//NOTE: script is executed both client side and Server Side
+// Document is undefined on server side, so DOM specific functions must be called after being mounted
+onMounted(() => {
+    setTheme(themes[0]);
+});
 </script>

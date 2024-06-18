@@ -11,82 +11,68 @@
         :class="{ 'bg-primary': index === activeBar }">
       </div>
     </div>
-    <CircularDial :initialBpm="bpm" @update:bpm="updateBpm" />
+    <CircularDial :initialBpm="bpm" v-on:update="updateBpm" />
     <button @click="toggleMetronome" class="btn btn-primary btn-outline">{{ isRunning ? 'Stop' : 'Start' }}</button>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
+<script setup lang="ts">
+import { defineProps, ref, watch } from 'vue';
 import CircularDial from './CircularDial.vue';
 
-export default defineComponent({
-  name: 'Metronome',
-  components: {
-    CircularDial,
-  },
-  props: {
-      initialActiveBar: {
-          type: Number,
-          default: -1
-      }
-  },
-  setup(props) {
-    const timeSignature = ref(4);
-    const bpm = ref(60);
-    const isRunning = ref(false);
-    const activeBar = ref(props.initialActiveBar);
-    let intervalId: number | undefined = undefined;
+const props = defineProps({
+    initialActiveBar: {
+        type: Number,
+        default: -1
+    }
+});
+const timeSignature = ref(4);
+const bpm = ref(60);
+const isRunning = ref(false);
+const activeBar = ref(props.initialActiveBar);
 
-    const updateBpm = (newBpm: number) => {
-      bpm.value = newBpm;
-      if (isRunning.value) {
-        stopMetronome();
-        startMetronome();
-      }
-    };
+let intervalCallbackId: number | undefined = undefined;
 
-    const startMetronome = () => {
-      const interval = (60 / bpm.value) * 1000;
-      intervalId = window.setInterval(() => {
-        activeBar.value = (activeBar.value + 1) % timeSignature.value;
-        // You can add a sound or click here
-      }, interval);
-      isRunning.value = true;
-    };
+function updateBpm(newBpm: number){
+  bpm.value = newBpm;
+  if (isRunning.value == true) {
+    // Restart the metronome with the new BPM
+    stopMetronome();
+    startMetronome();
+  }
+};
 
-    const stopMetronome = () => {
-      if (intervalId !== undefined) {
-        clearInterval(intervalId);
-      }
-      isRunning.value = false;
-      activeBar.value = -1;
-    };
+function startMetronome(){
+  const interval = (60 / bpm.value) * 1000;
+  intervalCallbackId = window.setInterval(() => {
+    activeBar.value = (activeBar.value + 1) % timeSignature.value;
+    // You can add a sound or click here
+  }, interval);
+  isRunning.value = true;
+};
 
-    const toggleMetronome = () => {
-      if (isRunning.value) {
-        stopMetronome();
-      } else {
-        startMetronome();
-      }
-    };
+function stopMetronome(){
+  if (intervalCallbackId !== undefined) {
+    clearInterval(intervalCallbackId);
+  }
+  isRunning.value = false;
+  activeBar.value = -1;
+};
 
-    watch(timeSignature, () => {
-      if (isRunning.value) {
-        stopMetronome();
-        startMetronome();
-      }
-    });
+function toggleMetronome(){
+  if (isRunning.value == true) {
+    stopMetronome();
+  } else {
+    startMetronome();
+  }
+};
 
-    return {
-      timeSignature,
-      bpm,
-      isRunning,
-      activeBar,
-      toggleMetronome,
-      updateBpm,
-    };
-  },
+watch(timeSignature, () => {
+  //Reset metronome when time signature changes
+  if (isRunning.value == true) {
+    stopMetronome();
+    startMetronome();
+  }
 });
 </script>
 

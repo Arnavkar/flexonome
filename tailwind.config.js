@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import { themes } from './constants.ts'
+
 export default {
   content: [
     "./components/**/*.{js,vue,ts}",
@@ -12,10 +14,10 @@ export default {
     extend: {},
   },
   plugins: [
-    require('daisyui'),
+    require('daisyui')
   ],
   daisyui: {
-    themes: ["winter", "night"],
+    themes: themes
   },
-  darkMode: ['class', '[data-theme="night"]']
+  darkMode: ['class', `[data-theme=${themes[0]}]`]
 }
