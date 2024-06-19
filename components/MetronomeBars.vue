@@ -9,7 +9,7 @@
 </template>
   
 <script setup lang="ts">
-import { ref, watch} from 'vue';
+import { ref, watch, onUpdated} from 'vue';
 import ColorButton from './ColorButton.vue';
 
 // Define props
@@ -28,7 +28,7 @@ const buttons = ref();
 
 // Watch for changes in the timeSignature prop and update numBars
 watch(() => props.numBeats, (newVal) => {
-    numBars.value = newVal;
+    numBars.value = newVal; 
 });
 
 // Watch for changes in the activeBar prop and call tic on the corresponding button
@@ -40,12 +40,16 @@ watch(() => props.activeBar, (newVal) => {
 
 watch(() => props.beatUnit, (newVal) => {
   beatUnit.value = newVal;
-  buttons.value.forEach((button: any) => {
-    button.updateWidth(beatUnit.value);
-  });
 });
 
 onMounted(() => {
   buttons.value[0].cycleColorAndSound();
+});
+
+//Make sure width styling is updated when beatUnit /num Bar changes
+onUpdated(() => {
+  buttons.value.forEach((button: any) => {
+    button.updateWidth(beatUnit.value);
+  });
 });
 </script>

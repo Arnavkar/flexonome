@@ -81,6 +81,7 @@ function updateNumBeats(newNumBeats: number){
 
 function updateBeatUnit(newBeatUnit: number){
   beatUnit.value = newBeatUnit;
+
 };
 
 watch(numBeats, () => {

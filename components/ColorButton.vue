@@ -17,6 +17,7 @@
   // Define color classes as typed array of Strings
   const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent'];
   const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent'];
+  
   const buttonWidths = {
     2: 'w-16',
     4: 'w-12',
@@ -30,7 +31,7 @@
 
   const currentBorderColor = ref(borderColors[currentIndex.value]);
   const currentBackgroundColor = ref(bgColors[currentIndex.value]);
-  const currentWidth:Ref<string> = ref(buttonWidths[4])
+  const currentWidth = ref(buttonWidths[4])
   
   function cycleColorAndSound() {
     currentIndex.value = (currentIndex.value + 1) % borderColors.length;
