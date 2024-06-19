@@ -44,4 +44,5 @@ onMounted(() => {
   buttons.value = Array.from({ length: numBars.value }, () => null);
 });
 
+
 </script>

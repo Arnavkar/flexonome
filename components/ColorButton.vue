@@ -9,32 +9,32 @@
   </template>
 
   <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref , onMounted } from 'vue';
+
+  const audioPaths:string[] = ['./Low.mp3', './Mid.mp3', './High.mp3']
+  let audioObjects:HTMLAudioElement[] = [];
   
   // Define color classes as typed array of Strings
-
   const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent'];
   const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent'];
-  const sounds = ['/path/to/sound/file1.mp3', '/path/to/sound/file2.mp3', '/path/to/sound/file3.mp3']
   
   const currentIndex = ref(0);
   const currentBorderColor = ref(borderColors[currentIndex.value]);
   const currentBackgroundColor = ref(bgColors[currentIndex.value]);
-  const currentSound = ref(sounds[currentIndex.value]);
+  const currentSound = ref();
   const isFlashing = ref(false);
   
   function cycleColorAndSound() {
     currentIndex.value = (currentIndex.value + 1) % borderColors.length;
     currentBorderColor.value = borderColors[currentIndex.value];
     currentBackgroundColor.value = bgColors[currentIndex.value];
-    currentSound.value = sounds[currentIndex.value];
+    currentSound.value = audioObjects[currentIndex.value];
   }
   
   function tic() {
     isFlashing.value = true;
     console.log(`Tic! ${currentSound.value} played`)
-    // const audio = new Audio('/path/to/sound/file.mp3');
-    // audio.play();
+    currentSound.value.play();
     
     setTimeout(() => {
       isFlashing.value = false;
@@ -42,6 +42,11 @@
   }
 
   defineExpose({ tic });
+
+  onMounted(() => {
+    audioObjects = audioPaths.map(path => new Audio(path));
+    currentSound.value = audioObjects[0];
+  });
   </script>
   
   <style scoped>
