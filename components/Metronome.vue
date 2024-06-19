@@ -3,13 +3,8 @@
     <div class="flex space-x-4 mb-4">
       <input type="number" v-model.number="timeSignature" min="1" class="input input-bordered w-24" placeholder="Time Sig">
     </div>
-    <div class="flex space-x-4 mb-4">
-      <div 
-        v-for="(bar, index) in timeSignature" 
-        :key="index" 
-        class="w-6 h-24 border-2 border-primary rounded" 
-        :class="{ 'bg-primary': index === activeBar }">
-      </div>
+    <div>
+      <MetronomeBars :timeSignature="timeSignature" :activeBar="activeBar"/>
     </div>
     <CircularDial :initialBpm="bpm" v-on:update="updateBpm" />
     <button @click="toggleMetronome" class="btn btn-primary btn-outline">{{ isRunning ? 'Stop' : 'Start' }}</button>
@@ -17,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import CircularDial from './CircularDial.vue';
 
 const props = defineProps({
@@ -75,7 +70,3 @@ watch(timeSignature, () => {
   }
 });
 </script>
-
-<style scoped>
-/* Add any additional styles here */
-</style>
