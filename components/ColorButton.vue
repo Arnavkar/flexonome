@@ -33,7 +33,6 @@
   
   function tic() {
     isFlashing.value = true;
-    console.log(`Tic! ${currentSound.value} played`)
     currentSound.value.play();
     
     setTimeout(() => {

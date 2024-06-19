@@ -35,13 +35,13 @@ const buttons = ref([]);
 
 // Watch for changes in the activeBar prop and call tic on the corresponding button
 watch(() => props.activeBar, (newVal) => {
-  if (newVal >= 0 && newVal < buttons.value.length) {
-    buttons.value[newVal+4]?.tic();
+  if (newVal >= 0 && newVal !== numBars.value) {
+    buttons.value[newVal]?.tic();
   }
 });
 
 onMounted(() => {
-  buttons.value = Array.from({ length: numBars.value }, () => null);
+  console.log(buttons.value)
 });
 
 
