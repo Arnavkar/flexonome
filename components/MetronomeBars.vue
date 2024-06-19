@@ -21,28 +21,22 @@ const props = defineProps<{
 // Initialize numBars with the prop value or default to 4
 const numBars = ref(props.timeSignature || 4);   
 
+// Empty Reference to the ColorButton components declared in template
+const buttons = ref(null);
+
 // Watch for changes in the timeSignature prop and update numBars
 watch(() => props.timeSignature, (newVal) => {
     numBars.value = newVal;
 });
 
-watch(() => props.activeBar, (newVal) => {
-    console.log(`Active bar changed to ${newVal}`);
-});
-
-// References to the ColorButton components
-const buttons = ref([]);
-
 // Watch for changes in the activeBar prop and call tic on the corresponding button
 watch(() => props.activeBar, (newVal) => {
   if (newVal >= 0 && newVal !== numBars.value) {
-    buttons.value[newVal]?.tic();
+    buttons.value[newVal]?.tic(); //Null handler??
   }
 });
 
 onMounted(() => {
-  console.log(buttons.value)
+  buttons.value[0].cycleColorAndSound(); //Null handler??
 });
-
-
 </script>

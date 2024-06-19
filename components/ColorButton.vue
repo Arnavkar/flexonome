@@ -40,7 +40,7 @@
     }, 100); // Flash duration in milliseconds
   }
 
-  defineExpose({ tic });
+  defineExpose({ tic, cycleColorAndSound });
 
   onMounted(() => {
     audioObjects = audioPaths.map(path => new Audio(path));

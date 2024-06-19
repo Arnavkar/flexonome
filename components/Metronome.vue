@@ -1,19 +1,23 @@
 <template>
   <div class="flex flex-col items-center">
-    <div class="flex space-x-4 mb-4">
-      <input type="number" v-model.number="timeSignature" min="1" class="input input-bordered w-24" placeholder="Time Sig">
-    </div>
     <div>
-      <MetronomeBars :timeSignature="timeSignature" :activeBar="activeBar"/>
+      <MetronomeBars :timeSignature="numBeats" :activeBar="activeBar"/>
     </div>
-    <CircularDial :initialBpm="bpm" v-on:update="updateBpm" />
-    <button @click="toggleMetronome" class="btn btn-primary btn-outline">{{ isRunning ? 'Stop' : 'Start' }}</button>
+    <div class="flex">
+      <CircularDial :initialBpm="bpm" v-on:update="updateBpm" />
+      <TimeSignatureInput
+        @numBeatsChange="updateNumBeats" 
+        @beatUnitChange="updateBeatUnit" 
+      />
+    </div>
+    <button @click="toggleMetronome" class="btn btn-primary btn-outline mt-4">{{ isRunning ? 'Stop' : 'Start' }}</button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import CircularDial from './CircularDial.vue';
+import TimeSignatureInput from './TimeSignatureInput.vue';
 
 const props = defineProps({
     initialActiveBar: {
@@ -21,8 +25,9 @@ const props = defineProps({
         default: -1
     }
 });
-const timeSignature = ref(4);
-const bpm = ref(60);
+const numBeats = ref(4);
+const beatUnit = ref(4)
+const bpm = ref(120);
 const isRunning = ref(false);
 const activeBar = ref(props.initialActiveBar);
 
@@ -40,7 +45,7 @@ function updateBpm(newBpm: number){
 function startMetronome(){
   const interval = (60 / bpm.value) * 1000;
   intervalCallbackId = window.setInterval(() => {
-    activeBar.value = (activeBar.value + 1) % timeSignature.value;
+    activeBar.value = (activeBar.value + 1) % numBeats.value;
     // You can add a sound or click here
   }, interval);
   isRunning.value = true;
@@ -62,7 +67,15 @@ function toggleMetronome(){
   }
 };
 
-watch(timeSignature, () => {
+function updateNumBeats(newNumBeats: number){
+  numBeats.value = newNumBeats;
+};
+
+function updateBeatUnit(newBeatUnit: number){
+  beatUnit.value = newBeatUnit;
+};
+
+watch(numBeats, () => {
   //Reset metronome when time signature changes
   if (isRunning.value == true) {
     stopMetronome();
