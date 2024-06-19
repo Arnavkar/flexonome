@@ -1,25 +1,28 @@
 <template>
     <Card>
         <div class="flex flex-col w-12 items-center">
-            <input 
-                type="number" 
+            <select 
                 class="input input-ghost text-5xl focus:text-primary text-center w-20 h-20" 
                 v-model.number="numBeats" 
-                @input="emitNumBeatsChange"
-            >            
+                @change="emitNumBeatsChange"
+            >
+            <option v-for="value in numBeatValues" :key="value" :value="value">{{ value }}</option>
+            </select>           
             <div class="divider divider-primary mt-0 mb-0"></div>
-            <input 
-                type="number" 
+            <select 
                 class="input input-ghost text-5xl focus:text-primary text-center w-20 h-20" 
                 v-model.number="beatUnit" 
-                @input="emitBeatValueChange"
-            >       
+                @change="emitBeatValueChange"
+            >
+            <option v-for="value in beatUnitValues" :key="value" :value="value">{{ value }}</option>
+            </select>      
         </div>
     </Card>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { numBeatValues, beatUnitValues } from '../constants';
 import Card from './Card.vue';
 
 const emit = defineEmits(["numBeatsChange", "beatUnitChange"]);

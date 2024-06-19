@@ -14,29 +14,38 @@ import ColorButton from './ColorButton.vue';
 
 // Define props
 const props = defineProps<{
-    timeSignature: number
+    numBeats: number
+    beatUnit: number
     activeBar:number
 }>();
 
 // Initialize numBars with the prop value or default to 4
-const numBars = ref(props.timeSignature || 4);   
+const numBars = ref(props.numBeats);   
+const beatUnit = ref(props.beatUnit);
 
 // Empty Reference to the ColorButton components declared in template
-const buttons = ref(null);
+const buttons = ref();
 
 // Watch for changes in the timeSignature prop and update numBars
-watch(() => props.timeSignature, (newVal) => {
+watch(() => props.numBeats, (newVal) => {
     numBars.value = newVal;
 });
 
 // Watch for changes in the activeBar prop and call tic on the corresponding button
 watch(() => props.activeBar, (newVal) => {
   if (newVal >= 0 && newVal !== numBars.value) {
-    buttons.value[newVal]?.tic(); //Null handler??
+    buttons.value[newVal]?.tic();
   }
 });
 
+watch(() => props.beatUnit, (newVal) => {
+  beatUnit.value = newVal;
+  buttons.value.forEach((button: any) => {
+    button.updateWidth(beatUnit.value);
+  });
+});
+
 onMounted(() => {
-  buttons.value[0].cycleColorAndSound(); //Null handler??
+  buttons.value[0].cycleColorAndSound();
 });
 </script>

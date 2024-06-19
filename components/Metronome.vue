@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-center">
     <div>
-      <MetronomeBars :timeSignature="numBeats" :activeBar="activeBar"/>
+      <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar"/>
     </div>
     <div class="flex">
       <CircularDial :initialBpm="bpm" v-on:update="updateBpm" />
@@ -23,13 +23,21 @@ const props = defineProps({
     initialActiveBar: {
         type: Number,
         default: -1
+    },
+    initialNumBeats: {
+        type: Number,
+        default: 4
+    },
+    initialBeatUnit: {
+        type: Number,
+        default: 4
     }
 });
-const numBeats = ref(4);
-const beatUnit = ref(4)
+const numBeats = ref(props.initialNumBeats);
+const beatUnit = ref(props.initialBeatUnit)
+const activeBar = ref(props.initialActiveBar);
 const bpm = ref(120);
 const isRunning = ref(false);
-const activeBar = ref(props.initialActiveBar);
 
 let intervalCallbackId: number | undefined = undefined;
 

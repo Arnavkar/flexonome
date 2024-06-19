@@ -1,7 +1,7 @@
 <template>
     <button
-       class = "w-12 h-12 border-2 rounded"
-      :class="[currentBorderColor, currentBackgroundColor, { 'bg-opacity-100': isFlashing, 'bg-opacity-0': !isFlashing }]"
+       class = "h-12 border-2 rounded"
+      :class="[currentBorderColor, currentBackgroundColor, currentWidth, { 'bg-opacity-100': isFlashing, 'bg-opacity-0': !isFlashing }]"
       @click="cycleColorAndSound"
     >
       <!-- Empty buton to just show border with color -->
@@ -10,19 +10,27 @@
 
   <script setup lang="ts">
   import { ref , onMounted } from 'vue';
+  import { audioPaths } from "../constants"
 
-  const audioPaths:string[] = ['./Low.mp3', './Mid.mp3', './High.mp3']
   let audioObjects:HTMLAudioElement[] = [];
   
   // Define color classes as typed array of Strings
   const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent'];
   const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent'];
+  const buttonWidths = {
+    2: 'w-16',
+    4: 'w-12',
+    8: 'w-8',
+    16: 'w-4'
+  }
   
   const currentIndex = ref(0);
-  const currentBorderColor = ref(borderColors[currentIndex.value]);
-  const currentBackgroundColor = ref(bgColors[currentIndex.value]);
   const currentSound = ref();
   const isFlashing = ref(false);
+
+  const currentBorderColor = ref(borderColors[currentIndex.value]);
+  const currentBackgroundColor = ref(bgColors[currentIndex.value]);
+  const currentWidth:Ref<string> = ref(buttonWidths[4])
   
   function cycleColorAndSound() {
     currentIndex.value = (currentIndex.value + 1) % borderColors.length;
@@ -40,7 +48,11 @@
     }, 100); // Flash duration in milliseconds
   }
 
-  defineExpose({ tic, cycleColorAndSound });
+  function updateWidth(newBeatUnit:number){
+    currentWidth.value = buttonWidths[newBeatUnit];
+  }
+
+  defineExpose({ tic, cycleColorAndSound, updateWidth });
 
   onMounted(() => {
     audioObjects = audioPaths.map(path => new Audio(path));
