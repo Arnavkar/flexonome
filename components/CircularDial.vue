@@ -6,7 +6,7 @@
                     {{ bpm }}
                 </div>
                 <div class="text-lg">
-                    BPM
+                    BPM (♩)
                 </div>
             </div>
             <div class="absolute w-6 h-6 rounded-full cursor-pointer bg-gray-700 dark:bg-white" :style="knobStyle"

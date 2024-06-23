@@ -45,13 +45,12 @@ function updateBpm(newBpm: number){
   bpm.value = newBpm;
   if (isRunning.value == true) {
     // Restart the metronome with the new BPM
-    stopMetronome();
-    startMetronome();
+    restartMetronome();
   }
 };
 
 function startMetronome(){
-  const interval = (60 / bpm.value) * 1000;
+  const interval = (60 / bpm.value) * 1000 / (beatUnit.value / 4)
   intervalCallbackId = window.setInterval(() => {
     activeBar.value = (activeBar.value + 1) % numBeats.value;
     // You can add a sound or click here
@@ -77,18 +76,29 @@ function toggleMetronome(){
 
 function updateNumBeats(newNumBeats: number){
   numBeats.value = newNumBeats;
+  if (isRunning.value == true) {
+    // Restart the metronome with the new BPM
+    restartMetronome();
+  }
 };
 
 function updateBeatUnit(newBeatUnit: number){
   beatUnit.value = newBeatUnit;
+  if (isRunning.value == true) {
+    // Restart the metronome with the new BPM
+    restartMetronome();
+  }
+};
 
+function restartMetronome(){
+  stopMetronome();
+  startMetronome();
 };
 
 watch(numBeats, () => {
   //Reset metronome when time signature changes
   if (isRunning.value == true) {
-    stopMetronome();
-    startMetronome();
+    restartMetronome();
   }
 });
 </script>
