@@ -12,14 +12,14 @@
             </div>
         </template>
         <template #multiple>
-        <div class="flex flex-col h-40 items-center">
+        <div class="flex flex-col w-full h-48 items-center">
             <textarea 
             type="text" 
-            class="input input-ghost text-xl h-40 text-center focus:bg-neutral"
+            class="input input-ghost text-xl flex-1 text-center dark:focus:bg-neutral focus:bg-gray-200"
             v-model="inputString"
-            @input="emitInputStringChange"
             placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"
             />
+            <button class="btn btn-primary mt-4" @click="emitInputStringChange">Submit</button>
         </div>
         </template>
     </Card>
@@ -30,8 +30,7 @@ import { ref } from 'vue';
 import { numBeatValues, beatUnitValues } from '../constants';
 import Card from './Card.vue';
 
-const emit = defineEmits(["numBeatsChange", "beatUnitChange"]);
-
+const emit = defineEmits(["numBeatsChange", "beatUnitChange","multipleTimeSignatureSubmit"]);
 const numBeats = ref(4);
 const beatUnit = ref(4);
 const inputString = ref("");
@@ -45,6 +44,6 @@ const emitBeatValueChange = () => {
 };
 
 const emitInputStringChange = () => {
-  emit("inputStringChange", inputString.value);
+    emit("multipleTimeSignatureSubmit", inputString.value);
 };
 </script>
