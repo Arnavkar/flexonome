@@ -137,7 +137,10 @@ function updateMultipleTimeSignature(inputString: string){
       errorMsg.value = null;
     }, 2000);
   }
-  restartMetronome();
+  if (isRunning.value == true) {
+    // Restart the metronome with the new BPM
+    restartMetronome();
+  }
 };
 </script>
 
