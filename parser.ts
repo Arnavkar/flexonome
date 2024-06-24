@@ -1,4 +1,4 @@
-export function parseTimeSignature(input:string,bpm:Ref<number>) {
+export function parseTimeSignature(input:string,bpm:number) {
     const result = {
       totalBeats: 0,
       beats: [] as { beatIndex: number, beatUnit: number, interval: number }[]

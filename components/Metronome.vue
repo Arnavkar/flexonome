@@ -13,7 +13,24 @@
       />
     </div>
     <button @click="toggleMetronome" class="btn btn-primary btn-outline mt-4 w-60">{{ isRunning ? 'Stop' : 'Start' }}</button>
+    <Transition>
+      <div v-if="errorMsg" role="alert" class="alert alert-error alert-outline mt-10 absolute-bottom">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 shrink-0 stroke-current"
+          fill="none"
+          viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Error! {{errorMsg}}</span>
+      </div>
+    </Transition>
   </div>
+  
 </template>
 
 <script setup lang="ts">
@@ -25,11 +42,12 @@ import TimeSignatureInput from './TimeSignatureInput.vue';
 import { parseTimeSignature } from '~/parser';
 import type { TimeSignature, Beat } from '~/types';
 
-const numBeats = ref(4);
-const beatUnit = ref(4)
-const activeBar = ref(-2);
-const bpm = ref(120);
-const isRunning = ref(false);
+const numBeats:Ref<number> = ref(4);
+const beatUnit:Ref<number>  = ref(4)
+const activeBar:Ref<number>  = ref(-2);
+const bpm:Ref<number>  = ref(120);
+const isRunning:Ref<boolean>  = ref(false);
+const errorMsg: Ref<string|null> = ref(null);
 
 let timeoutId: number | null = null;
 
@@ -97,13 +115,17 @@ function updateBeatUnit(newBeatUnit: number){
 
 function updateMultipleTimeSignature(inputString: string){
   console.log(inputString);
-    let parsed: any;
-    try {
-        parsed = parseTimeSignature(inputString,bpm.value);
-        console.log(parsed);
-    } catch (error) {
-        console.error(error.message);
-    }
+  let parsed: any;
+  try {
+      parsed = parseTimeSignature(inputString,bpm.value);
+      console.log(parsed);
+  } catch (error: any) {
+    console.log(error.message);
+    errorMsg.value = error.message;
+    setTimeout(() => {
+      errorMsg.value = null;
+    }, 2000);
+  }
 };
 
 watch(numBeats, () => {
@@ -113,3 +135,15 @@ watch(numBeats, () => {
   }
 });
 </script>
+
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>
