@@ -15,7 +15,7 @@
         <div class="flex flex-col w-full h-48 items-center">
             <textarea 
             type="text" 
-            class="input input-ghost text-xl flex-1 text-center dark:focus:bg-neutral focus:bg-gray-200"
+            class="input input-ghost text-2xl w-60 flex-1 text-center dark:focus:bg-neutral focus:bg-gray-200"
             v-model="inputString"
             placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"
             />

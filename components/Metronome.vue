@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col items-center">
-    <div>
+    <Transition>
       <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar"/>
-    </div>
+    </Transition>
     <div class="flex">
       <CircularDial :bpm="bpm" @updateBpm="updateBpm" />
       <TimeSignatureInput
@@ -39,7 +39,7 @@ import MetronomeBars from './MetronomeBars.vue';
 import CircularDial from './CircularDial.vue';
 import TimeSignatureInput from './TimeSignatureInput.vue';
 
-import { parseTimeSignature } from '~/parser';
+import { parseTimeSignature, updateTimeSignature } from '~/parser';
 import type { TimeSignature } from '~/types';
 
 const numBeats:Ref<number> = ref(4);
@@ -47,7 +47,9 @@ const beatUnit:Ref<number[]>  = ref(Array(numBeats.value).fill(4));
 const activeBar:Ref<number>  = ref(-2);
 const bpm:Ref<number>  = ref(120);
 const isRunning:Ref<boolean>  = ref(false);
+
 const errorMsg: Ref<string|null> = ref(null);
+const multipleTimeSignatureString:Ref<string> = ref("");
 
 const timeSignature: Ref<TimeSignature> = ref(parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value));
 
@@ -95,7 +97,7 @@ function toggleMetronome(){
 
 function updateBpm(newBpm: number){
   bpm.value = newBpm;
-  timeSignature.value = parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value);
+  timeSignature.value = updateTimeSignature(bpm.value, timeSignature.value);
   if (isRunning.value == true) {
     // Restart the metronome with the new BPM
     restartMetronome();
@@ -125,7 +127,6 @@ function updateMultipleTimeSignature(inputString: string){
   //console.log(inputString);
   try {
       let parsed = parseTimeSignature(inputString,bpm.value);
-      console.log(parsed)
       timeSignature.value = parsed;
       beatUnit.value = parsed.beats.map(beat => beat.beatUnit)
       numBeats.value = parsed.numBeats;
@@ -136,15 +137,8 @@ function updateMultipleTimeSignature(inputString: string){
       errorMsg.value = null;
     }, 2000);
   }
-
+  restartMetronome();
 };
-
-watch(numBeats, () => {
-  //Reset metronome when time signature changes
-  if (isRunning.value == true) {
-    restartMetronome();
-  }
-});
 </script>
 
 <style scoped>

@@ -39,6 +39,13 @@
     currentBackgroundColor.value = bgColors[currentIndex.value];
     currentSound.value = audioObjects[currentIndex.value];
   }
+
+  function setColorAndSound(index:number){
+    currentIndex.value = index;
+    currentBorderColor.value = borderColors[currentIndex.value];
+    currentBackgroundColor.value = bgColors[currentIndex.value];
+    currentSound.value = audioObjects[currentIndex.value];
+  }
   
   function tic() {
     isFlashing.value = true;

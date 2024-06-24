@@ -1,5 +1,5 @@
 <template>
-    <div class="flex space-x-4 mb-4">
+    <div class="flex flex-wrap space-x-4 w-8/12 justify-around m-4 p-4">
         <ColorButton 
         v-for="(n, index) in numBars"
         :key="n"
