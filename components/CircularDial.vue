@@ -1,6 +1,6 @@
 <template>
     <Card :isTabbed="false">
-        <div ref="dial" class="relative w-48 h-48 rounded-full border-4 border-gray-300 dark:border-gray-600 ">
+        <div ref="dial" class="relative w-60 h-60 rounded-full border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
                 <div class="text-5xl font-bold">
                     {{ bpm }}
@@ -12,6 +12,18 @@
             <div class="absolute w-6 h-6 rounded-full cursor-pointer bg-gray-700 dark:bg-white" :style="knobStyle"
                 @mousedown="startDrag">
             </div>
+            <ul v-for="i in 12" :key="i">
+                <div 
+                class="absolute w-1 h-1 rounded-full cursor-pointer bg-gray-400 dark:bg-gray-300 disabled" 
+                :style ="{
+                    top: `calc(50% + ${118 * Math.sin((angle+i*30  * Math.PI ) / 180)}px)`,
+                    left: `calc(50% + ${118 * Math.cos((angle+i*30  * Math.PI) / 180)}px)`,
+                    transform: `translate(-50%, -50%) rotate(${angle+i}deg)`, 
+                    transformOrigin: 'center center'
+                    }"
+                >
+                </div>
+            </ul>
         </div>
     </Card>
 </template>
@@ -20,31 +32,29 @@
 import {ref, computed, onMounted, onUnmounted, watch, defineProps } from 'vue';
 import Card from './Card.vue';
 
-const props = defineProps({
-    initialBpm: {
+const props = defineProps({ 
+    bpm: {
         type: Number,
-        default: 60
+        default: 120
     }
 });
+const emits = defineEmits(["updateBpm"]);
 
-const emits = defineEmits<{
-    update: [bpm: number]
-}>()
-
-const angle = ref(0);
-const bpm = ref(props.initialBpm);
-const dragging = ref(false);
-const dial = ref<HTMLElement | null>(null);
+const angle:Ref<number> = ref(0);
+const dragging:Ref<boolean>= ref(false);
+const bpm:Ref<number> = ref(props.bpm);
+const dial:Ref<HTMLElement|null> = ref(null);
 
 function startDrag(event: MouseEvent){
-    event.preventDefault();
+    event.preventDefault(); //Prevents highlighting etc.
     dragging.value = true;
+    //Once the drag has started
     document.addEventListener('mousemove', onDrag);
     document.addEventListener('mouseup', stopDrag);
 };
 
 function onDrag(event: MouseEvent){
-    if (!dragging.value || !dial.value) return;
+    if (!dragging.value || !dial.value) return; //Make sure dial is rendered and draggin is true
     const rect = dial.value.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -64,7 +74,6 @@ function onDrag(event: MouseEvent){
     } else if (delta < 0) {
         bpm.value = Math.max(20, bpm.value - 1);
     }
-    emits('update', bpm.value);
 };
 
 function stopDrag(){
@@ -74,8 +83,8 @@ function stopDrag(){
 };
 
 const knobStyle = computed(() => {
-    const radius = 76; // Adjusted for the dial's radius
-    const radians = (angle.value * Math.PI) / 180;
+    const radius = 100; // Adjusted for the dial's radius
+    const radians = ((angle.value * Math.PI) / 180);
     const x = radius * Math.cos(radians);
     const y = radius * Math.sin(radians);
     return {
@@ -86,6 +95,7 @@ const knobStyle = computed(() => {
     };
 });
 
+
 onMounted(() => {
     document.addEventListener('mouseup', stopDrag);
 });
@@ -95,7 +105,7 @@ onUnmounted(() => {
 });
 
 watch(bpm, (newBpm) => {
-    emits('update', newBpm);
+    emits('updateBpm', newBpm);
 });
 </script>
 

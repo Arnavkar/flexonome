@@ -8,3 +8,4 @@ export type TimeSignature = {
     totalBeats: number;
     beats : Beat[];
 }
+

@@ -22,11 +22,9 @@
   import { ref } from 'vue';
   
   // Define props
-  const props = defineProps<{
-    isTabbed: boolean;
-  }>();
+  const props = defineProps({ isTabbed: Boolean});
   
   // Active tab state
-  const activeTab = ref('single');
+  const activeTab:Ref<String> = ref('single');
   </script>
   

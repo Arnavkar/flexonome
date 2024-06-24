@@ -15,8 +15,8 @@
   let audioObjects:HTMLAudioElement[] = [];
   
   // Define color classes as typed array of Strings
-  const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent'];
-  const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent'];
+  const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent','border-gray-400'];
+  const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent','bg-gray-400'];
   
   const buttonWidths: Record<number, string> = {
     2: 'w-16',
@@ -42,7 +42,9 @@
   
   function tic() {
     isFlashing.value = true;
-    currentSound.value.play();
+    if (currentIndex.value !== 3) {
+      currentSound.value.play();
+    }
     
     setTimeout(() => {
       isFlashing.value = false;

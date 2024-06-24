@@ -4,7 +4,7 @@
       <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar"/>
     </div>
     <div class="flex">
-      <CircularDial :initialBpm="bpm" v-on:update="updateBpm" />
+      <CircularDial :bpm="bpm" @updateBpm="updateBpm" />
       <TimeSignatureInput
         :bpm="bpm"
         @numBeatsChange="updateNumBeats" 
@@ -22,12 +22,12 @@ import MetronomeBars from './MetronomeBars.vue';
 import CircularDial from './CircularDial.vue';
 import TimeSignatureInput from './TimeSignatureInput.vue';
 
-import { parseTimeSignature } from '../parser';
-import { TimeSignature, Beat } from '../types'
+import { parseTimeSignature } from '~/parser';
+import type { TimeSignature, Beat } from '~/types';
 
 const numBeats = ref(4);
 const beatUnit = ref(4)
-const activeBar = ref(-1);
+const activeBar = ref(-2);
 const bpm = ref(120);
 const isRunning = ref(false);
 
