@@ -18,7 +18,7 @@
   const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent'];
   const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent'];
   
-  const buttonWidths = {
+  const buttonWidths: Record<number, string> = {
     2: 'w-16',
     4: 'w-12',
     8: 'w-8',
