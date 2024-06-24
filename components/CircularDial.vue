@@ -16,8 +16,8 @@
                 <div 
                 class="absolute w-1 h-1 rounded-full cursor-pointer bg-gray-400 dark:bg-gray-300 disabled" 
                 :style ="{
-                    top: `calc(50% + ${118 * Math.sin((angle+i*30  * Math.PI ) / 180)}px)`,
-                    left: `calc(50% + ${118 * Math.cos((angle+i*30  * Math.PI) / 180)}px)`,
+                    top: `calc(50% + ${(118 * Math.sin((angle+i*30  * Math.PI ) / 180)).toFixed(2)}px)`,
+                    left: `calc(50% + ${(118 * Math.cos((angle+i*30  * Math.PI) / 180)).toFixed(2)}px)`,
                     transform: `translate(-50%, -50%) rotate(${angle+i}deg)`, 
                     transformOrigin: 'center center'
                     }"
@@ -83,7 +83,7 @@ function stopDrag(){
 };
 
 const knobStyle = computed(() => {
-    const radius = 100; // Adjusted for the dial's radius
+    const radius = 97; // Adjusted for the dial's radius
     const radians = ((angle.value * Math.PI) / 180);
     const x = radius * Math.cos(radians);
     const y = radius * Math.sin(radians);

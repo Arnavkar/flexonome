@@ -40,14 +40,16 @@ import CircularDial from './CircularDial.vue';
 import TimeSignatureInput from './TimeSignatureInput.vue';
 
 import { parseTimeSignature } from '~/parser';
-import type { TimeSignature, Beat } from '~/types';
+import type { TimeSignature } from '~/types';
 
 const numBeats:Ref<number> = ref(4);
-const beatUnit:Ref<number>  = ref(4)
+const beatUnit:Ref<number[]>  = ref(Array(numBeats.value).fill(4));
 const activeBar:Ref<number>  = ref(-2);
 const bpm:Ref<number>  = ref(120);
 const isRunning:Ref<boolean>  = ref(false);
 const errorMsg: Ref<string|null> = ref(null);
+
+const timeSignature: Ref<TimeSignature> = ref(parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value));
 
 let timeoutId: number | null = null;
 
@@ -57,12 +59,15 @@ function restartMetronome(){
 };
 
 function startMetronome() {
-  const interval = (60 / bpm.value) * 1000 / (beatUnit.value / 4);
+  const beats = timeSignature.value.beats;
+  let currentBeatIndex = 0;
 
   function tic() {
-    activeBar.value = (activeBar.value + 1) % numBeats.value;
+    const currentBeat = beats[currentBeatIndex];
+    activeBar.value = currentBeat.beatIndex;
     // You can add a sound or click here
-    timeoutId = window.setTimeout(tic, interval);
+    currentBeatIndex = (currentBeatIndex + 1) % beats.length;
+    timeoutId = window.setTimeout(tic, currentBeat.interval);
   }
 
   if (!isRunning.value) {
@@ -90,6 +95,7 @@ function toggleMetronome(){
 
 function updateBpm(newBpm: number){
   bpm.value = newBpm;
+  timeSignature.value = parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value);
   if (isRunning.value == true) {
     // Restart the metronome with the new BPM
     restartMetronome();
@@ -98,7 +104,8 @@ function updateBpm(newBpm: number){
 
 function updateNumBeats(newNumBeats: number){
   numBeats.value = newNumBeats;
-
+  beatUnit.value = Array(numBeats.value).fill(beatUnit.value[0]);
+  timeSignature.value = parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value);
   if (isRunning.value == true) {
     // Restart the metronome with the new BPM
     restartMetronome();
@@ -106,7 +113,8 @@ function updateNumBeats(newNumBeats: number){
 };
 
 function updateBeatUnit(newBeatUnit: number){
-  beatUnit.value = newBeatUnit;
+  beatUnit.value = Array(numBeats.value).fill(newBeatUnit);
+  timeSignature.value = parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value);
   if (isRunning.value == true) {
     // Restart the metronome with the new BPM
     restartMetronome();
@@ -114,18 +122,21 @@ function updateBeatUnit(newBeatUnit: number){
 };
 
 function updateMultipleTimeSignature(inputString: string){
-  console.log(inputString);
-  let parsed: any;
+  //console.log(inputString);
   try {
-      parsed = parseTimeSignature(inputString,bpm.value);
-      console.log(parsed);
+      let parsed = parseTimeSignature(inputString,bpm.value);
+      console.log(parsed)
+      timeSignature.value = parsed;
+      beatUnit.value = parsed.beats.map(beat => beat.beatUnit)
+      numBeats.value = parsed.numBeats;
   } catch (error: any) {
-    console.log(error.message);
+    //console.log(error.message);
     errorMsg.value = error.message;
     setTimeout(() => {
       errorMsg.value = null;
     }, 2000);
   }
+
 };
 
 watch(numBeats, () => {

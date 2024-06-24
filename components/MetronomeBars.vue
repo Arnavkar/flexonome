@@ -15,7 +15,7 @@ import ColorButton from './ColorButton.vue';
 // Define props
 const props = defineProps<{
     numBeats: number
-    beatUnit: number
+    beatUnit: number[]
     activeBar:number
 }>();
 
@@ -48,8 +48,8 @@ onMounted(() => {
 
 //Make sure width styling is updated when beatUnit /num Bar changes
 onUpdated(() => {
-  buttons.value.forEach((button: any) => {
-    button.updateWidth(beatUnit.value);
+  buttons.value.forEach((button: any, index:number) => {
+    button.updateWidth(beatUnit.value[index]);
   });
 });
 </script>

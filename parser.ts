@@ -1,7 +1,9 @@
-export function parseTimeSignature(input:string,bpm:number) {
-    const result = {
-      totalBeats: 0,
-      beats: [] as { beatIndex: number, beatUnit: number, interval: number }[]
+import type { TimeSignature, Beat } from '~/types';
+
+export function parseTimeSignature(input:string,bpm:number): TimeSignature {
+    const result:TimeSignature = {
+      numBeats: 0,
+      beats: [] as Beat[]
     };
   
     // Validate the input
@@ -45,7 +47,7 @@ export function parseTimeSignature(input:string,bpm:number) {
   
         for (let i = 0; i < repeat; i++) {
           for (let j = 0; j < numBeats; j++) {
-            const interval = (60 / bpm.value) * 1000 / (beatUnit / 4);
+            const interval = (60 / bpm) * 1000 / (beatUnit / 4);
             result.beats.push({
               beatIndex: currentBeatIndex,
               beatUnit: beatUnit,
@@ -53,7 +55,7 @@ export function parseTimeSignature(input:string,bpm:number) {
             });
             currentBeatIndex++;
           }
-          result.totalBeats += numBeats;
+          result.numBeats += numBeats;
         }
       });
     });

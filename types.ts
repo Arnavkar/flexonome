@@ -5,7 +5,7 @@ export type Beat = {
 }
 
 export type TimeSignature = {
-    totalBeats: number;
+    numBeats: number;
     beats : Beat[];
 }
 
