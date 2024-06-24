@@ -1,22 +1,27 @@
 <template>
-    <Card>
-        <div class="flex flex-col w-12 items-center">
-            <select 
-                class="input input-ghost text-5xl focus:text-primary text-center w-20 h-20" 
-                v-model.number="numBeats" 
-                @change="emitNumBeatsChange"
-            >
-            <option v-for="value in numBeatValues" :key="value" :value="value">{{ value }}</option>
-            </select>           
+    <Card :isTabbed="true">
+        <template #single>
+            <div class="flex flex-col w-12 items-center">
+                <select class="input input-ghost text-5xl focus:text-primary text-center w-20 h-20" v-model.number="numBeats" @change="emitNumBeatsChange">
+                    <option v-for="value in numBeatValues" :key="value" :value="value">{{ value }}</option>
+                </select>           
             <div class="divider divider-primary mt-0 mb-0"></div>
-            <select 
-                class="input input-ghost text-5xl focus:text-primary text-center w-20 h-20" 
-                v-model.number="beatUnit" 
-                @change="emitBeatValueChange"
-            >
-            <option v-for="value in beatUnitValues" :key="value" :value="value">{{ value }}</option>
-            </select>      
+                <select class="input input-ghost text-5xl focus:text-primary text-center w-20 h-20" v-model.number="beatUnit" @change="emitBeatValueChange">
+                    <option v-for="value in beatUnitValues" :key="value" :value="value">{{ value }}</option>
+                </select>      
+            </div>
+        </template>
+        <template #multiple>
+        <div class="flex flex-col h-40 items-center">
+            <textarea 
+            type="text" 
+            class="input input-ghost text-xl h-40 text-center focus:bg-neutral"
+            v-model="inputString"
+            @input="emitInputStringChange"
+            placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"
+            />
         </div>
+        </template>
     </Card>
 </template>
 
@@ -29,6 +34,7 @@ const emit = defineEmits(["numBeatsChange", "beatUnitChange"]);
 
 const numBeats = ref(4);
 const beatUnit = ref(4);
+const inputString = ref("");
 
 const emitNumBeatsChange = () => {
   emit("numBeatsChange", numBeats.value);
@@ -36,5 +42,9 @@ const emitNumBeatsChange = () => {
 
 const emitBeatValueChange = () => {
   emit("beatUnitChange", beatUnit.value);
+};
+
+const emitInputStringChange = () => {
+  emit("inputStringChange", inputString.value);
 };
 </script>

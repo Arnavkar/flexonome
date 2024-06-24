@@ -1,5 +1,5 @@
 <template>
-    <Card>
+    <Card :isTabbed="false">
         <div ref="dial" class="relative w-48 h-48 rounded-full border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
                 <div class="text-5xl font-bold">
@@ -60,7 +60,7 @@ function onDrag(event: MouseEvent){
 
     // Update bpm based on angle change
     if (delta > 0) {
-        bpm.value = Math.min(400, bpm.value + 1);
+        bpm.value = Math.min(300, bpm.value + 1);
     } else if (delta < 0) {
         bpm.value = Math.max(20, bpm.value - 1);
     }
