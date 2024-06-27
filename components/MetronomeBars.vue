@@ -1,10 +1,11 @@
 <template>
-    <div class="flex flex-wrap space-x-4 w-8/12 justify-around m-4 p-4">
+    <div class="flex flex-wrap justify-center gap-4  max-w-screen-md m-4 ">
         <ColorButton 
         v-for="(n, index) in numBars"
         :key="n"
         ref = buttons
-        :index = "index"/>
+        :index = "index"
+        />
     </div>
 </template>
   
