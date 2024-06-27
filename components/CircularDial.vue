@@ -1,5 +1,5 @@
 <template>
-    <Card :isTabbed="false">
+    <Card :isTabbed="false" :size="80">
         <div ref="dial" class="relative w-60 h-60 rounded-full border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
                 <div class="text-5xl font-bold">

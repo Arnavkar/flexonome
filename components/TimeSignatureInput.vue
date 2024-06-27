@@ -1,5 +1,5 @@
 <template>
-    <Card :isTabbed="true">
+    <Card :isTabbed="true" :size="72">
         <template #single>
             <div class="flex flex-col w-12 items-center">
                 <select class="input input-ghost text-5xl focus:text-primary text-center w-20 h-20" v-model.number="numBeats" @change="emitNumBeatsChange">
