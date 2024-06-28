@@ -3,9 +3,9 @@
     <Transition>
       <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar"/>
     </Transition>
-    <div class="flex">
-      <Accelerator/>
-      <CircularDial :bpm="bpm" @updateBpm="updateBpm" />
+    <div class="flex w-full items-center justify-center">
+      <AcceleratorInput :isAccelerator="isAccelerator" @acceleratorSubmit="startAccelerator"/>
+      <CircularDial :bpm="bpm" @updateBpm="updateBpm" :isAccelerator="isAccelerator"/>
       <TimeSignatureInput
         :bpm="bpm"
         @numBeatsChange="updateNumBeats" 
@@ -39,19 +39,19 @@ import { ref, watch } from 'vue';
 import MetronomeBars from './MetronomeBars.vue';
 import CircularDial from './CircularDial.vue';
 import TimeSignatureInput from './TimeSignatureInput.vue';
-import Accelerator from './Accelerator.vue';
+import AcceleratorInput from './AcceleratorInput.vue';
 
-import { parseTimeSignature, updateTimeSignature } from '~/parser';
-import type { TimeSignature } from '~/types';
+import { parseTimeSignature, updateTimeSignatureBPM } from '~/parser';
+import type { Accelerator, TimeSignature } from '~/types';
 
 const numBeats:Ref<number> = ref(4);
 const beatUnit:Ref<number[]>  = ref(Array(numBeats.value).fill(4));
 const activeBar:Ref<number>  = ref(-2);
 const bpm:Ref<number>  = ref(120);
 const isRunning:Ref<boolean>  = ref(false);
+const isAccelerator:Ref<boolean>  = ref(false);
 
 const errorMsg: Ref<string|null> = ref(null);
-
 const timeSignature: Ref<TimeSignature> = ref(parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value));
 
 let timeoutId: number | null = null;
@@ -88,6 +88,14 @@ function stopMetronome() {
   activeBar.value = -2;
 }
 
+function validateBPM(bpm_value:number){
+    if (bpm.value < 20 || bpm.value > 300) {
+      throwError("BPM must be between 20 and 300");
+      return false;
+    }
+    return true;
+};
+
 function toggleMetronome(){
   if (!validateBPM(bpm.value)) return;
   if (isRunning.value == true) {
@@ -99,22 +107,11 @@ function toggleMetronome(){
 
 function updateBpm(newBpm: number){
   bpm.value = newBpm;
-  timeSignature.value = updateTimeSignature(bpm.value, timeSignature.value);
+  timeSignature.value = updateTimeSignatureBPM(bpm.value, timeSignature.value);
   if (isRunning.value == true) {
     // Restart the metronome with the new BPM
     restartMetronome();
   }
-};
-
-function validateBPM(bpm_value:number){
-    if (bpm.value < 20 || bpm.value > 300) {
-      errorMsg.value = "BPM must be between 20 and 300";
-      setTimeout(() => {
-        errorMsg.value = null;
-      }, 2000);
-      return false;
-    }
-    return true;
 };
 
 function updateNumBeats(newNumBeats: number){
@@ -144,17 +141,59 @@ function updateMultipleTimeSignature(inputString: string){
       beatUnit.value = parsed.beats.map(beat => beat.beatUnit)
       numBeats.value = parsed.numBeats;
   } catch (error: any) {
-    //console.log(error.message);
-    errorMsg.value = error.message;
-    setTimeout(() => {
-      errorMsg.value = null;
-    }, 2000);
+    throwError(error.message);
   }
   if (isRunning.value == true) {
     // Restart the metronome with the new BPM
     restartMetronome();
   }
 };
+
+function throwError(message: string){
+  errorMsg.value = message;
+  setTimeout(() => {
+    errorMsg.value = null;
+  }, 2000);
+}
+
+function validateAccelerator(accelerator:Accelerator){
+    if (accelerator.startBPM < 20 || accelerator.startBPM > 280){
+      throwError("Starting BPM must be between 20 and 280");
+      return false;
+    }
+    if (accelerator.maxBpm < 40 || accelerator.maxBpm > 300){
+      throwError("Max BPM must be between 40 and 300");
+      return false;
+    }
+    if (accelerator.startBPM > accelerator.maxBpm){
+      throwError("Starting BPM must be less than Max BPM");
+      return false;
+    }
+    return true;
+}
+
+function startAccelerator(accelerator:Accelerator){
+  if(!validateAccelerator(accelerator)) return;
+  bpm.value = accelerator.startBPM;
+
+  //Calculate the total time required to complete a bar at the starting BPM given a timeSignature Object
+  let timeToCompleteBar = timeSignature.value.beats.reduce((acc, beat) => acc + beat.interval, 0);
+  
+  //After a 500ms delay, restart the metronome and register a set interval
+  
+  let intervalId = setInterval(() => {
+    bpm.value += accelerator.bpmIncrement;
+    if (bpm.value > accelerator.maxBpm){
+      clearInterval(intervalId);
+    }
+    restartMetronome();
+  }, timeToCompleteBar * accelerator.numBarsToRepeat);
+
+  
+
+  timeSignature.value = updateTimeSignatureBPM(bpm.value, timeSignature.value);
+
+}
 </script>
 
 <style scoped>

@@ -1,5 +1,5 @@
 <template>
-    <Card :isTabbed="true" :size="72">
+    <Card :isTabbed="true" :size="64">
         <template #single>
             <div class="flex flex-col w-12 items-center">
                 <select class="input input-ghost text-5xl focus:text-primary text-center w-20 h-20" v-model.number="numBeats" @change="emitNumBeatsChange">
@@ -12,14 +12,14 @@
             </div>
         </template>
         <template #multiple>
-        <div class="flex flex-col w-full h-48 items-center">
+        <div class="flex flex-col justify-between items-center">
             <textarea 
             type="text" 
-            class="input input-ghost text-2xl w-60 flex-1 text-center dark:focus:bg-neutral focus:bg-gray-200"
+            class="input input-ghost text-xl w-60 h-32 text-center dark:focus:bg-neutral focus:bg-gray-200"
             v-model="inputString"
             placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"
             />
-            <button class="btn btn-primary mt-4" @click="emitInputStringChange">Submit</button>
+            <button class="btn btn-primary mt-2 w-1/2" @click="emitInputStringChange">Submit</button>
         </div>
         </template>
     </Card>

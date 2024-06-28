@@ -63,7 +63,7 @@ export function parseTimeSignature(input:string,bpm:number): TimeSignature {
     return result;
   }
 
-  export function updateTimeSignature(newBpm:number, timeSignature:TimeSignature):TimeSignature{
+  export function updateTimeSignatureBPM(newBpm:number, timeSignature:TimeSignature):TimeSignature{
     timeSignature.beats.forEach(beat => {
       beat.interval = (60 / newBpm) * 1000 / (beat.beatUnit / 4);
     });
