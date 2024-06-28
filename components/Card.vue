@@ -5,12 +5,14 @@
             <a role="tab" class="tab" @click="switchToTab2" :class="{'tab-active': activeTab === 'tab-2'}">{{ secondTab }}</a>
         </div> 
         <div class="flex flex-col items-center">
-            <div v-show="activeTab === 'tab-1'">
-                <slot name="single"></slot>
+            <Transition name="slide-up" mode="out-in">
+            <div v-if="activeTab === 'tab-1'">
+                <slot name="single"></slot> 
             </div>
-            <div v-show="activeTab === 'tab-2'">
-                <slot name="multiple"></slot>
+            <div v-else-if="activeTab === 'tab-2'">
+                <slot name="multiple"></slot> 
             </div>
+            </Transition>
         </div>
     </div>
       <div v-else class="flex flex-col justify-center items-center shadow-md shadow-neutral dark:shadow-black border-blue-200 dark:border-blue-950 border-2 rounded-2xl p-4 m-2" :class="cardSize">
@@ -56,3 +58,20 @@ const cardSize = computed(() => {
 });
 
 </script>
+
+<style scoped>
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.25s ease-out;
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+</style>

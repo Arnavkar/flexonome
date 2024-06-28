@@ -1,7 +1,7 @@
 <template>
     <Card :isTabbed="true" :size="64">
         <template #single>
-            <div class="flex flex-col w-12 items-center">
+            <div class="flex flex-col w-12 h-44 items-center">
                 <select class="input input-ghost text-5xl focus:text-primary text-center w-20 h-20" v-model.number="numBeats" @change="emitNumBeatsChange">
                     <option v-for="value in numBeatValues" :key="value" :value="value">{{ value }}</option>
                 </select>           
@@ -12,10 +12,10 @@
             </div>
         </template>
         <template #multiple>
-        <div class="flex flex-col justify-between items-center">
+        <div class="flex flex-col justify-between h-44 items-center">
             <textarea 
             type="text" 
-            class="input input-ghost text-xl w-60 h-32 text-center dark:focus:bg-neutral focus:bg-gray-200"
+            class="input input-ghost text-xl w-60 h-28 text-center dark:focus:bg-neutral focus:bg-gray-200"
             v-model="inputString"
             placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"
             />
