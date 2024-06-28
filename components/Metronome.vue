@@ -15,7 +15,7 @@
     </div>
     <button @click="toggleMetronome" class="btn btn-primary btn-outline mt-4 w-60">{{ isRunning ? 'Stop' : 'Start' }}</button>
     <Transition>
-      <div v-if="errorMsg" role="alert" class="alert alert-error alert-outline mt-10 absolute-bottom">
+      <div v-if="errorMsg" role="alert" class="alert alert-error alert-outline mt-10 absolute-bottom w-1/2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-6 w-6 shrink-0 stroke-current"
@@ -51,7 +51,6 @@ const bpm:Ref<number>  = ref(120);
 const isRunning:Ref<boolean>  = ref(false);
 
 const errorMsg: Ref<string|null> = ref(null);
-const multipleTimeSignatureString:Ref<string> = ref("");
 
 const timeSignature: Ref<TimeSignature> = ref(parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value));
 
@@ -90,6 +89,7 @@ function stopMetronome() {
 }
 
 function toggleMetronome(){
+  if (!validateBPM(bpm.value)) return;
   if (isRunning.value == true) {
     stopMetronome();
   } else {
@@ -104,6 +104,17 @@ function updateBpm(newBpm: number){
     // Restart the metronome with the new BPM
     restartMetronome();
   }
+};
+
+function validateBPM(bpm_value:number){
+    if (bpm.value < 20 || bpm.value > 300) {
+      errorMsg.value = "BPM must be between 20 and 300";
+      setTimeout(() => {
+        errorMsg.value = null;
+      }, 2000);
+      return false;
+    }
+    return true;
 };
 
 function updateNumBeats(newNumBeats: number){

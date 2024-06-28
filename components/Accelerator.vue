@@ -14,6 +14,10 @@
                 </select>
             </div>
             <div class = "flex items-center justify-between w-full">
+                <span class="text-md">Starting BPM</span>
+                <input type = "number" class="input input-primary text-md focus:text-primary text-center m-4 w-16" v-model.number="startBPM">
+            </div>
+            <div class = "flex items-center justify-between w-full">
                 <span class="text-md">Max BPM</span>
                 <input type = "number" class="input input-primary text-md focus:text-primary text-center m-4 w-16" v-model.number="maxBpm">
             </div>
@@ -29,4 +33,5 @@ import { bpmIncrements } from '~/constants';
 const numBarsToRepeat = ref(4);
 const bpmIncrement = ref(5);
 const maxBpm = ref(120);
+const startBPM = ref(60);
 </script>
