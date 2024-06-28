@@ -1,5 +1,5 @@
 <template>
-    <Card :isTabbed="true" :size="80" firstTab="Standard" secondTab="Accelerator">
+    <Card :isTabbed="true" :size="80" firstTab="Standard" secondTab="Accelerator" @activeTab="getActiveTab">
         <template #single>
         <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
@@ -27,7 +27,7 @@
         </template>
         <template #multiple>
             <div class="radial-progress mt-2 dark:text-gray-700 text-gray-200" role="progressbar" style="--value:100; --size:15rem; --thickness: 4px;">
-                <div class="radial-progress text-primary" role="progressbar" style="--value:50; --size:15rem; --thickness: 4px;">
+                <div class="radial-progress text-primary" role="progressbar"  style=" --size:15rem; --thickness: 4px;" :style="{'--value':progress}">
                     <div class="absolute inset-0 flex flex-col justify-center items-center">
                         <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
                         <div class="text-lg dark:text-white text-black">
@@ -43,19 +43,21 @@
 <script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted, watch, defineProps } from 'vue';
 import Card from './Card.vue';
+import type { Accelerator } from '~/types';
 
-const props = defineProps({ 
-    bpm: {
-        type: Number,
-        default: 120
-    }
-});
-const emits = defineEmits(["updateBpm"]);
+const props = defineProps<{ 
+    bpm: number,
+    acceleratorOptions: Accelerator | {},
+    progress: number
+}>();
+
+const emits = defineEmits(["updateBpm","showAcceleratorOptions"]);
 
 const angle:Ref<number> = ref(0);
 const dragging:Ref<boolean>= ref(false);
 const bpm:Ref<number> = ref(props.bpm);
 const dial:Ref<HTMLElement|null> = ref(null);
+const isAccelerator:Ref<boolean> = ref(false);
 
 function startDrag(event: MouseEvent){
     event.preventDefault(); //Prevents highlighting etc.
@@ -107,6 +109,14 @@ const knobStyle = computed(() => {
     };
 });
 
+function getActiveTab(tab: string){
+    if(tab === 'tab-2'){
+        isAccelerator.value = true;
+    } else {
+        isAccelerator.value = false;
+    }
+}
+
 onMounted(() => {
     document.addEventListener('mouseup', stopDrag);
 });
@@ -114,10 +124,19 @@ onMounted(() => {
 onUnmounted(() => {
     document.removeEventListener('mouseup', stopDrag);
 });
+//Mainly to update internal state when prop changes
+watch(props, (newProps) => {
+    bpm.value = newProps.bpm;
+});
 
 watch(bpm, (newBpm) => {
     emits('updateBpm', newBpm);
 });
+
+watch(isAccelerator, (newBool) => {
+    emits('showAcceleratorOptions', newBool);
+});
+
 </script>
 
 <style scoped>

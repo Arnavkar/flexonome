@@ -1,17 +1,26 @@
 <template>
   <div class="flex flex-col items-center">
-    <Transition>
-      <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar"/>
-    </Transition>
-    <div class="flex w-full items-center justify-center">
-      <AcceleratorInput :isAccelerator="isAccelerator" @acceleratorSubmit="startAccelerator"/>
-      <CircularDial :bpm="bpm" @updateBpm="updateBpm" :isAccelerator="isAccelerator"/>
+    <SlideTransition>
+      <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar" :key="numBeats"/>
+    </SlideTransition>
+    <div class="flex items-center justify-center">
       <TimeSignatureInput
         :bpm="bpm"
         @numBeatsChange="updateNumBeats" 
         @beatUnitChange="updateBeatUnit" 
         @multipleTimeSignatureSubmit="updateMultipleTimeSignature"
       />
+      <CircularDial 
+        :bpm="bpm"
+        :acceleratorOptions="acceleratorOptions" 
+        :progress="progress"
+        @updateBpm="updateBpm" 
+        @showAcceleratorOptions="showAcceleratorOptions"/>
+      <SlideTransition>
+        <AcceleratorInput 
+          v-if="showAccelerator" 
+          @acceleratorOptionsSubmit="setAcceleratorOptions"/>
+      </SlideTransition>
     </div>
     <button @click="toggleMetronome" class="btn btn-primary btn-outline mt-4 w-60">{{ isRunning ? 'Stop' : 'Start' }}</button>
     <Transition>
@@ -35,24 +44,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import MetronomeBars from './MetronomeBars.vue';
 import CircularDial from './CircularDial.vue';
 import TimeSignatureInput from './TimeSignatureInput.vue';
-import AcceleratorInput from './AcceleratorInput.vue';
+import SlideTransition from './SlideTransition.vue';
 
 import { parseTimeSignature, updateTimeSignatureBPM } from '~/parser';
 import type { Accelerator, TimeSignature } from '~/types';
+import AcceleratorInput from './AcceleratorInput.vue';
 
 const numBeats:Ref<number> = ref(4);
 const beatUnit:Ref<number[]>  = ref(Array(numBeats.value).fill(4));
-const activeBar:Ref<number>  = ref(-2);
 const bpm:Ref<number>  = ref(120);
 const isRunning:Ref<boolean>  = ref(false);
-const isAccelerator:Ref<boolean>  = ref(false);
+
+const timeSignature: Ref<TimeSignature> = ref(parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value));
+
+const activeBar:Ref<number>  = ref(-2);
+
+const showAccelerator:Ref<boolean>  = ref(true);
+
+const acceleratorOptions:Ref<Accelerator> = ref({
+  numBarsToRepeat:4,
+  bpmIncrement:5,
+  startBPM:120,
+  maxBpm:180
+});
+
+const progress:Ref<number> = ref(0);
 
 const errorMsg: Ref<string|null> = ref(null);
-const timeSignature: Ref<TimeSignature> = ref(parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value));
 
 let timeoutId: number | null = null;
 
@@ -62,21 +84,40 @@ function restartMetronome(){
 };
 
 function startMetronome() {
-  const beats = timeSignature.value.beats;
-  let currentBeatIndex = 0;
+    const beats = timeSignature.value.beats;
+    let currentBeatIndex = 0;
+    let currentBeatInAcceleratorLoop = 0;
+    let numBeatsBeforeIncrement = 0
+    let newBpm = bpm.value;
 
-  function tic() {
-    const currentBeat = beats[currentBeatIndex];
-    activeBar.value = currentBeat.beatIndex;
-    // You can add a sound or click here
-    currentBeatIndex = (currentBeatIndex + 1) % beats.length;
-    timeoutId = window.setTimeout(tic, currentBeat.interval);
-  }
+    if(showAccelerator.value){
+      currentBeatInAcceleratorLoop = 0
+      numBeatsBeforeIncrement = beats.length * acceleratorOptions.value.numBarsToRepeat + 1;
+    }
 
-  if (!isRunning.value) {
-    tic();
-    isRunning.value = true;
-  }
+    function tic() {
+      const currentBeat = beats[currentBeatIndex];
+      activeBar.value = currentBeat.beatIndex;
+      // You can add a sound or click here
+      currentBeatIndex = (currentBeatIndex + 1) % beats.length;
+
+      timeoutId = window.setTimeout(tic, currentBeat.interval? currentBeat.interval : 1000);
+
+      if (showAccelerator.value){
+        currentBeatInAcceleratorLoop = (currentBeatInAcceleratorLoop + 1) % numBeatsBeforeIncrement;
+        if (currentBeatInAcceleratorLoop == 0){
+          newBpm = Math.min(acceleratorOptions.value.maxBpm, newBpm + acceleratorOptions.value.bpmIncrement);
+          updateBpm(newBpm);
+        }
+        console.log(currentBeatInAcceleratorLoop);
+        console.log(currentBeat.interval)
+      } 
+    }
+
+    if (!isRunning.value) {
+      tic();
+      isRunning.value = true;
+    }
 }
 
 function stopMetronome() {
@@ -172,27 +213,16 @@ function validateAccelerator(accelerator:Accelerator){
     return true;
 }
 
-function startAccelerator(accelerator:Accelerator){
+function setAcceleratorOptions(accelerator:Accelerator){
   if(!validateAccelerator(accelerator)) return;
-  bpm.value = accelerator.startBPM;
+  stopMetronome();
+  acceleratorOptions.value = accelerator;
+  updateBpm(accelerator.startBPM);
+}
 
-  //Calculate the total time required to complete a bar at the starting BPM given a timeSignature Object
-  let timeToCompleteBar = timeSignature.value.beats.reduce((acc, beat) => acc + beat.interval, 0);
-  
-  //After a 500ms delay, restart the metronome and register a set interval
-  
-  let intervalId = setInterval(() => {
-    bpm.value += accelerator.bpmIncrement;
-    if (bpm.value > accelerator.maxBpm){
-      clearInterval(intervalId);
-    }
-    restartMetronome();
-  }, timeToCompleteBar * accelerator.numBarsToRepeat);
-
-  
-
-  timeSignature.value = updateTimeSignatureBPM(bpm.value, timeSignature.value);
-
+function showAcceleratorOptions(showAcceleratorBool: boolean){
+  showAccelerator.value = showAcceleratorBool;
+  stopMetronome();
 }
 </script>
 

@@ -1,18 +1,18 @@
 <template>
       <div v-if="isTabbed" class = "shadow-md shadow-neutral dark:shadow-black border-blue-200 dark:border-blue-950 border-2 rounded-2xl p-4 m-2" :class="cardSize">
         <div role="tablist" class="tabs tabs-boxed">
-            <a role="tab" class="tab" @click="switchToTab1" :class="{'tab-active': activeTab === 'tab-1'}">{{firstTab}} </a>
+            <a role="tab" class="tab" @click="switchToTab1" :class="{'tab-active': activeTab === 'tab-1'}">{{ firstTab}} </a>
             <a role="tab" class="tab" @click="switchToTab2" :class="{'tab-active': activeTab === 'tab-2'}">{{ secondTab }}</a>
         </div> 
         <div class="flex flex-col items-center">
-            <Transition name="slide-up" mode="out-in">
-            <div v-if="activeTab === 'tab-1'">
-                <slot name="single"></slot> 
-            </div>
-            <div v-else-if="activeTab === 'tab-2'">
-                <slot name="multiple"></slot> 
-            </div>
-            </Transition>
+            <SlideTransition>
+                <div v-if="activeTab === 'tab-1'">
+                    <slot name="single"></slot> 
+                </div>
+                <div v-else-if="activeTab === 'tab-2'">
+                    <slot name="multiple"></slot> 
+                </div>
+            </SlideTransition>
         </div>
     </div>
       <div v-else class="flex flex-col justify-center items-center shadow-md shadow-neutral dark:shadow-black border-blue-200 dark:border-blue-950 border-2 rounded-2xl p-4 m-2" :class="cardSize">
@@ -22,6 +22,7 @@
   
 <script setup lang="ts">
 import { ref } from 'vue';
+import SlideTransition from './SlideTransition.vue';
 
 // Define props
 const props = defineProps({ 
@@ -44,34 +45,24 @@ const props = defineProps({
 
 // Active tab state
 const activeTab:Ref<String> = ref('tab-1');
+const emits = defineEmits(["activeTab"]);
 
 function switchToTab1(){
     activeTab.value = 'tab-1'
+    emitActiveTab();
 }
 
 function switchToTab2(){
     activeTab.value = 'tab-2' 
+    emitActiveTab();
 }
 
 const cardSize = computed(() => {
     return `w-${props.size} h-${props.size}`;
 });
 
+const emitActiveTab = () => {
+    emits('activeTab', activeTab.value);
+}
+
 </script>
-
-<style scoped>
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: all 0.25s ease-out;
-}
-
-.slide-up-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.slide-up-leave-to {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-</style>

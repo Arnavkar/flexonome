@@ -19,7 +19,7 @@
             v-model="inputString"
             placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"
             />
-            <button class="btn btn-primary mt-2 w-1/2" @click="emitInputStringChange">Submit</button>
+            <button class="btn btn-primary mt-2 w-1/2 btn-outline" @click="emitInputStringChange">Submit</button>
         </div>
         </template>
     </Card>
@@ -30,20 +30,20 @@ import { ref } from 'vue';
 import { numBeatValues, beatUnitValues } from '../constants';
 import Card from './Card.vue';
 
-const emit = defineEmits(["numBeatsChange", "beatUnitChange","multipleTimeSignatureSubmit"]);
+const emits = defineEmits(["numBeatsChange", "beatUnitChange","multipleTimeSignatureSubmit"]);
 const numBeats = ref(4);
 const beatUnit = ref(4);
 const inputString = ref("");
 
 const emitNumBeatsChange = () => {
-  emit("numBeatsChange", numBeats.value);
+    emits("numBeatsChange", numBeats.value);
 };
 
 const emitBeatValueChange = () => {
-  emit("beatUnitChange", beatUnit.value);
+    emits("beatUnitChange", beatUnit.value);
 };
 
 const emitInputStringChange = () => {
-    emit("multipleTimeSignatureSubmit", inputString.value);
+    emits("multipleTimeSignatureSubmit", inputString.value);
 };
 </script>
