@@ -1,9 +1,7 @@
 <template>
   <div class="relative flex justify-center items-center h-screen">
     <div class="absolute top-0 right-0 m-4 p-2">
-      <label class="swap swap-flip">
-        <input type="checkbox" class="toggle" @click="toggleTheme" />
-      </label>
+      <ThemeController />
     </div>
     <Transition name="fade-slide">
       <div v-if="intro" class="hero min-h-screen">
@@ -28,9 +26,10 @@
 </template>
 
 <script setup lang="ts">
-import { themes } from './constants';
-import { onMounted, ref} from 'vue';
+
+import {ref , onMounted} from 'vue';
 import Metronome from './components/Metronome.vue';
+import ThemeController from './components/ThemeController.vue';
 
 const intro: Ref<boolean> = ref(false);
 const showMetronome: Ref<boolean> = ref(false);
@@ -42,17 +41,7 @@ function startMetronome() {
   }, 500);
 }
 
-function toggleTheme() {
-  const theme = document.documentElement.getAttribute('data-theme');
-  setTheme(theme === themes[0] ? themes[1] : themes[0]);
-}
-
-function setTheme(theme: string) {
-  document.documentElement.setAttribute('data-theme', theme);
-}
-
 onMounted(() => {
-  setTheme(themes[0]);
   window.setTimeout(() => {
     intro.value = true;
   }, 1000);

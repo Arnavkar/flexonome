@@ -3,7 +3,7 @@
         <template #single>
         <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
-                <input type="number" v-model="bpm" class="input input-ghost text-primary focus:outline-none focus:border-0 hover: text-center w-2/3 max-w-xs text-5xl font-bold remove-arrow"/>
+                <input type="number" v-model="bpm" class="input input-ghost text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold remove-arrow"/>
                 <div class="text-lg">
                     BPM (♩)
                 </div>
