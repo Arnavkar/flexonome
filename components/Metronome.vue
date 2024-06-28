@@ -1,15 +1,17 @@
 <template>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center justify-between">
     <SlideTransition>
-      <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar" :key="numBeats"/>
+        <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar" :key="numBeats"/>
     </SlideTransition>
-    <div class="flex items-center justify-center">
-      <TimeSignatureInput
-        :bpm="bpm"
-        @numBeatsChange="updateNumBeats" 
-        @beatUnitChange="updateBeatUnit" 
-        @multipleTimeSignatureSubmit="updateMultipleTimeSignature"
-      />
+    <div class="grid grid-cols-3 mt-8">
+      <div class="flex flex-col items-end justify-center">
+        <TimeSignatureInput
+            :bpm="bpm"
+            @numBeatsChange="updateNumBeats" 
+            @beatUnitChange="updateBeatUnit" 
+            @multipleTimeSignatureSubmit="updateMultipleTimeSignature"
+          />
+      </div>
       <CircularDial 
         :bpm="bpm"
         :acceleratorOptions="acceleratorOptions" 
@@ -24,23 +26,22 @@
     </div>
     <button @click="toggleMetronome" class="btn btn-primary btn-outline mt-4 w-60">{{ isRunning ? 'Stop' : 'Start' }}</button>
     <Transition>
-      <div v-if="errorMsg" role="alert" class="alert alert-error alert-outline mt-10 absolute-bottom w-1/2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 shrink-0 stroke-current"
-          fill="none"
-          viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span>Error! {{errorMsg}}</span>
-      </div>
-    </Transition>
+    <div v-if="errorMsg" role="alert" class="alert alert-error alert-outline mt-10 absolute-bottom w-1/2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Error! {{errorMsg}}</span>
+    </div>
+  </Transition>
   </div>
-  
 </template>
 
 <script setup lang="ts">
@@ -63,7 +64,7 @@ const timeSignature: Ref<TimeSignature> = ref(parseTimeSignature(`${numBeats.val
 
 const activeBar:Ref<number>  = ref(-2);
 
-const showAccelerator:Ref<boolean>  = ref(true);
+const showAccelerator:Ref<boolean>  = ref(false);
 
 const acceleratorOptions:Ref<Accelerator> = ref({
   numBarsToRepeat:4,
@@ -88,7 +89,6 @@ function startMetronome() {
     let currentBeatIndex = 0;
     let currentBeatInAcceleratorLoop = 0;
     let numBeatsBeforeIncrement = 0
-    let newBpm = bpm.value;
 
     if(showAccelerator.value){
       currentBeatInAcceleratorLoop = 0
@@ -105,12 +105,10 @@ function startMetronome() {
 
       if (showAccelerator.value){
         currentBeatInAcceleratorLoop = (currentBeatInAcceleratorLoop + 1) % numBeatsBeforeIncrement;
+        progress.value = Math.floor((currentBeatInAcceleratorLoop / (numBeatsBeforeIncrement-1))*100)
         if (currentBeatInAcceleratorLoop == 0){
-          newBpm = Math.min(acceleratorOptions.value.maxBpm, newBpm + acceleratorOptions.value.bpmIncrement);
-          updateBpm(newBpm);
+          updateBpm(Math.min(acceleratorOptions.value.maxBpm, bpm.value + acceleratorOptions.value.bpmIncrement));
         }
-        console.log(currentBeatInAcceleratorLoop);
-        console.log(currentBeat.interval)
       } 
     }
 

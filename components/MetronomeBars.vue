@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-wrap justify-center gap-4  max-w-screen-md m-4 ">
+    <div class="flex flex-wrap justify-center gap-4  max-w-screen-sm m-4 pl-12 pr-12">
         <ColorButton 
         v-for="(n, index) in numBars"
         :key="n"

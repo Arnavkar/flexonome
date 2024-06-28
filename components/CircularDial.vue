@@ -26,8 +26,8 @@
         </div>
         </template>
         <template #multiple>
-            <div class="radial-progress mt-2 dark:text-gray-700 text-gray-200" role="progressbar" style="--value:100; --size:15rem; --thickness: 4px;">
-                <div class="radial-progress text-primary" role="progressbar"  style=" --size:15rem; --thickness: 4px;" :style="{'--value':progress}">
+            <div class="radial-progress mt-2 dark:text-gray-700 text-gray-200" role="progressbar" style="--value:100; --size:15rem; --thickness: 4px; ">
+                <div class="radial-progress text-accent" role="progressbar"  style=" --size:15rem; --thickness: 4px;" :style="{'--value':progress}">
                     <div class="absolute inset-0 flex flex-col justify-center items-center">
                         <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
                         <div class="text-lg dark:text-white text-black">
@@ -140,6 +140,10 @@ watch(isAccelerator, (newBool) => {
 </script>
 
 <style scoped>
+.radial-progress::after{
+    content: none;
+    
+}
 .remove-arrow::-webkit-inner-spin-button,
 .remove-arrow::-webkit-outer-spin-button {
     -webkit-appearance: none;
