@@ -19,5 +19,10 @@ export default {
   daisyui: {
     themes: themes
   },
+  safelist: [
+    {
+      pattern: /w-.+/,
+    }
+  ],
   darkMode: ['class', `[data-theme=${themes[0]}]`]
 }

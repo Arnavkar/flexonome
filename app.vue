@@ -20,7 +20,7 @@
       </div>
     </Transition>
     <Transition name="fade-slide">
-      <div v-if="showMetronome">
+      <div v-if="showMetronome" class="w-full">
         <Metronome />
       </div>
     </Transition>

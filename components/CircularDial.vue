@@ -1,10 +1,9 @@
 <template>
-    <Card :isTabbed="false" :size="80">
+    <Card :isTabbed="false" :size="72">
         <div ref="dial" class="relative w-60 h-60 rounded-full border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
-                <div class="text-5xl font-bold">
-                    {{ bpm }}
-                </div>
+                <input type="number" v-model="bpm" class="input input-ghost focus:outline-none focus:border-0 text-center w-2/3 max-w-xs text-5xl font-bold"/>
+                
                 <div class="text-lg">
                     BPM (♩)
                 </div>
