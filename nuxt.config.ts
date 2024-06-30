@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     '@fortawesome/fontawesome-free/css/all.css'
 
   ],
+  pages: true,
   postcss: {
     plugins: {
       tailwindcss: {},
