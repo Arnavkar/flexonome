@@ -1,7 +1,7 @@
 <template>
     <button
-       class = "h-12 border-2 rounded"
-      :class="[currentBorderColor, currentBackgroundColor, currentWidth, { 'bg-opacity-100': isFlashing, 'bg-opacity-0': !isFlashing }]"
+       class = "h-12 border-2 rounded-full"
+      :class="[currentBorderColor, currentBackgroundColor, currentWidth, { 'active-state': isFlashing, 'dark:bg-slate-700 bg-slate-200': !isFlashing }]"
       @click="cycleColorAndSound"
     >
       <!-- Empty buton to just show border with color -->
@@ -62,7 +62,7 @@
     currentWidth.value = buttonWidths[newBeatUnit];
   }
 
-  defineExpose({ tic, cycleColorAndSound, updateWidth });
+  defineExpose({ tic, cycleColorAndSound, updateWidth, setColorAndSound });
 
   onMounted(() => {
     audioObjects = audioPaths.map(path => new Audio(path));
@@ -71,10 +71,7 @@
   </script>
   
   <style scoped>
-  .bg-opacity-0 {
-    background-color: transparent;
-  }
-  .bg-opacity-100 {
+  .active-state {
     background-color: currentBackgroundColor;
   }
   </style>

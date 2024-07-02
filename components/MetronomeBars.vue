@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-wrap justify-center gap-4  max-w-screen-sm m-4 pl-12 pr-12">
         <ColorButton 
-        v-for="(n, index) in numBars"
+        v-for="(n, index) in numBeats"
         :key="n"
         ref = buttons
         :index = "index"
@@ -21,20 +21,14 @@ const props = defineProps<{
 }>();
 
 // Initialize numBars with the prop value or default to 4
-const numBars = ref(props.numBeats);   
 const beatUnit = ref(props.beatUnit);
 
 // Empty Reference to the ColorButton components declared in template
 const buttons = ref();
 
-// Watch for changes in the timeSignature prop and update numBars
-watch(() => props.numBeats, (newVal) => {
-    numBars.value = newVal; 
-});
-
 // Watch for changes in the activeBar prop and call tic on the corresponding button
 watch(() => props.activeBar, (newVal) => {
-  if (newVal >= 0 && newVal !== numBars.value) {
+  if (newVal >= 0 && newVal !== props.numBeats) {
     buttons.value[newVal]?.tic();
   }
 });

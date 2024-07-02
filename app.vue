@@ -6,3 +6,12 @@
         <NuxtPage />
     </div>
 </template>
+
+<script setup lang="ts">
+
+import { useRoute } from 'vue-router';
+import NavBar from '~/components/NavBar.vue';
+//Check the current URL path
+
+
+</script>

@@ -1,5 +1,3 @@
-import Accelerator from "./components/AcceleratorInput.vue";
-
 export type Beat = {
     beatIndex: number;
     beatUnit: number;
@@ -11,9 +9,17 @@ export type TimeSignature = {
     beats : Beat[];
 }
 
+export type Polyrhythm = {
+    ratios: number[];
+    intervals: number[];    
+}
+
 export type Accelerator = {
     numBarsToRepeat: number;
     bpmIncrement: number;
     maxBpm: number;
     startBPM: number;
 }
+
+export type Errorhandler = (a: string) => void;
+
