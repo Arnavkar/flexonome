@@ -1,5 +1,5 @@
 <template>
-    <Card :isTabbed="true" :size="64">
+    <Card :isTabbed="true" :size="64" @activeTab="handleTabChange">
         <template #single>
             <div class="flex flex-col w-12 h-44 items-center">
                 <select class="input input-ghost text-5xl focus:text-primary text-center w-24 h-20" v-model.number="numBeats" @change="emitNumBeatsChange">
@@ -46,4 +46,13 @@ const emitBeatValueChange = () => {
 const emitInputStringChange = () => {
     emits("multipleTimeSignatureSubmit", inputString.value);
 };
+
+function handleTabChange(tab: string) {
+    if (tab === "tab-1") {
+        emitBeatValueChange();
+        emitNumBeatsChange();
+    } else if (inputString.value !== '') {
+        emitInputStringChange();
+    }
+}
 </script>

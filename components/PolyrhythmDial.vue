@@ -1,31 +1,35 @@
 <template>
   <Card :isTabbed="false" :size="96">
   <div class="ring-circles">
+    <div class="border-accent border-2 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"  :style="{
+        width: `${radii[1] * 2}px`,
+        height: `${radii[1] * 2}px`,
+      }">      
+      <TransitionGroup name="list">
+        <ColorButton
+        v-for="(n,index) in y"
+          :key="n"
+          ref=circleRefs2
+          :index = "index"
+          class = "border-4 rounded-full"
+          :style="getCircleStyle(1, index, y)"
+        ></ColorButton>
+      </TransitionGroup>
+    </div>
     <div class="border-primary border-2 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" :style="{
         width: `${radii[0] * 2}px`,
         height: `${radii[0] * 2}px`,
       }">      
+      <TransitionGroup name="list">
       <ColorButton
         v-for="(n,index) in x"
         :key="n"
         ref=circleRefs1
         :index = "index"
-        class = "border-4"
+        class = "border-4 rounded-full"
         :style="getCircleStyle(0, index, x)"
       ></ColorButton>
-    </div>
-    <div class="border-accent border-2 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"  :style="{
-        width: `${radii[1] * 2}px`,
-        height: `${radii[1] * 2}px`,
-      }">      
-      <ColorButton
-      v-for="(n,index) in y"
-        :key="n"
-        ref=circleRefs2
-        :index = "index"
-        class = "border-4"
-        :style="getCircleStyle(1, index, y)"
-      ></ColorButton>
+      </TransitionGroup>
     </div>
   </div>
   </Card>
@@ -83,15 +87,19 @@ watch(()=> props.activeCircles_2, (newVal) => {
 });
 
 watch(()=> props.x, () => {
-  circleRefs1.value.forEach((circle:any) => {
-    circle.setColorAndSound(0);
-  });
+  window.setTimeout(() => {
+    circleRefs2.value.forEach((circle:any) => {
+      circle.setColorAndSound(2);
+    });
+  }, 10);
 });
 
 watch(()=> props.y, () => {
-  circleRefs2.value.forEach((circle:any) => {
-    circle.setColorAndSound(2);
-  });
+  window.setTimeout(() => {
+    circleRefs2.value.forEach((circle:any) => {
+      circle.setColorAndSound(2);
+    });
+  }, 10);
 });
 
 onMounted(() => {

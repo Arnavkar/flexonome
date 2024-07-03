@@ -152,8 +152,4 @@ watch(isAccelerator, (newBool) => {
 .remove-arrow {
     -moz-appearance: textfield;
 }
-
-.background-circle {
-
-}
 </style>

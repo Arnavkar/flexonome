@@ -1,9 +1,8 @@
 <template>
+  <div>
   <Transition name="fade-slide">
     <div v-if="renderPage" class="flex flex-col items-center justify-between">
-      <SlideTransition>
-        <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar" :key="numBeats" />
-      </SlideTransition>
+        <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar"/>
       <div class="grid grid-cols-3 mt-8">
         <div class="flex flex-col items-end justify-center">
           <TimeSignatureInput @numBeatsChange="updateNumBeats" @beatUnitChange="updateBeatUnit"
@@ -29,6 +28,7 @@
       </Transition>
     </div>
   </Transition>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -201,16 +201,3 @@ onMounted(() => {
 });
 
 </script>
-
-<style scoped>
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
-</style>

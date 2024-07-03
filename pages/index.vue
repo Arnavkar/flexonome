@@ -1,4 +1,5 @@
 <template>
+  <div>
     <Transition name="fade-slide">
       <div v-if="intro" class="hero min-h-screen">
         <div class="hero-content text-center">
@@ -13,11 +14,12 @@
         </div>
       </div>
     </Transition>
+  </div>
 </template>
 
 <script setup lang="ts">
 
-import {ref , onMounted, onUnmounted} from 'vue';
+import {ref , onMounted} from 'vue';
 
 const intro: Ref<boolean> = ref(false);
 
@@ -35,15 +37,3 @@ function goToMetronome() {
   }, 500);
 }
 </script>
-
-<style scoped>
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
-</style>

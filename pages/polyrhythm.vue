@@ -1,4 +1,5 @@
 <template>
+  <div>
   <Transition name="fade-slide">
     <div v-if="renderPage" class="flex flex-col items-center justify-between">
       <div class="grid grid-cols-3 mt-8">
@@ -28,6 +29,7 @@
       </Transition>
     </div>
   </Transition>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -159,16 +161,3 @@ onMounted(() => {
 });
 
 </script>
-
-<style scoped>
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
-</style>

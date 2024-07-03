@@ -1,11 +1,13 @@
 <template>
-    <div class="flex flex-wrap justify-center gap-4  max-w-screen-sm m-4 pl-12 pr-12">
+    <div class="flex flex-wrap gap-4 max-w-screen-sm m-4 pl-12 pr-12">
+      <TransitionGroup name="list">
         <ColorButton 
-        v-for="(n, index) in numBeats"
+        v-for="n in numBeats"
         :key="n"
         ref = buttons
-        :index = "index"
+        class = "rounded-lg"
         />
+      </TransitionGroup>
     </div>
 </template>
   
@@ -34,7 +36,7 @@ watch(() => props.activeBar, (newVal) => {
 });
 
 watch(() => props.beatUnit, (newVal) => {
-  beatUnit.value = newVal;
+  beatUnit.value = newVal;  
 });
 
 onMounted(() => {

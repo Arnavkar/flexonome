@@ -1,7 +1,7 @@
 <template>
     <button
-       class = "h-12 border-2 rounded-full"
-      :class="[currentBorderColor, currentBackgroundColor, currentWidth, { 'active-state': isFlashing, 'dark:bg-slate-700 bg-slate-200': !isFlashing }]"
+       class = "h-12 border-2"
+      :class="[currentBorderColor, currentBackgroundColor, currentWidth, { 'active-state': isFlashing, 'dark:bg-slate-800 bg-slate-200': !isFlashing }]"
       @click="cycleColorAndSound"
     >
       <!-- Empty buton to just show border with color -->
