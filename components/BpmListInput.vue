@@ -1,0 +1,40 @@
+<template>        
+    <Card :isTabbed="false" :size="80">
+    <div class= "flex items-center gap-10">
+        <div class="flex flex-col items-center gap-4">
+        <div v-for="(input, index) in inputs" :key="index">
+            <input type="number" v-model="inputs[index]" class="input border-2 dark:border-gray-700 border-gray-300 text-3xl text-primary text-center w-24 h-12" />
+        </div>
+        </div>
+        <div class="flex flex-col items-center">
+            <button @click="addInput" class="w-12 h-12 border-green-700 border-2 rounded-md m-2">+</button>
+            <button v-if="inputs.length > 1" @click="removeInput" class="w-12 h-12 border-red-800 border-2 rounded-md m-2">-</button>
+        </div>
+    </div>
+    </Card>
+</template>
+  
+  <script setup lang="ts">
+  import { ref } from 'vue';
+
+  const emits = defineEmits(["inputChange"]);
+  
+  // Reactive list of inputs
+  const inputs = ref<number[]>([120]); // Start with one input initialized to 0
+  
+  // Function to add an input
+  const addInput = () => {
+    inputs.value.push(120); // Add a new input initialized to 0
+  };
+  // Function to remove an input
+  function removeInput(){
+    inputs.value.splice(inputs.value.length-1, 1); // Remove the input at the specified index
+  };
+
+  watchEffect(() => {
+    emits("inputChange", inputs.value);
+    console.log(inputs.value);
+  });
+
+  </script>
+  
