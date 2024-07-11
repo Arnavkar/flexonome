@@ -17,10 +17,10 @@
   <script setup lang="ts">
   import { ref } from 'vue';
 
-  const emits = defineEmits(["inputChange"]);
+  const emits = defineEmits(["inputChange",]);
   
   // Reactive list of inputs
-  const inputs = ref<number[]>([120]); // Start with one input initialized to 0
+  const inputs:Ref<number[]> = ref([120,60]); // Start with one input initialized to 0
   
   // Function to add an input
   const addInput = () => {
@@ -33,7 +33,6 @@
 
   watchEffect(() => {
     emits("inputChange", inputs.value);
-    console.log(inputs.value);
   });
 
   </script>
