@@ -76,7 +76,8 @@ export function parseTimeSignature(input:string, bpm:number): TimeSignature {
           result.beats.push({
             beatIndex: currentBeatIndex,
             beatUnit: beatUnit,
-            interval: interval
+            interval: interval,
+            isFirst: j === 0
           });
           currentBeatIndex++;
         }

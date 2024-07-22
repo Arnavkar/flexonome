@@ -34,7 +34,6 @@ function getWidth(){
 function togglePhaser(){
   isRunning.value = !isRunning.value;
   getWidth();
-
 }
 
 function updateBpmList(newBpmList: number[]){

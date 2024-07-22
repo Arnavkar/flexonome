@@ -2,6 +2,7 @@ export type Beat = {
     beatIndex: number;
     beatUnit: number;
     interval: number;
+    isFirst: boolean;
 }
 
 export type TimeSignature = {
