@@ -7,8 +7,8 @@
         </div>
         </div>
         <div class="flex flex-col items-center">
-            <button @click="addInput" class="w-12 h-12 border-green-700 border-2 rounded-md m-2">+</button>
-            <button v-if="inputs.length > 1" @click="removeInput" class="w-12 h-12 border-red-800 border-2 rounded-md m-2">-</button>
+            <button v-if="inputs.length < 10" @click="addInput" class="w-12 h-12 border-primary text-primary border-2 rounded-md m-2">+</button>
+            <button v-if="inputs.length > 1" @click="removeInput" class="w-12 h-12 border-secondary text-secondary border-2 rounded-md m-2">-</button>
         </div>
     </div>
     </Card>
@@ -24,7 +24,7 @@
   
   // Function to add an input
   const addInput = () => {
-    inputs.value.push(120); // Add a new input initialized to 0
+    inputs.value.push(120); // Add a new input initialized to 120
   };
   // Function to remove an input
   function removeInput(){
