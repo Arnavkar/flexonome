@@ -1,10 +1,12 @@
 <template>
+  <Transition name="fade-slide" mode="out-in">
     <div class="relative flex flex-col justify-center items-center h-screen">
         <div class="absolute top-0 w-full p-4">
             <NavBar v-if="!isIntro"/>
         </div>
         <NuxtPage />
     </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -15,6 +17,42 @@ import NavBar from '~/components/NavBar.vue';
 const isIntro: Ref<boolean> = computed(() => {
     const route = useRoute().path;
     return route === '/';
+});
+
+function setCookie(c_name:string,value:string,exdays:number){
+  //Create visited cookie
+  document.cookie = `${c_name}=${value}; expires=${new Date(Date.now() + exdays * 24 * 60 * 60 * 1000).toUTCString()}`;
+}
+
+function getCookie(c_name:string){
+  //Get the value of the visited cookie
+  if (document.cookie.length > 0) {
+    let c_start = document.cookie.indexOf(c_name + "=");
+    if (c_start !== -1) {
+      c_start = c_start + c_name.length + 1;
+      let c_end = document.cookie.indexOf(";", c_start);
+      if (c_end === -1) {
+        c_end = document.cookie.length;
+      }
+      return unescape(document.cookie.substring(c_start, c_end));
+    }
+  }
+  return "";
+}
+
+function checkSession(){
+  if (useRoute().path == "/"){
+    var c = getCookie("isited");
+    if (c === "yes") {
+        //push to metronome page
+        window.location.href = '/metronome';  
+    } 
+    setCookie("visited", "yes", 7); // expire in 1 year; or use null to never expire
+  }
+}
+
+onMounted(() => {
+  checkSession();
 });
 
 </script>
