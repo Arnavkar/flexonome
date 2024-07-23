@@ -2,7 +2,7 @@
   <div>
   <Transition name="fade-slide">
     <div v-if="renderPage" class="flex flex-col items-center justify-between">
-        <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar"/>
+        <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar" :accents="getAccents(timeSignature)"/>
       <div class="grid grid-cols-3 mt-8">
         <div class="flex flex-col items-end justify-center">
           <TimeSignatureInput @numBeatsChange="updateNumBeats" @beatUnitChange="updateBeatUnit"
@@ -156,7 +156,6 @@ function updateBeatUnit(newBeatUnit: number) {
 };
 
 function updateMultipleTimeSignature(inputString: string) {
-  //console.log(inputString);
   try {
     let parsed = parseTimeSignature(inputString, bpm.value);
     timeSignature.value = parsed;
@@ -170,6 +169,11 @@ function updateMultipleTimeSignature(inputString: string) {
     restartMetronome();
   }
 };
+
+function getAccents(timeSignature:TimeSignature){
+  const accentArr = timeSignature.beats.map((beat:Beat) => beat.isFirst? 1:0);
+  return accentArr;
+}
 
 function setAcceleratorOptions(accelerator: Accelerator) {
   if (!validateAccelerator(accelerator, throwError)) return;

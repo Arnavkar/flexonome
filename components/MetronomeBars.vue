@@ -20,6 +20,7 @@ const props = defineProps<{
     numBeats: number
     beatUnit: number[]
     activeBar:number
+    accents:number[]
 }>();
 
 // Initialize numBars with the prop value or default to 4
@@ -36,7 +37,8 @@ watch(() => props.activeBar, (newVal) => {
 });
 
 watch(() => props.beatUnit, (newVal) => {
-  beatUnit.value = newVal;  
+  beatUnit.value = newVal;
+  console.log(props.accents)
 });
 
 onMounted(() => {
@@ -47,6 +49,9 @@ onMounted(() => {
 onUpdated(() => {
   buttons.value.forEach((button: any, index:number) => {
     button.updateWidth(beatUnit.value[index]);
+    if (props.accents[index]==1){
+      buttons.value[index].setColorAndSound(1);
+    }
   });
 });
 </script>
