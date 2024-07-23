@@ -26,6 +26,16 @@
           <span>Error! {{ errorMsg }}</span>
         </div>
       </Transition>
+      <Transition name="fade-slide">
+        <div v-if="successMsg" role="alert" class="alert alert-success alert-outline mt-10 absolute-bottom w-1/2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M5 13l4 4L19 7" />
+          </svg>
+          <span>Success! {{ successMsg }}</span>
+        </div>
+      </Transition>
     </div>
   </Transition>
 </div>
@@ -59,6 +69,7 @@ const acceleratorOptions: Ref<Accelerator> = ref(defaultAccelerator);
 const progress: Ref<number> = ref(0);
 
 const errorMsg: Ref<string | null> = ref(null);
+const successMsg: Ref<string | null> = ref(null);
 
 let timeoutId: number | null = null;
 
@@ -126,6 +137,13 @@ function throwError(message: string) {
   }, 2000);
 }
 
+function throwSuccess(message: string) {
+  successMsg.value = message;
+  setTimeout(() => {
+    successMsg.value = null;
+  }, 2000);
+}
+
 function updateBpm(newBpm: number) {
   if (!validateBPM(newBpm, throwError)) return;
   bpm.value = newBpm;
@@ -164,6 +182,7 @@ function updateMultipleTimeSignature(inputString: string) {
   } catch (error: any) {
     throwError(error.message);
   }
+  throwSuccess('Multple Time signature created');
   if (isRunning.value == true) {
     // Restart the metronome with the new BPM
     restartMetronome();
@@ -180,6 +199,7 @@ function setAcceleratorOptions(accelerator: Accelerator) {
   stopMetronome();
   acceleratorOptions.value = accelerator;
   updateBpm(accelerator.startBPM);
+  throwSuccess('New Accelerator created');
 }
 
 function showAcceleratorOptions(showAcceleratorBool: boolean) {

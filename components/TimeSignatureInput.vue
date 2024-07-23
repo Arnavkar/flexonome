@@ -26,8 +26,8 @@
             </div>
         </div>
         <div class="flex justify-evenly">
-            <button class="btn  btn-primary" @click="emitInputStringChange">Submit</button>
-            <button class="btn  btn-outline btn-primary" onclick="help_modal.showModal()">Help</button>
+            <button class="btn btn-outline btn-primary" @click="emitInputStringChange">Submit</button>
+            <button class="btn  btn-neutral" onclick="help_modal.showModal()">Help</button>
         </div>
         <!-- Open the modal using ID.showModal() method -->
         <dialog id="help_modal" class="modal modal-bottom sm:modal-middle">
