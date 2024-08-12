@@ -15,7 +15,7 @@
         </SlideTransition>
       </div>
       <button @click="toggleMetronome" class="btn btn-primary btn-outline mt-4 w-60">{{ isRunning ? 'Stop' : 'Start'
-        }}</button>
+        }}<span>{{ drift }}</span></button>
       <Transition name="fade-slide">
         <div v-if="errorMsg" role="alert" class="alert alert-error alert-outline mt-10 absolute-bottom w-1/2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
@@ -70,6 +70,7 @@ const progress: Ref<number> = ref(0);
 
 const errorMsg: Ref<string | null> = ref(null);
 const successMsg: Ref<string | null> = ref(null);
+const drift:Ref<number> = ref(0);
 
 let timeoutId: number | null = null;
 
@@ -82,19 +83,25 @@ function startMetronome() {
   const beats = timeSignature.value.beats;
   let currentBeatIndex = 0;
   let currentBeatInAcceleratorLoop = 0;
-  let numBeatsBeforeIncrement = 0
+  let numBeatsBeforeIncrement = 0;
+  const start = Date.now()
+  let totalTime = 0;
 
   if (showAccelerator.value) {
     numBeatsBeforeIncrement = beats.length * acceleratorOptions.value.numBarsToRepeat + 1;
   }
 
-  function tic() {
+  const tic = () => {
     const currentBeat = beats[currentBeatIndex];
+    const timeDrift = Math.max((new Date().getTime() - start) - totalTime,0);
+    drift.value = timeDrift;
+
     activeBar.value = currentBeat.beatIndex;
     // You can add a sound or click here
     currentBeatIndex = (currentBeatIndex + 1) % beats.length;
 
-    timeoutId = window.setTimeout(tic, currentBeat.interval ? currentBeat.interval : 1000);
+    timeoutId = window.setTimeout(tic, currentBeat.interval ? currentBeat.interval - timeDrift : 1000);
+    totalTime += currentBeat.interval;
 
     if (showAccelerator.value) {
       currentBeatInAcceleratorLoop = (currentBeatInAcceleratorLoop + 1) % numBeatsBeforeIncrement;
@@ -106,7 +113,7 @@ function startMetronome() {
   }
 
   if (!isRunning.value) {
-    tic();
+    tic()
     isRunning.value = true;
   }
 }
