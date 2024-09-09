@@ -188,10 +188,11 @@ function updateMultipleTimeSignature(inputString: string) {
     beatUnit.value = parsed.beats.map((beat: Beat) => beat.beatUnit)
     numBeats.value = parsed.numBeats;
     accents.value = getAccents(timeSignature.value);
+    throwSuccess('Multple Time signature created');
   } catch (error: any) {
     throwError(error.message);
   }
-  throwSuccess('Multple Time signature created');
+  
   if (isRunning.value == true) {
     // Restart the metronome with the new BPM
     restartMetronome();
