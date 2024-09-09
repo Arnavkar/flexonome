@@ -2,7 +2,7 @@
   <div>
   <Transition name="fade-slide">
     <div v-if="renderPage" class="flex flex-col items-center justify-between">
-        <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar" :accents="getAccents(timeSignature)"/>
+        <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar" :accents="accents"/>
       <div class="grid grid-cols-3 mt-8">
         <div class="flex flex-col items-end justify-center">
           <TimeSignatureInput @numBeatsChange="updateNumBeats" @beatUnitChange="updateBeatUnit"
@@ -15,7 +15,7 @@
         </SlideTransition>
       </div>
       <button @click="toggleMetronome" class="btn btn-primary btn-outline mt-4 w-60">{{ isRunning ? 'Stop' : 'Start'
-        }}<span>{{ drift }}</span></button>
+        }}</button>
       <Transition name="fade-slide">
         <div v-if="errorMsg" role="alert" class="alert alert-error alert-outline mt-10 absolute-bottom w-1/2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
@@ -62,6 +62,7 @@ const isRunning: Ref<boolean> = ref(false);
 const numBeats: Ref<number> = ref(4);
 const beatUnit: Ref<number[]> = ref(Array(numBeats.value).fill(4));
 const timeSignature: Ref<TimeSignature> = ref(parseTimeSignature(`${numBeats.value}/${beatUnit.value[0]}`, bpm.value));
+const accents : Ref<number[]> = ref([1,0,0,0]);
 const activeBar: Ref<number> = ref(-2);
 
 const showAccelerator: Ref<boolean> = ref(false);
@@ -186,6 +187,7 @@ function updateMultipleTimeSignature(inputString: string) {
     timeSignature.value = parsed;
     beatUnit.value = parsed.beats.map((beat: Beat) => beat.beatUnit)
     numBeats.value = parsed.numBeats;
+    accents.value = getAccents(timeSignature.value);
   } catch (error: any) {
     throwError(error.message);
   }
@@ -229,6 +231,7 @@ function showPage() {
 
 onMounted(() => {
     showPage();
+    accents.value = getAccents(timeSignature.value);
 });
 
 </script>

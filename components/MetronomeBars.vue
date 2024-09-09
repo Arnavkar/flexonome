@@ -25,6 +25,7 @@ const props = defineProps<{
 
 // Initialize numBars with the prop value or default to 4
 const beatUnit = ref(props.beatUnit);
+const accents = ref(props.accents);
 
 // Empty Reference to the ColorButton components declared in template
 const buttons = ref();
@@ -36,9 +37,22 @@ watch(() => props.activeBar, (newVal) => {
   }
 });
 
-watch(() => props.beatUnit, (newVal) => {
-  beatUnit.value = newVal;
-  console.log(props.accents)
+watch(() => props.beatUnit, async(newVal) => {
+  beatUnit.value = [...newVal];
+  await nextTick();
+  buttons.value.forEach((button: any, index:number) => {
+    button.updateWidth(beatUnit.value[index]);
+  });
+});
+
+watch(() => props.accents, async (newVal) => {
+  accents.value = [...newVal];
+  await nextTick();
+  buttons.value.forEach((button: any, index:number) => {
+    if (accents.value[index]==1){
+      button.setColorAndSound(1);
+    }
+  });
 });
 
 onMounted(() => {
@@ -47,11 +61,5 @@ onMounted(() => {
 
 //Make sure width styling is updated when beatUnit /num Bar changes
 onUpdated(() => {
-  buttons.value.forEach((button: any, index:number) => {
-    button.updateWidth(beatUnit.value[index]);
-    if (props.accents[index]==1){
-      buttons.value[index].setColorAndSound(1);
-    }
-  });
 });
 </script>
