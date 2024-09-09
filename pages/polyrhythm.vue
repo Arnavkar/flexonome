@@ -68,6 +68,7 @@ const progress: Ref<number> = ref(0);
 
 const errorMsg: Ref<string | null> = ref(null);
 const successMsg: Ref<string | null> = ref(null);
+const drift:Ref<number[]> = ref([0,0]);
 
 const activeCircles: Ref<number[]> = ref([-2, -2]);
 let timeoutIds: number[] = [-1,-1]
@@ -81,12 +82,18 @@ function startMetronome() {
   let currentBeatIndexes = [0,0];
   let currentBeatInAcceleratorLoop = 0;
   let numBeatsBeforeIncrement = polyrhythm.value.ratios[0] * acceleratorOptions.value.numBarsToRepeat + 1;
+  const start = Date.now()
+  let totalTimes = [0,0];
 
-  function tic(index: number){
+  const tic = (index: number) => {
     activeCircles.value[index] = currentBeatIndexes[index]
     currentBeatIndexes[index] = (currentBeatIndexes[index] + 1) % polyrhythm.value.ratios[index]
-    timeoutIds[index] = window.setTimeout(tic, polyrhythm.value.intervals[index],index)
+    const timeDrift = Math.max((new Date().getTime() - start) - totalTimes[index],0);
+    drift.value[index] = timeDrift;
 
+    timeoutIds[index] = window.setTimeout(tic, polyrhythm.value.intervals[index] - timeDrift,index)
+    totalTimes[index] += polyrhythm.value.intervals[index];
+    
     if(showAccelerator.value && index == 0){
       currentBeatInAcceleratorLoop = (currentBeatInAcceleratorLoop + 1) % numBeatsBeforeIncrement;
       progress.value = Math.floor((currentBeatInAcceleratorLoop / (numBeatsBeforeIncrement-1)) * 100)
