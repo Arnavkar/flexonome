@@ -101,3 +101,11 @@ export function constructPolyrhythm(ratio_1: number, ratio_2: number, bpm: numbe
       intervals: [interval_1, interval_2]
   };
 }
+
+export const isMobile = (): boolean => {
+  if(/Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    return true
+  } else {
+    return false
+  }
+}

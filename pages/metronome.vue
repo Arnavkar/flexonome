@@ -3,7 +3,7 @@
   <Transition name="fade-slide">
     <div v-if="renderPage" class="flex flex-col items-center justify-between">
         <MetronomeBars :numBeats="numBeats" :beatUnit="beatUnit" :activeBar="activeBar" :accents="accents"/>
-      <div class="grid grid-cols-3 mt-8">
+      <div v-if="!isMobileDevice" class="grid grid-cols-3 mt-8">
         <div class="flex flex-col items-end justify-center">
           <TimeSignatureInput @numBeatsChange="updateNumBeats" @beatUnitChange="updateBeatUnit"
             @multipleTimeSignatureSubmit="updateMultipleTimeSignature" />
@@ -14,8 +14,22 @@
           <AcceleratorInput v-if="showAccelerator" @acceleratorOptionsSubmit="setAcceleratorOptions" />
         </SlideTransition>
       </div>
-      <button @click="toggleMetronome" class="btn btn-primary btn-outline mt-4 w-60">{{ isRunning ? 'Stop' : 'Start'
-        }}</button>
+      <button v-if="!isMobileDevice" @click="toggleMetronome" class="btn btn-primary btn-outline mt-4 w-60">
+        {{ isRunning ? 'Stop' : 'Start'}}
+      </button>
+
+      <div v-if="isMobileDevice" class="flex flex-col w-auto">
+        <CircularDial :bpm="bpm" :acceleratorOptions="acceleratorOptions" :progress="progress" @updateBpm="updateBpm"
+          @showAcceleratorOptions="showAcceleratorOptions" />
+        <div class="flex justify-around items-center">
+          <Card :size="20">{{ numBeats }}/{{ beatUnit[0]}}</Card>
+          <button @click="toggleMetronome" class="btn btn-primary btn-outline w-32">
+            {{ isRunning ? 'Stop' : 'Start'}}
+          </button>
+          
+        </div>
+      </div>
+      
       <Transition name="fade-slide">
         <div v-if="errorMsg" role="alert" class="alert alert-error alert-outline mt-10 absolute-bottom w-1/2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
@@ -38,7 +52,7 @@
       </Transition>
     </div>
   </Transition>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -49,12 +63,14 @@ import TimeSignatureInput from '../components/TimeSignatureInput.vue';
 import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
 
-
 import { parseTimeSignature, validateBPM, validateAccelerator } from '~/utils/utils';
 import type { Accelerator, TimeSignature } from '../utils/types';
 import { defaultAccelerator } from '~/constants';
 
+import { isMobile } from '../utils/utils';
+
 const renderPage: Ref<boolean> = ref(false);
+const isMobileDevice: Ref<boolean | null> = ref(null);
 
 const bpm: Ref<number> = ref(120);
 const isRunning: Ref<boolean> = ref(false);
@@ -232,6 +248,7 @@ function showPage() {
 
 onMounted(() => {
     showPage();
+    isMobileDevice.value = isMobile();
     accents.value = getAccents(timeSignature.value);
 });
 

@@ -42,12 +42,11 @@ function getCookie(c_name:string){
 
 function checkSession(){
   if (useRoute().path == "/"){
-    var c = getCookie("isited");
+    var c = getCookie("visited");
     if (c === "yes") {
-        //push to metronome page
-        window.location.href = '/metronome';  
+        navigateTo('/metronome');
     } 
-    setCookie("visited", "yes", 7); // expire in 1 year; or use null to never expire
+    setCookie("visited", "yes", 7);
   }
 }
 
