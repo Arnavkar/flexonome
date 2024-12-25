@@ -1,5 +1,5 @@
 <template>
-    <Card :isTabbed="true" :size="80" @activeTab="handleTabChange">
+    <BaseCard :isTabbed="true" :size="80" @activeTab="handleTabChange">
         <template #single>
             <div class="flex flex-col w-12 h-44 items-center">
                 <select class="input input-ghost text-5xl focus:text-primary text-center w-24 h-20" v-model.number="numBeats" @change="emitNumBeatsChange">
@@ -47,13 +47,13 @@
         </div>
         </dialog>
         </template>
-    </Card>
+    </BaseCard>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { numBeatValues, beatUnitValues } from '../constants';
-import Card from './BaseCard.vue';
+import BaseCard from './BaseCard.vue';
 
 const emits = defineEmits(["numBeatsChange", "beatUnitChange","multipleTimeSignatureSubmit"]);
 const numBeats = ref(4);

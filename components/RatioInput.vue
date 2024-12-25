@@ -1,5 +1,5 @@
 <template>
-    <Card :isTabbed="false" :size="80">
+    <BaseCard :isTabbed="false" :size="80">
         <div class="flex items-center justify-center">
             <span class="text-5xl">
                 <select class="input input-ghost text-5xl text-primary focus:text-primary text-center w-24 h-20" v-model.number="ratio_1" @change="emitRatio1Change">
@@ -11,12 +11,12 @@
                 </select>
             </span>
         </div>
-    </Card>
+    </BaseCard>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Card from './BaseCard.vue';
+import BaseCard from './BaseCard.vue';
 
 const emits = defineEmits(["ratio1Change", "ratio2Change"]);
 const ratio_1 = ref(3);

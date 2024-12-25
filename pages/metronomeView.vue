@@ -42,7 +42,7 @@
           @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
           @showAcceleratorOptions="showAcceleratorOptions"/>
         <div class="flex justify-around items-center">
-          <Card :size="20">{{ numBeats }}/{{ beatUnit[0]}}</Card>
+          <BaseCard :size="20">{{ numBeats }}/{{ beatUnit[0]}}</BaseCard>
           <button class="btn btn-primary btn-outline w-32"
             @click="() => metronome.toggle()">
             {{ metronome.isRunning ? 'Stop' : 'Start'}}

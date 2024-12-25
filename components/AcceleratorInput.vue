@@ -1,5 +1,5 @@
 <template>
-    <Card :isTabbed="false" :size="72">
+    <BaseCard :isTabbed="false" :size="72">
         <div class="flex flex-col items-center m-2 gap-2">
             <div class = "flex items-center justify-between w-full">
                 <span class="text-md">Number of Repeats</span>
@@ -23,12 +23,12 @@
             </div>
             <button @click="emitAccelerator" class="btn btn-primary btn-outline  w-60">Submit</button>
         </div>
-    </Card>
+    </BaseCard>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Card from './BaseCard.vue';
+import BaseCard from './BaseCard.vue';
 import { bpmIncrements } from '~/constants';
 import type { Accelerator } from '../utils/types';
 

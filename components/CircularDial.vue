@@ -1,5 +1,5 @@
 <template>
-    <Card :isTabbed="true" :size="80" firstTab="Standard" secondTab="Accelerator" @activeTab="getActiveTab">
+    <BaseCard :isTabbed="true" :size="80" firstTab="Standard" secondTab="Accelerator" @activeTab="getActiveTab">
         <template #single>
         <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
@@ -37,12 +37,12 @@
                 </div>
             </div>
         </template>
-    </Card>
+    </BaseCard>
 </template>
 
 <script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted, watch, defineProps } from 'vue';
-import Card from './BaseCard.vue';
+import BaseCard from './BaseCard.vue';
 import type { Accelerator } from '../utils/types';
 import { defaultAccelerator } from '../constants';
 

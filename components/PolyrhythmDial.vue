@@ -1,5 +1,5 @@
 <template>
-  <Card :isTabbed="false" :size="96">
+  <BaseCard :isTabbed="false" :size="96">
   <div class="ring-circles">
     <div class="border-accent border-2 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"  :style="{
         width: `${radii[1] * 2}px`,
@@ -32,12 +32,12 @@
       </TransitionGroup>
     </div>
   </div>
-  </Card>
+  </BaseCard>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import Card from './BaseCard.vue';
+import BaseCard from './BaseCard.vue';
 import ColorButton from './ColorButton.vue';
 
 // Props

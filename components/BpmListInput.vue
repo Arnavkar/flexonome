@@ -1,5 +1,5 @@
 <template>        
-    <Card :isTabbed="false" :size="80">
+  <BaseCard :isTabbed="false" :size="80">
     <div class= "flex items-center gap-10">
         <div class="flex flex-col items-center gap-4">
         <div v-for="(input, index) in inputs" :key="index">
@@ -11,11 +11,12 @@
             <button v-if="inputs.length > 1" @click="removeInput" class="w-12 h-12 border-secondary text-secondary border-2 rounded-md m-2">-</button>
         </div>
     </div>
-    </Card>
+  </BaseCard>
 </template>
   
   <script setup lang="ts">
   import { ref, watchEffect } from 'vue';
+  import BaseCard from './BaseCard.vue';
 
   const emits = defineEmits(["inputChange",]);
   
