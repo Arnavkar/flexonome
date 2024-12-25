@@ -52,7 +52,7 @@ const props = defineProps<{
     progress: number
 }>();
 
-const emits = defineEmits(["updateBpm","showAcceleratorOptions"]);
+const emits = defineEmits(["updateBpm","toggleAccelerator"]);
 
 const angle:ref<number> = ref(0);
 const dragging:ref<boolean>= ref(false);
@@ -134,8 +134,8 @@ watch(bpm, (newBpm) => {
     emits('updateBpm', newBpm);
 });
 
-watch(isAccelerator, (newBool) => {
-    emits('showAcceleratorOptions', newBool);
+watch(isAccelerator, () => {
+    emits('toggleAccelerator');
 });
 
 </script>

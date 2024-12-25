@@ -20,7 +20,7 @@
           :acceleratorOptions="metronome.acceleratorOptions" 
           :progress="metronome.acceleratorProgress" 
           @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
-          @showAcceleratorOptions="(isEnabled) => metronome.enableAccelerator(isEnabled)" />
+          @toggleAccelerator="() => metronome.toggleAccelerator()" />
         <SlideTransition>
           <AcceleratorInput 
             v-if="metronome.acceleratorEnabled" 

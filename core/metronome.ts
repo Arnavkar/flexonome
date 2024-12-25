@@ -1,15 +1,16 @@
 import type { TimeSignature, Accelerator } from '../utils/types';
 import { parseTimeSignature, validateBPM } from '~/utils/utils';
 import { defaultAccelerator } from '~/constants';
+import type IMetronome  from '~/interfaces/IMetronome';
 
-export default class Metronome {
+export default class Metronome implements IMetronome {
   public bpm: number = 120;
   public isRunning: boolean = false;
   public timeSignature: TimeSignature = parseTimeSignature('4/4', this.bpm);
   public beatUnit: number[] = [4, 4, 4, 4];
   public accents: number[] = [1, 0, 0, 0];
   public activeBar: number = -2
-  private timeoutId: number | null = null;
+  private timeoutIds: number[] = [];
 
   public acceleratorOptions: Accelerator = defaultAccelerator;
   public acceleratorEnabled: boolean = false;
@@ -29,7 +30,7 @@ export default class Metronome {
     return this.beatUnit.length;
   }
 
-  public start(): void | number {
+  public start(){
     const beats = this.timeSignature.beats;
     let currentBeatIndex = 0;
     let currentBeatInAcceleratorLoop = 0;
@@ -50,7 +51,8 @@ export default class Metronome {
       // You can add a sound or click here
       currentBeatIndex = (currentBeatIndex + 1) % beats.length;
 
-      this.timeoutId = window.setTimeout(tic, currentBeat.interval ? currentBeat.interval - timeDrift : 1000);
+      const timeoutId = window.setTimeout(tic, currentBeat.interval ? currentBeat.interval - timeDrift : 1000)
+      this.timeoutIds.push(timeoutId);
       totalTime += currentBeat.interval;
 
       if (this.acceleratorEnabled) {
@@ -69,9 +71,9 @@ export default class Metronome {
   }
 
   public stop() {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId);
-      this.timeoutId = null;
+    if (this.timeoutIds.length > 0) {
+      this.timeoutIds.forEach(id => clearTimeout(id));
+      this.timeoutIds = [];
     }
     this.isRunning = false;
     this.activeBar = -2;
@@ -125,8 +127,9 @@ export default class Metronome {
       this.timeSignature = parseTimeSignature(inputString, this.bpm);
       this.beatUnit = this.timeSignature.beats.map((beat: Beat) => beat.beatUnit)
       this.setAccents();
+      this.successCallback("Multiple time signature applied");
     } catch (e) {
-      console.error(e);
+      this.errorCallback((e as Error).message);
     }
     
     if (this.isRunning == true) {
@@ -143,11 +146,11 @@ export default class Metronome {
     this.stop();
     this.acceleratorOptions = accelerator;
     this.updateBpm(accelerator.startBPM);
-    this.successCallback("New Accelerator settings applied");
+    this.successCallback("Accelerator settings applied");
   }
   
-  public enableAccelerator(showAcceleratorBool: boolean) {
-    this.acceleratorEnabled = showAcceleratorBool;
+  public toggleAccelerator() {
+    this.acceleratorEnabled = !this.acceleratorEnabled;
     this.stop()
   }
 }
