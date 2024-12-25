@@ -15,12 +15,12 @@
 </template>
   
   <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref, watchEffect } from 'vue';
 
   const emits = defineEmits(["inputChange",]);
   
   // Reactive list of inputs
-  const inputs:Ref<number[]> = ref([120,60]); // Start with one input initialized to 0
+  const inputs:ref<number[]> = ref([120,60]); // Start with one input initialized to 0
   
   // Function to add an input
   const addInput = () => {

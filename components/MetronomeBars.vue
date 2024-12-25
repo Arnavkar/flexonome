@@ -12,7 +12,7 @@
 </template>
   
 <script setup lang="ts">
-import { ref, watch, onUpdated} from 'vue';
+import { ref, watch, onUpdated, onMounted, nextTick} from 'vue';
 import ColorButton from './ColorButton.vue';
 
 // Define props
@@ -40,7 +40,7 @@ watch(() => props.activeBar, (newVal) => {
 watch(() => props.beatUnit, async(newVal) => {
   beatUnit.value = [...newVal];
   await nextTick();
-  buttons.value.forEach((button: any, index:number) => {
+  buttons.value.forEach((button: ColorButton, index:number) => {
     button.updateWidth(beatUnit.value[index]);
   });
 });
@@ -48,7 +48,7 @@ watch(() => props.beatUnit, async(newVal) => {
 watch(() => props.accents, async (newVal) => {
   accents.value = [...newVal];
   await nextTick();
-  buttons.value.forEach((button: any, index:number) => {
+  buttons.value.forEach((button: ColorButton, index:number) => {
     if (accents.value[index]==1){
       button.setColorAndSound(1);
     }

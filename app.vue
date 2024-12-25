@@ -1,20 +1,21 @@
 <template>
-  <Transition name="fade-slide" mode="out-in">
     <div class="relative flex flex-col justify-center items-center h-screen">
         <div class="absolute top-0 w-full p-4">
+          <Transition name="fade-slide" mode="out-in">
             <NavBar v-if="!isIntro"/>
+          </Transition>
         </div>
         <NuxtPage />
     </div>
-  </Transition>
 </template>
 
 <script setup lang="ts">
 
 import { useRoute } from 'vue-router';
+import { ref,computed, onMounted } from 'vue';
 import NavBar from '~/components/NavBar.vue';
 //Check the current URL path
-const isIntro: Ref<boolean> = computed(() => {
+const isIntro: ref<boolean> = computed(() => {
     const route = useRoute().path;
     return route === '/';
 });
@@ -44,7 +45,7 @@ function checkSession(){
   if (useRoute().path == "/"){
     var c = getCookie("visited");
     if (c === "yes") {
-        navigateTo('/metronome');
+      window.location.href = "/metronomeView";
     } 
     setCookie("visited", "yes", 7);
   }

@@ -28,8 +28,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Card from './Card.vue';
+import Card from './BaseCard.vue';
 import { bpmIncrements } from '~/constants';
+import type { Accelerator } from '../utils/types';
 
 const acceleratorOptions: ref<Accelerator> = ref({
     numBarsToRepeat: 4,

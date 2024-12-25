@@ -19,9 +19,9 @@
             <ul
             tabindex="0"
             class="menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-            <li><a href="/metronome">Metronome</a></li>
-            <li><a href="/polyrhythm">Polyrhythm</a></li>
-            <li><a href="/phaser">Phaser</a></li>
+            <li><a href="/metronomeView">Metronome</a></li>
+            <li><a href="/polyrhythmView">Polyrhythm</a></li>
+            <li><a href="/phaserView">Phaser</a></li>
             </ul>
         </div>
         </div>

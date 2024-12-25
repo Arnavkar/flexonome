@@ -31,7 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import { themes } from '../constants';
+import { themes} from '../constants';
+import { onMounted } from 'vue';
 
 function toggleTheme() {
   const theme = document.documentElement.getAttribute('data-theme');

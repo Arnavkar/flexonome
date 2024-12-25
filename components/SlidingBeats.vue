@@ -10,7 +10,7 @@
   </template>
     
   <script setup lang="ts">
-  import { ref, computed, watchEffect, onMounted, onUnmounted } from 'vue';
+  import { ref, computed, watch} from 'vue';
   import ColorButton from './ColorButton.vue';
   
   const props = defineProps<{
@@ -35,7 +35,7 @@
 
   watch(() => props.isRunning, () => {
     if (props.isRunning) {
-      buttons.value.forEach((button: any,index:any) => {
+      buttons.value.forEach((button: ColorButton,index:number) => {
         intervals.value.push(window.setInterval(() => {
           button.tic();
         }, durations.value[index]*1000/2));

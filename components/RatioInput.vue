@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Card from './Card.vue';
+import Card from './BaseCard.vue';
 
 const emits = defineEmits(["ratio1Change", "ratio2Change"]);
 const ratio_1 = ref(3);

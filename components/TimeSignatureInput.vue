@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { numBeatValues, beatUnitValues } from '../constants';
-import Card from './Card.vue';
+import Card from './BaseCard.vue';
 
 const emits = defineEmits(["numBeatsChange", "beatUnitChange","multipleTimeSignatureSubmit"]);
 const numBeats = ref(4);

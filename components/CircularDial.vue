@@ -42,22 +42,23 @@
 
 <script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted, watch, defineProps } from 'vue';
-import Card from './Card.vue';
+import Card from './BaseCard.vue';
 import type { Accelerator } from '../utils/types';
+import { defaultAccelerator } from '../constants';
 
 const props = defineProps<{ 
     bpm: number,
-    acceleratorOptions: Accelerator | {},
+    acceleratorOptions: Accelerator | defaultAccelerator,
     progress: number
 }>();
 
 const emits = defineEmits(["updateBpm","showAcceleratorOptions"]);
 
-const angle:Ref<number> = ref(0);
-const dragging:Ref<boolean>= ref(false);
-const bpm:Ref<number> = ref(props.bpm);
-const dial:Ref<HTMLElement|null> = ref(null);
-const isAccelerator:Ref<boolean> = ref(false);
+const angle:ref<number> = ref(0);
+const dragging:ref<boolean>= ref(false);
+const bpm:ref<number> = ref(props.bpm);
+const dial:ref<HTMLElement|null> = ref(null);
+const isAccelerator:ref<boolean> = ref(false);
 
 function startDrag(event: MouseEvent){
     event.preventDefault(); //Prevents highlighting etc.

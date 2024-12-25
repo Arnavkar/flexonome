@@ -36,8 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import Card from './Card.vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import Card from './BaseCard.vue';
 import ColorButton from './ColorButton.vue';
 
 // Props
@@ -88,7 +88,7 @@ watch(()=> props.activeCircles_2, (newVal) => {
 
 watch(()=> props.x, () => {
   window.setTimeout(() => {
-    circleRefs2.value.forEach((circle:any) => {
+    circleRefs2.value.forEach((circle:ColorButton) => {
       circle.setColorAndSound(2);
     });
   }, 10);
@@ -96,14 +96,14 @@ watch(()=> props.x, () => {
 
 watch(()=> props.y, () => {
   window.setTimeout(() => {
-    circleRefs2.value.forEach((circle:any) => {
+    circleRefs2.value.forEach((circle:ColorButton) => {
       circle.setColorAndSound(2);
     });
   }, 10);
 });
 
 onMounted(() => {
-  circleRefs2.value.forEach((circle: any) => {
+  circleRefs2.value.forEach((circle: ColorButton) => {
     circle.setColorAndSound(2);
   });
 });
