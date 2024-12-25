@@ -31,7 +31,7 @@ import { ref } from 'vue';
 import Card from './Card.vue';
 import { bpmIncrements } from '~/constants';
 
-const acceleratorOptions: Ref<Accelerator> = ref({
+const acceleratorOptions: ref<Accelerator> = ref({
     numBarsToRepeat: 4,
     bpmIncrement: 5,
     startBPM: 120,

@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, Ref, onMounted  } from 'vue';
 import SlidingBeats from '~/components/SlidingBeats.vue';
 import BpmListInput from '~/components/BpmListInput.vue';
 import Card from '~/components/Card.vue';

@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, Ref, onMounted} from 'vue';
 import CircularDial from '../components/CircularDial.vue';
 import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';

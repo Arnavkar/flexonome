@@ -20,8 +20,8 @@
             placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"
             />
             <div class="grid mt-2 mb-2">
-                <a v-for="denum in [4,8]">
-                    <button v-for="num in [2,3,4,5,6,7]" :id="`${num}/${denum}`" @click="AddTimeSig(`${num}/${denum}`)" class="btn btn-xs btn-primary m-1">{{ num }}/{{ denum }}</button>
+                <a v-for="denum in [4,8]" :key=denum>
+                    <button v-for="num in [2,3,4,5,6,7]" :key=num :id="`${num}/${denum}`" @click="AddTimeSig(`${num}/${denum}`)" class="btn btn-xs btn-primary m-1">{{ num }}/{{ denum }}</button>
                 </a>
             </div>
         </div>
