@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-const intro: Ref<boolean> = ref(false);
+const intro: ref<boolean> = ref(false);
 
 onMounted(() => {
   window.setTimeout(() => {
@@ -41,7 +41,7 @@ onMounted(() => {
 const goToMetronome = () => {
   intro.value = false;
   setTimeout(() => {
-    window.location.href = '/metronome';
+    window.location.href = '/metronomeView';
   }, 500);
 }
 </script>

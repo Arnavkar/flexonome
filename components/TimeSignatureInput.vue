@@ -2,11 +2,11 @@
     <BaseCard :isTabbed="true" :size="80" @activeTab="handleTabChange">
         <template #single>
             <div class="flex flex-col w-12 h-44 items-center">
-                <select class="input input-ghost text-5xl focus:text-primary text-center w-24 h-20" v-model.number="numBeats" @change="emitNumBeatsChange">
+                <select class="input input-ghost text-5xl focus:text-primary text-center w-24 h-20" v-model.number="numBeats" @change="emitTimeSignatureChange">
                     <option v-for="value in numBeatValues" :key="value" :value="value">{{ value }}</option>
                 </select>           
             <div class="divider divider-primary mt-0 mb-0"></div>
-                <select class="input input-ghost text-5xl focus:text-primary text-center w-24 h-20" v-model.number="beatUnit" @change="emitBeatValueChange">
+                <select class="input input-ghost text-5xl focus:text-primary text-center w-24 h-20" v-model.number="beatUnit" @change="emitTimeSignatureChange">
                     <option v-for="value in beatUnitValues" :key="value" :value="value">{{ value }}</option>
                 </select>      
             </div>
@@ -17,8 +17,7 @@
             type="text" 
             class="input border-2 border-gray-500 text-xl w-60 h-28 text-center dark:focus:bg-neutral focus:bg-gray-200"
             v-model="inputString"
-            placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"
-            />
+            placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"></textarea>
             <div class="grid mt-2 mb-2">
                 <a v-for="denum in [4,8]" :key=denum>
                     <button v-for="num in [2,3,4,5,6,7]" :key=num :id="`${num}/${denum}`" @click="AddTimeSig(`${num}/${denum}`)" class="btn btn-xs btn-primary m-1">{{ num }}/{{ denum }}</button>
@@ -55,17 +54,13 @@ import { ref } from 'vue';
 import { numBeatValues, beatUnitValues } from '../constants';
 import BaseCard from './BaseCard.vue';
 
-const emits = defineEmits(["numBeatsChange", "beatUnitChange","multipleTimeSignatureSubmit"]);
+const emits = defineEmits(["timeSignatureChange","multipleTimeSignatureSubmit"]);
 const numBeats = ref(4);
 const beatUnit = ref(4);
 const inputString = ref("");
 
-const emitNumBeatsChange = () => {
-    emits("numBeatsChange", numBeats.value);
-};
-
-const emitBeatValueChange = () => {
-    emits("beatUnitChange", beatUnit.value);
+const emitTimeSignatureChange = () => {
+    emits("timeSignatureChange", `${numBeats.value}/${beatUnit.value}`);
 };
 
 const emitInputStringChange = () => {
@@ -74,8 +69,7 @@ const emitInputStringChange = () => {
 
 function handleTabChange(tab: string) {
     if (tab === "tab-1") {
-        emitBeatValueChange();
-        emitNumBeatsChange();
+        emitTimeSignatureChange();
     } else if (inputString.value !== '') {
         emitInputStringChange();
     }

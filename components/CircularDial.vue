@@ -9,7 +9,8 @@
                 </div>
             </div>
             <div class="absolute w-6 h-6 rounded-full cursor-pointer bg-gray-700 dark:bg-white" :style="knobStyle"
-                @mousedown="startDrag">
+                @mousedown="startDrag"
+                @touchstart="startDragMobile">
             </div>
             <ul v-for="i in 12" :key="i">
                 <div 
@@ -61,6 +62,7 @@ const dial:ref<HTMLElement|null> = ref(null);
 const isAccelerator:ref<boolean> = ref(false);
 
 function startDrag(event: MouseEvent){
+    console.log('startDrag');
     event.preventDefault(); //Prevents highlighting etc.
     dragging.value = true;
     //Once the drag has started
@@ -68,7 +70,19 @@ function startDrag(event: MouseEvent){
     document.addEventListener('mouseup', stopDrag);
 };
 
-function onDrag(event: MouseEvent){
+function startDragMobile(event: MouseEvent){
+    console.log('startDragMobile');
+    event.preventDefault(); //Prevents highlighting etc.
+    dragging.value = true;
+    //Once the drag has started
+    document.addEventListener('touchmove', onDrag);
+    document.addEventListener('touchup', stopDragMobile);
+};
+
+function onDrag(event: MouseEvent | TouchEvent){
+    if (event instanceof TouchEvent){
+        event = event.touches[0]
+    }
     if (!dragging.value || !dial.value) return; //Make sure dial is rendered and draggin is true
     const rect = dial.value.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -95,6 +109,12 @@ function stopDrag(){
     dragging.value = false;
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mouseup', stopDrag);
+};
+
+function stopDragMobile(){
+    dragging.value = false;
+    document.removeEventListener('touchmove', onDrag);
+    document.removeEventListener('touchup', stopDrag);
 };
 
 const knobStyle = computed(() => {

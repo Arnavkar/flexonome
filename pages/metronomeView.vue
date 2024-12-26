@@ -11,14 +11,13 @@
       <div v-if="!isMobileDevice" class="grid grid-cols-3 mt-8">
         <div class="flex flex-col items-end justify-center">
           <TimeSignatureInput 
-            @numBeatsChange="(newNumBeats) => metronome.updateNumBeats(newNumBeats)"
-            @beatUnitChange="(newBeatUnit) => metronome.updateNumBeats(newBeatUnit)"
-            @multipleTimeSignatureSubmit="(inputStr) => metronome.updateMultipleTimeSignature(inputStr)"/>
+            @timeSignatureChange="(inputStr) => metronome.updateTimeSignature(inputStr)"
+            @multipleTimeSignatureSubmit="(inputStr) => metronome.updateTimeSignature(inputStr)"/>
         </div>
         <CircularDial 
           :bpm="metronome.bpm" 
           :acceleratorOptions="metronome.acceleratorOptions" 
-          :progress="metronome.acceleratorProgress" 
+          :progress="metronome.accelerator.progress" 
           @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
           @toggleAccelerator="() => metronome.toggleAccelerator()" />
         <SlideTransition>
@@ -30,23 +29,27 @@
 
       <button class="btn btn-primary btn-outline mt-4 w-60"
         v-if="!isMobileDevice" 
-        @click="() => metronome.toggle()">
+        @click="() => {
+          //metronome.toggle()
+          metronomeTest.start();
+        }">
         {{ metronome.isRunning ? 'Stop' : 'Start'}}
       </button>
 
-      <div v-if="isMobileDevice" class="flex flex-col w-auto">
+      <div v-if="isMobileDevice" class="flex flex-col w-auto gap-4">
         <CircularDial 
           :bpm="metronome.bpm" 
           :acceleratorOptions="metronome.acceleratorOptions" 
-          :progress="metronome.acceleratorProgress" 
+          :progress="metronome.accelerator.progress" 
           @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
-          @showAcceleratorOptions="showAcceleratorOptions"/>
+          @toggleAccelerator="() => metronome.toggleAccelerator()"/>
         <div class="flex justify-around items-center">
-          <BaseCard :size="20">{{ numBeats }}/{{ beatUnit[0]}}</BaseCard>
-          <button class="btn btn-primary btn-outline w-32"
+          <BaseCard :size="24">{{ metronome.numBeats }}/{{ metronome.beatUnit[0]}}</BaseCard>
+          <button class="btn btn-primary btn-outline w-24 h-24"
             @click="() => metronome.toggle()">
             {{ metronome.isRunning ? 'Stop' : 'Start'}}
           </button>
+          <BaseCard :size="24">{{ metronome.numBeats }}/{{ metronome.beatUnit[0]}}</BaseCard>
         </div>
       </div>
       
@@ -77,7 +80,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue';
-import Metronome from '../core/Metronome.js';
+import Metronome from '../core/Metronome';
+import MetronomeV2 from '../core/MetronomeV2';
 import MetronomeBars from '../components/MetronomeBars.vue';
 import CircularDial from '../components/CircularDial.vue';
 import TimeSignatureInput from '../components/TimeSignatureInput.vue';
@@ -90,6 +94,7 @@ const renderPage: ref<boolean> = ref(false);
 const isMobileDevice: ref<boolean | null> = ref(null);
 
 const metronome = reactive(new Metronome());
+const metronomeTest = new MetronomeV2();
 
 const errorMsg: ref<string | null> = ref(null);
 const successMsg: ref<string | null> = ref(null);
@@ -119,6 +124,8 @@ onMounted(() => {
     isMobileDevice.value = isMobile();
     metronome.addCallbacks(throwSuccess, throwError);
     metronome.setAccents()
-});
+
+    metronomeTest.setup();
+  });
 
 </script>

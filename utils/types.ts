@@ -5,9 +5,11 @@ export type Beat = {
     isFirst: boolean;
 }
 
-export type TimeSignature = {
-    numBeats: number;
-    beats : Beat[];
+export type BeatV2 = {
+    beatIndex: number;
+    beatUnit: number;
+    time: number;
+    isFirst: boolean;
 }
 
 export type Polyrhythm = {
@@ -20,6 +22,7 @@ export type Accelerator = {
     bpmIncrement: number;
     maxBpm: number;
     startBPM: number;
+    progress: number;
 }
 
 export type Errorhandler = (a: string) => void;

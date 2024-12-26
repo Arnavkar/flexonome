@@ -14,5 +14,6 @@ export const defaultAccelerator:Accelerator = {
     numBarsToRepeat:4,
     bpmIncrement:5,
     startBPM:120,
-    maxBpm:180
+    maxBpm:180,
+    progress:0
 }

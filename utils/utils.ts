@@ -1,4 +1,4 @@
-import type { TimeSignature, Beat, Polyrhythm, Errorhandler } from './types';
+import type { Beat, Polyrhythm, Errorhandler } from './types';
 
 
 export function validateBPM(bpm_value:number, errorHandler?: Errorhandler):boolean{
@@ -28,11 +28,8 @@ export function validateAccelerator(accelerator:Accelerator, errorHandler?: Erro
   return true;
 }
 
-export function parseTimeSignature(input:string, bpm:number): TimeSignature {
-  const result:TimeSignature = {
-    numBeats: 0,
-    beats: [] as Beat[]
-  };
+export function parseTimeSignature(input:string, bpm:number): Beat[] {
+  const result: Beat[] = []
 
   // Validate the input
   if (typeof input !== 'string' || input.trim() === '') {
@@ -76,7 +73,7 @@ export function parseTimeSignature(input:string, bpm:number): TimeSignature {
       for (let i = 0; i < repeat; i++) {
         for (let j = 0; j < numBeats; j++) {
           const interval = (60 / bpm) * 1000 / (beatUnit / 4);
-          result.beats.push({
+          result.push({
             beatIndex: currentBeatIndex,
             beatUnit: beatUnit,
             interval: interval,
@@ -84,11 +81,9 @@ export function parseTimeSignature(input:string, bpm:number): TimeSignature {
           });
           currentBeatIndex++;
         }
-        result.numBeats += numBeats;
       }
     });
   });
-
   return result;
 }
 
@@ -112,3 +107,31 @@ export const isMobile = (): boolean => {
     return false
   }
 }
+
+export const loadAudioBuffer = async (filePath: string, audioContext: AudioContext): Promise<AudioBuffer> => {
+  const response = await fetch(filePath);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch audio file: ${filePath}`);
+  } else {
+    console.log(`Successfully fetched audio file: ${filePath}`);
+  }
+  const arrayBuffer = await response.arrayBuffer();
+  return await audioContext.decodeAudioData(arrayBuffer);
+
+  // const sampleRate = audioBuffer.sampleRate;
+  // const frameCount = Math.min(audioBuffer.length, sampleRate * duration);
+
+  // const newBuffer = audioContext.createBuffer(
+  //   audioBuffer.numberOfChannels,
+  //   frameCount,
+  //   sampleRate
+  // );
+
+  // for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+  //   const oldData = audioBuffer.getChannelData(channel);
+  //   const newData = newBuffer.getChannelData(channel);
+  //   newData.set(oldData.subarray(0, frameCount));
+  // }
+
+  // return newBuffer;
+};
