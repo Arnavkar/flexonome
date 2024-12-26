@@ -50,12 +50,12 @@
   function tic() {
     isFlashing.value = true;
     if (currentIndex.value !== 3) {
-      currentSound.value.play();
+      //currentSound.value.play();
     }
     
     setTimeout(() => {
       isFlashing.value = false;
-    }, 100); // Flash duration in milliseconds
+    }, 50); // Flash duration in milliseconds
   }
 
   function updateWidth(newBeatUnit:number){

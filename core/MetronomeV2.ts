@@ -10,20 +10,27 @@ export default class MetronomeV2 {
     public isRunning: boolean = false;
     public beats: Beat[] = parseTimeSignature('4/4', this.bpm);
     public accents: number[] = [1, 0, 0, 0];
-    public activeBar: number = -2;
-    private timeoutIds: number[] = [];
+    public activeBar: number = -1;
 
     public accelerator: Accelerator = defaultAccelerator;
     public acceleratorEnabled: boolean = false;
 
-    public drift: number = 0;
-
-    private readonly scheduleAheadTime: number = 0.1;
-
     public unlocked: boolean = false;
     public audioContext: AudioContext | null = null;
     public audioBuffers: AudioBuffer[] = [];
-    public timerWorker: Worker | null = null;
+    public nextNoteTime: number = 0; // Next note's scheduled time
+    public scheduleAheadTime: number = 0.1; // How far ahead to schedule (in seconds)
+    public timerInterval: number = 25;
+    private timerId: number | null = null;
+
+    public get numBeats(): number {
+        return this.beats.length;
+    }
+
+    public get beatUnit(): number[] {
+        return this.beats.map((beat: Beat) => beat.beatUnit);
+    }
+
 
     public setup() {
         this.audioContext = new AudioContext();
@@ -33,7 +40,7 @@ export default class MetronomeV2 {
     }
 
     public setUpAudioContext() {
-        if (!this.audioContext) {console.log("No Audio Context"); return;}
+        if (!this.audioContext) { console.log("No Audio Context"); return; }
         const buffer = this.audioContext.createBuffer(1, 1, 22050);
         const node = this.audioContext.createBufferSource();
         node.buffer = buffer;
@@ -42,15 +49,63 @@ export default class MetronomeV2 {
     }
 
     public async setUpAudioBuffers() {
-        if (!this.audioContext) {console.log("No Audio Context"); return;}
+        if (!this.audioContext) { console.log("No Audio Context"); return; }
         const audioBuffers = await Promise.all(audioPaths.map(async (path) => {
             return await loadAudioBuffer(path, this.audioContext!);
         }));
         this.audioBuffers = audioBuffers;
     }
 
+    private scheduler() {
+        if (!this.audioContext) { console.log("No Audio Context"); return; }
+        while (this.nextNoteTime < this.audioContext.currentTime + this.scheduleAheadTime) {
+            this.scheduleNote();
+            this.advanceNote();
+        }
+    }
+
+    private scheduleNote() {
+        const currentBeatIndex = this.activeBar;
+        const isAccent = this.accents[currentBeatIndex] === 1;
+
+        // Load or use pre-loaded audio buffer
+        const buffer = isAccent ? this.audioBuffers[2] : this.audioBuffers[0];
+
+        if (!buffer) return;
+        
+        this.activeBar = (currentBeatIndex + 1) % this.numBeats;
+        console.log(this.activeBar)
+        if (this.activeBar >= 0)
+            this.playSound(buffer, this.nextNoteTime);
+    }
+
+    private advanceNote() {
+        const beatDuration = (60 / this.bpm)
+        this.nextNoteTime += beatDuration;
+    }
+
+    public updateBpm(newBpm: number) {
+        if (!validateBPM(newBpm, console.error)) return;
+        this.bpm = newBpm;
+
+        if (this.isRunning) {
+            this.stop();
+            this.start();
+        }
+    }
+
+    public toggle() {
+        if (!validateBPM(this.bpm, console.error)) return;
+        if (this.isRunning) {
+            this.stop();
+        } else {
+            this.start();
+        }
+    }
+
+
     private playSound(buffer: AudioBuffer, time: number) {
-        if (!this.audioContext) {console.log("No Audio Context"); return;}
+        if (!this.audioContext) { console.log("No Audio Context"); return; }
         const source = this.audioContext.createBufferSource();
         source.buffer = buffer;
         source.connect(this.audioContext.destination);
@@ -100,59 +155,27 @@ export default class MetronomeV2 {
     // }
 
     public start() {
-        if (!this.audioContext) {console.log("No Audio Context"); return;}
-        if (!this.isRunning) {
-            const startTime = this.audioContext.currentTime;
-            let currentBeatIndex = 0;
-            //let currentBeatInAcceleratorLoop = 0;
-            // let numBeatsBeforeIncrement = 0;
+        if (!this.audioContext) { console.log("No Audio Context"); return; }
+        if (this.isRunning) return;
+        this.isRunning = true;
 
-            // if (this.acceleratorEnabled) {
-            //     numBeatsBeforeIncrement = this.beats.length * this.accelerator.numBarsToRepeat + 1;
-            // }
 
-            this.isRunning = true;
-
-            this.beats.forEach((beat, index) => {
-                const scheduleTime =
-                    startTime + index * ((60 / this.bpm) * (beat.beatUnit / 4));
-
-                const isAccent = this.accents[index % this.accents.length] === 1;
-
-                if (isAccent && this.audioBuffers[2]) {
-                    this.playSound(this.audioBuffers[2], scheduleTime);
-                } else if (!isAccent && this.audioBuffers[1]) {
-                    this.playSound(this.audioBuffers[1], scheduleTime);
-                }
-
-                currentBeatIndex = (currentBeatIndex + 1) % this.beats.length;
-
-                // if (this.acceleratorEnabled) {
-                //     currentBeatInAcceleratorLoop =
-                //         (currentBeatInAcceleratorLoop + 1) % numBeatsBeforeIncrement;
-                //     this.accelerator.progress = Math.floor(
-                //         (currentBeatInAcceleratorLoop / (numBeatsBeforeIncrement - 1)) * 100
-                //     );
-                //     if (currentBeatInAcceleratorLoop === 0) {
-                //         this.updateBpm(
-                //             Math.min(
-                //                 this.accelerator.maxBpm,
-                //                 this.bpm + this.accelerator.bpmIncrement
-                //             )
-                //         );
-                //     }
-                // }
-            });
-        }
+        this.nextNoteTime = this.audioContext.currentTime;
+        this.scheduler();
+        this.timerId = window.setInterval(() => this.scheduler(), this.timerInterval);
     }
 
     public stop() {
-        if (!this.audioContext) {console.log("No Audio Context"); return;}
+        if (!this.audioContext) { console.log("No Audio Context"); return; }
 
-        if (this.audioContext.state !== 'closed') {
-            this.audioContext.close();
-        }
+        if (!this.isRunning) return;
         this.isRunning = false;
+
+        if (this.timerId !== null) {
+            clearInterval(this.timerId);
+            this.timerId = null;
+        }
+
         this.activeBar = -2;
         this.accelerator.progress = 0;
     }

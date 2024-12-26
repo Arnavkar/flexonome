@@ -30,8 +30,7 @@
       <button class="btn btn-primary btn-outline mt-4 w-60"
         v-if="!isMobileDevice" 
         @click="() => {
-          //metronome.toggle()
-          metronomeTest.start();
+          metronome.toggle();
         }">
         {{ metronome.isRunning ? 'Stop' : 'Start'}}
       </button>
@@ -80,7 +79,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue';
-import Metronome from '../core/Metronome';
+//import Metronome from '../core/Metronome';
 import MetronomeV2 from '../core/MetronomeV2';
 import MetronomeBars from '../components/MetronomeBars.vue';
 import CircularDial from '../components/CircularDial.vue';
@@ -93,25 +92,24 @@ import { isMobile } from '../utils/utils';
 const renderPage: ref<boolean> = ref(false);
 const isMobileDevice: ref<boolean | null> = ref(null);
 
-const metronome = reactive(new Metronome());
-const metronomeTest = new MetronomeV2();
+const metronome = reactive(new MetronomeV2());
 
 const errorMsg: ref<string | null> = ref(null);
 const successMsg: ref<string | null> = ref(null);
 
-function throwError(message: string) {
-  errorMsg.value = message;
-  setTimeout(() => {
-    errorMsg.value = null;
-  }, 2000);
-}
+// function throwError(message: string) {
+//   errorMsg.value = message;
+//   setTimeout(() => {
+//     errorMsg.value = null;
+//   }, 2000);
+// }
 
-function throwSuccess(message: string) {
-  successMsg.value = message;
-  setTimeout(() => {
-    successMsg.value = null;
-  }, 2000);
-}
+// function throwSuccess(message: string) {
+//   successMsg.value = message;
+//   setTimeout(() => {
+//     successMsg.value = null;
+//   }, 2000);
+// }
 
 function showPage() {
   window.setTimeout(() => {
@@ -122,10 +120,10 @@ function showPage() {
 onMounted(() => {
     showPage();
     isMobileDevice.value = isMobile();
-    metronome.addCallbacks(throwSuccess, throwError);
-    metronome.setAccents()
+    //metronome.addCallbacks(throwSuccess, throwError);
+    //metronome.setAccents()
 
-    metronomeTest.setup();
+    metronome.setup();
   });
 
 </script>
