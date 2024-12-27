@@ -29,8 +29,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import type { Ref } from 'vue';
 
-const intro: ref<boolean> = ref(false);
+const intro: Ref<boolean> = ref(false);
 
 onMounted(() => {
   window.setTimeout(() => {

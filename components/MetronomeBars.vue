@@ -40,7 +40,7 @@ watch(() => props.activeBar, (newVal) => {
 watch(() => props.beatUnit, async(newVal) => {
   beatUnit.value = [...newVal];
   await nextTick();
-  buttons.value.forEach((button: ColorButton, index:number) => {
+  buttons.value.forEach((button:typeof ColorButton, index:number) => {
     button.updateWidth(beatUnit.value[index]);
   });
 });
@@ -48,7 +48,7 @@ watch(() => props.beatUnit, async(newVal) => {
 watch(() => props.accents, async (newVal) => {
   accents.value = [...newVal];
   await nextTick();
-  buttons.value.forEach((button: ColorButton, index:number) => {
+  buttons.value.forEach((button:typeof ColorButton, index:number) => {
     if (accents.value[index]==1){
       button.setColorAndSound(1);
     }

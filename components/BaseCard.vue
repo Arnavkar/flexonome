@@ -22,6 +22,7 @@
   
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import type { Ref } from 'vue';
 import SlideTransition from './SlideTransition.vue';
 
 // Define props
@@ -44,7 +45,7 @@ const props = defineProps({
 });
 
 // Active tab state
-const activeTab:ref<string> = ref('tab-1');
+const activeTab:Ref<string> = ref('tab-1');
 const emits = defineEmits(["activeTab"]);
 
 function switchToTab1(){

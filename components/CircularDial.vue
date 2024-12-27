@@ -43,23 +43,23 @@
 
 <script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted, watch, defineProps } from 'vue';
+import type { Ref } from 'vue';
 import BaseCard from './BaseCard.vue';
 import type { Accelerator } from '../utils/types';
-import { defaultAccelerator } from '../constants';
 
 const props = defineProps<{ 
     bpm: number,
-    acceleratorOptions: Accelerator | defaultAccelerator,
+    acceleratorOptions: Accelerator
     progress: number
 }>();
 
 const emits = defineEmits(["updateBpm","toggleAccelerator"]);
 
-const angle:ref<number> = ref(0);
-const dragging:ref<boolean>= ref(false);
-const bpm:ref<number> = ref(props.bpm);
-const dial:ref<HTMLElement|null> = ref(null);
-const isAccelerator:ref<boolean> = ref(false);
+const angle:Ref<number> = ref(0);
+const dragging:Ref<boolean>= ref(false);
+const bpm:Ref<number> = ref(props.bpm);
+const dial:Ref<HTMLElement|null> = ref(null);
+const isAccelerator:Ref<boolean> = ref(false);
 
 function startDrag(event: MouseEvent){
     console.log('startDrag');
@@ -70,7 +70,7 @@ function startDrag(event: MouseEvent){
     document.addEventListener('mouseup', stopDrag);
 };
 
-function startDragMobile(event: MouseEvent){
+function startDragMobile(event: TouchEvent){
     console.log('startDragMobile');
     event.preventDefault(); //Prevents highlighting etc.
     dragging.value = true;
@@ -80,15 +80,18 @@ function startDragMobile(event: MouseEvent){
 };
 
 function onDrag(event: MouseEvent | TouchEvent){
-    if (event instanceof TouchEvent){
-        event = event.touches[0]
-    }
     if (!dragging.value || !dial.value) return; //Make sure dial is rendered and draggin is true
     const rect = dial.value.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    const x = event.clientX - centerX;
-    const y = event.clientY - centerY;
+    let x,y;
+    if (event instanceof TouchEvent){
+        x = event.touches[0].clientX - centerX;
+        y = event.touches[0].clientY - centerY;
+    } else {
+        x = event.clientX - centerX;
+        y = event.clientY - centerY;
+    }
     let newAngle = Math.atan2(y, x) * (180 / Math.PI);
 
     // Ensure the angle is within the allowable range

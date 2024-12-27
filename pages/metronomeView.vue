@@ -78,7 +78,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive} from 'vue';
+import type { Ref } from 'vue';
 //import Metronome from '../core/Metronome';
 import MetronomeV2 from '../core/MetronomeV2';
 import MetronomeBars from '../components/MetronomeBars.vue';
@@ -89,13 +90,13 @@ import AcceleratorInput from '../components/AcceleratorInput.vue';
 
 import { isMobile } from '../utils/utils';
 
-const renderPage: ref<boolean> = ref(false);
-const isMobileDevice: ref<boolean | null> = ref(null);
+const renderPage: Ref<boolean> = ref(false);
+const isMobileDevice: Ref<boolean | null> = ref(null);
 
 const metronome = reactive(new MetronomeV2());
 
-const errorMsg: ref<string | null> = ref(null);
-const successMsg: ref<string | null> = ref(null);
+const errorMsg: Ref<string | null> = ref(null);
+const successMsg: Ref<string | null> = ref(null);
 
 // function throwError(message: string) {
 //   errorMsg.value = message;

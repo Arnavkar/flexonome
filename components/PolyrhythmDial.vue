@@ -88,7 +88,7 @@ watch(()=> props.activeCircles_2, (newVal) => {
 
 watch(()=> props.x, () => {
   window.setTimeout(() => {
-    circleRefs2.value.forEach((circle:ColorButton) => {
+    circleRefs2.value.forEach((circle:typeof ColorButton) => {
       circle.setColorAndSound(2);
     });
   }, 10);
@@ -96,14 +96,14 @@ watch(()=> props.x, () => {
 
 watch(()=> props.y, () => {
   window.setTimeout(() => {
-    circleRefs2.value.forEach((circle:ColorButton) => {
+    circleRefs2.value.forEach((circle: typeof ColorButton) => {
       circle.setColorAndSound(2);
     });
   }, 10);
 });
 
 onMounted(() => {
-  circleRefs2.value.forEach((circle: ColorButton) => {
+  circleRefs2.value.forEach((circle: typeof ColorButton) => {
     circle.setColorAndSound(2);
   });
 });

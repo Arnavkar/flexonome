@@ -35,7 +35,7 @@
 
   watch(() => props.isRunning, () => {
     if (props.isRunning) {
-      buttons.value.forEach((button: ColorButton,index:number) => {
+      buttons.value.forEach((button: typeof ColorButton, index:number) => {
         intervals.value.push(window.setInterval(() => {
           button.tic();
         }, durations.value[index]*1000/2));

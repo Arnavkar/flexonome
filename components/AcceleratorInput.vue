@@ -28,15 +28,18 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import type { Ref } from 'vue';   
 import BaseCard from './BaseCard.vue';
 import { bpmIncrements } from '~/constants';
 import type { Accelerator } from '../utils/types';
 
-const acceleratorOptions: ref<Accelerator> = ref({
+const acceleratorOptions: Ref<Accelerator> = ref({
     numBarsToRepeat: 4,
     bpmIncrement: 5,
     startBPM: 120,
-    maxBpm: 180
+    maxBpm: 180,
+    progress: 100
+
 });
 
 const emits = defineEmits(["acceleratorOptionsSubmit"]);

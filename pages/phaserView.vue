@@ -16,14 +16,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted  } from 'vue';
+import type { Ref } from 'vue';
 import SlidingBeats from '~/components/SlidingBeats.vue';
 import BpmListInput from '~/components/BpmListInput.vue';
-import BaseCard from '~/components/./BaseCard';
+import BaseCard from '~/components/BaseCard.vue';
 
-const bpmList: ref<number[]> = ref([]);
-const isRunning: ref<boolean> = ref(false);
-const renderPage: ref<boolean> = ref(false);
-const width: ref<number> = ref(0);
+const bpmList: Ref<number[]> = ref([]);
+const isRunning: Ref<boolean> = ref(false);
+const renderPage: Ref<boolean> = ref(false);
+const width: Ref<number> = ref(0);
 
 function showPage() {
   window.setTimeout(() => {

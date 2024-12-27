@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted} from 'vue';
+import type { Ref } from 'vue';
 import CircularDial from '../components/CircularDial.vue';
 import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
@@ -53,24 +54,25 @@ import type { Accelerator, Polyrhythm } from '../utils/types';
 import { defaultAccelerator } from '~/constants';
 import PolyrhythmDial from '~/components/PolyrhythmDial.vue';
 
-const renderPage: ref<boolean> = ref(false);
 
-const bpm: ref<number> = ref(120);
-const isRunning: ref<boolean> = ref(false);
+const renderPage: Ref<boolean> = ref(false);
 
-const ratio_1: ref<number> = ref(3);
-const ratio_2: ref<number> = ref(4);
-const polyrhythm: ref<Polyrhythm> = ref(constructPolyrhythm(ratio_1.value, ratio_2.value, bpm.value));
+const bpm: Ref<number> = ref(120);
+const isRunning: Ref<boolean> = ref(false);
 
-const showAccelerator: ref<boolean> = ref(false);
-const acceleratorOptions: ref<Accelerator> = ref(defaultAccelerator);
-const progress: ref<number> = ref(0);
+const ratio_1: Ref<number> = ref(3);
+const ratio_2: Ref<number> = ref(4);
+const polyrhythm: Ref<Polyrhythm> = ref(constructPolyrhythm(ratio_1.value, ratio_2.value, bpm.value));
 
-const errorMsg: ref<string | null> = ref(null);
-const successMsg: ref<string | null> = ref(null);
-const drift:ref<number[]> = ref([0,0]);
+const showAccelerator: Ref<boolean> = ref(false);
+const acceleratorOptions: Ref<Accelerator> = ref(defaultAccelerator);
+const progress: Ref<number> = ref(0);
 
-const activeCircles: ref<number[]> = ref([-2, -2]);
+const errorMsg: Ref<string | null> = ref(null);
+const successMsg: Ref<string | null> = ref(null);
+const drift:Ref<number[]> = ref([0,0]);
+
+const activeCircles: Ref<number[]> = ref([-2, -2]);
 let timeoutIds: number[] = [-1,-1]
 
 function restartMetronome() {
