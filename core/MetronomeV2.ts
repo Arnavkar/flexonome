@@ -1,26 +1,22 @@
 // import type { Accelerator } from '../utils/types';
-import { loadAudioBuffer } from '~/utils/utils';
+import { playSound } from '~/utils/utils';
 import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
-//import type IMetronome  from '~/interfaces/IMetronome';
+import type { IMetronome } from '~/interfaces/IMetronome';
+import BaseMetronome from './BaseMetronome';
 //import type { BeatV2 } from '~/utils/types';
 
-export default class MetronomeV2 {
-    public bpm: number = 120;
-    public isRunning: boolean = false;
-    public beats: Beat[] = parseTimeSignature('4/4', this.bpm);
-    public accents: number[] = [1, 0, 0, 0];
-    public activeBar: number = -1;
-
+export default class MetronomeV2 extends BaseMetronome implements IMetronome {
     public accelerator: Accelerator = defaultAccelerator;
     public acceleratorEnabled: boolean = false;
+    public numBeatsBeforeIncrement: number = 0;
+    public currentBeatInAcceleratorLoop: number = 1;
 
     public audioContext: AudioContext | null = null;
     public audioBuffers: AudioBuffer[] = [];
     public nextNoteTime: number = 0; // Next note's scheduled time
     public scheduleAheadTime: number = 0.1; // How far ahead to schedule (in seconds)
     public timerInterval: number = 25;
-    private timerId: number | null = null;
 
     public get numBeats(): number {
         return this.beats.length;
@@ -30,23 +26,14 @@ export default class MetronomeV2 {
         return this.beats.map((beat: Beat) => beat.beatUnit);
     }
 
-
-    public setup() {
+    public async setup() {
         this.audioContext = new AudioContext();
-        this.setUpAudioBuffers()
+        this.audioBuffers = await setUpAudioBuffers(this.audioContext, audioPaths);
         //this.setUpWorker()
     }
 
-    public async setUpAudioBuffers() {
-        if (!this.audioContext) { console.log("No Audio Context"); return; }
-        const audioBuffers = await Promise.all(audioPaths.map(async (path) => {
-            return await loadAudioBuffer(path, this.audioContext!);
-        }));
-        this.audioBuffers = audioBuffers;
-    }
-
     private scheduler() {
-        if (!this.audioContext) { console.log("No Audio Context"); return; }
+        if (!this.audioContext) { console.error("No Audio Context"); return; }
         while (this.nextNoteTime < this.audioContext.currentTime + this.scheduleAheadTime) {
             this.scheduleNote();
             this.advanceNote();
@@ -54,117 +41,93 @@ export default class MetronomeV2 {
     }
 
     private scheduleNote() {
+        if (!this.audioContext) { console.error("No Audio Context"); return; }
         const currentBeatIndex = this.activeBar;
-        
+
         this.activeBar = (currentBeatIndex + 1) % this.numBeats;
         const isAccent = this.accents[this.activeBar] === 1;
         // Load or use pre-loaded audio buffer
         const buffer = isAccent ? this.audioBuffers[2] : this.audioBuffers[0];
         if (!buffer) return;
 
-        console.log(this.activeBar)
         if (this.activeBar >= 0)
-            this.playSound(buffer, this.nextNoteTime);
+            playSound(buffer, this.audioContext, this.nextNoteTime);
     }
 
     private advanceNote() {
-        const beatDuration = (60 / this.bpm)
+        console.log(`activeBar: ${this.activeBar}, currentBeatInAcceleratorLoop: ${this.currentBeatInAcceleratorLoop}`)
+        if (this.activeBar < 0) {
+            return;
+        }
+        const beatDuration = (60 / this.bpm) / ((this.beats[this.activeBar]).beatUnit / 4);
         this.nextNoteTime += beatDuration;
+        if (this.acceleratorEnabled){
+            this.currentBeatInAcceleratorLoop = (this.currentBeatInAcceleratorLoop + 1) % this.numBeatsBeforeIncrement;
+            this.accelerator.progress = Math.floor((this.currentBeatInAcceleratorLoop / (this.numBeatsBeforeIncrement)) * 100)
+            if (this.currentBeatInAcceleratorLoop == 0) {
+                window.setTimeout(() => this.updateBpm(Math.min(this.accelerator.maxBpm, this.bpm + this.accelerator.bpmIncrement)),50);
+            }
+        }
     }
 
     public updateBpm(newBpm: number) {
-        if (!validateBPM(newBpm, console.error)) return;
+        if (!validateBPM(newBpm, this.errorCallback)) return;
         this.bpm = newBpm;
 
-        if (this.isRunning) {
-            this.stop();
-            this.start();
+        // if (this.isRunning) {
+        //     this.stop();
+        //     this.start();
+        // }
+    }
+
+    public updateTimeSignature(inputString: string) {
+        try {
+            this.beats = parseTimeSignature(inputString, this.bpm);
+            this.setAccents();
+            this.successCallback("Multiple time signature applied");
+        } catch (e) {
+            this.errorCallback((e as Error).message);
+        }
+
+        if (this.isRunning == true) {
+            this.restart();
         }
     }
 
-    public toggle() {
-        if (!validateBPM(this.bpm, console.error)) return;
-        if (this.isRunning) {
-            this.stop();
-        } else {
-            this.start();
+    public setAccents(){
+        this.accents = this.beats.map((beat:Beat) => beat.isFirst? 1:0);
+    }
+
+    public override start() {
+        super.start();
+        if (!this.audioContext) { console.error("No Audio Context"); return; }
+
+        if (this.acceleratorEnabled) {
+            this.numBeatsBeforeIncrement = this.beats.length * this.accelerator.numBarsToRepeat;
         }
-    }
-
-
-    private playSound(buffer: AudioBuffer, time: number) {
-        if (!this.audioContext) { console.log("No Audio Context"); return; }
-        const source = this.audioContext.createBufferSource();
-        source.buffer = buffer;
-        source.connect(this.audioContext.destination);
-        source.start(time);
-    }
-
-    // public setUpWorker(){
-    //     this.timerWorker = new Worker('./worker.js');
-    //     this.timerWorker.onmessage = (e) => {
-    //         if(e.data === "tick"){
-    //             this.schedule();
-    //         }else{
-    //             console.log("message: " + e.data);
-    //         }
-    //     }
-    // }
-
-    // public schedule(){
-    //     if(!this.audioContext) return;
-
-    //     while (this.nextNoteTime < this.audioContext.currentTime + this.scheduleAheadTime){
-    //         this.scheduleNote(this.activeNote, this.nextNoteTime);
-    //         this.nextNote();
-    //     }
-    // }
-
-    // public async scheduleNote( beatNumber:number, time:number ) {
-    //     if(!this.audioContext) return;
-
-    //     // push the note on the queue, even if we're not playing.
-    //     this.noteQueue.push({ note: beatNumber, time: time });
-
-    //     // create a buffer source
-    //     const source = this.audioContext.createBufferSource();
-    //     const audioBuffer = await this.audioBuffers[2];
-    //     source.buffer = audioBuffer; // low pitch sample
-    //     source.connect(this.audioContext.destination);
-    //     source.start(time);
-    // }
-
-    // public nextNote() {
-    //     this.nextNoteTime += this.bufferLength * (60.0 / this.bpm);
-    //     this.activeNote++
-    //     if (this.activeNote == this.numBeats) {
-    //         this.activeNote = 0;
-    //     } 
-    // }
-
-    public start() {
-        if (!this.audioContext) { console.log("No Audio Context"); return; }
-        if (this.isRunning) return;
-        this.isRunning = true;
-
-
+        this.currentBeatInAcceleratorLoop = 1;
         this.nextNoteTime = this.audioContext.currentTime;
-        this.scheduler();
-        this.timerId = window.setInterval(() => this.scheduler(), this.timerInterval);
+        const timeoutId = window.setInterval(() => this.scheduler(), this.timerInterval);
+        this.timeoutIds.push(timeoutId);
     }
 
-    public stop() {
-        if (!this.audioContext) { console.log("No Audio Context"); return; }
-
-        if (!this.isRunning) return;
-        this.isRunning = false;
-
-        if (this.timerId !== null) {
-            clearInterval(this.timerId);
-            this.timerId = null;
-        }
-
-        this.activeBar = -2;
+    public override stop() {
+        super.stop()
+        this.numBeatsBeforeIncrement = 1000;
+        this.currentBeatInAcceleratorLoop = 1;
         this.accelerator.progress = 0;
+    }
+
+    public toggleAccelerator() {
+        this.acceleratorEnabled = !this.acceleratorEnabled;
+        this.stop()
+    }
+
+    public setAccelerator(accelerator: Accelerator) {
+        if (!validateAccelerator(accelerator, this.errorCallback)) return;
+        this.stop();
+        this.accelerator = accelerator;
+        this.updateBpm(accelerator.startBPM);
+        this.successCallback("Accelerator settings applied");
     }
 }

@@ -16,14 +16,14 @@
         </div>
         <CircularDial 
           :bpm="metronome.bpm" 
-          :acceleratorOptions="metronome.acceleratorOptions" 
+          :acceleratorOptions="metronome.accelerator" 
           :progress="metronome.accelerator.progress" 
           @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
           @toggleAccelerator="() => metronome.toggleAccelerator()" />
         <SlideTransition>
           <AcceleratorInput 
             v-if="metronome.acceleratorEnabled" 
-            @acceleratorOptionsSubmit="(options) => metronome.setAcceleratorOptions(options)"/>
+            @acceleratorOptionsSubmit="(options) => metronome.setAccelerator(options)"/>
         </SlideTransition>
       </div>
 
@@ -38,7 +38,7 @@
       <div v-if="isMobileDevice" class="flex flex-col w-auto gap-4">
         <CircularDial 
           :bpm="metronome.bpm" 
-          :acceleratorOptions="metronome.acceleratorOptions" 
+          :acceleratorOptions="metronome.accelerator" 
           :progress="metronome.accelerator.progress" 
           @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
           @toggleAccelerator="() => metronome.toggleAccelerator()"/>
@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive} from 'vue';
 import type { Ref } from 'vue';
-//import Metronome from '../core/Metronome';
+import Metronome from '../core/Metronome';
 import MetronomeV2 from '../core/MetronomeV2';
 import MetronomeBars from '../components/MetronomeBars.vue';
 import CircularDial from '../components/CircularDial.vue';
@@ -98,19 +98,15 @@ const metronome = reactive(new MetronomeV2());
 const errorMsg: Ref<string | null> = ref(null);
 const successMsg: Ref<string | null> = ref(null);
 
-// function throwError(message: string) {
-//   errorMsg.value = message;
-//   setTimeout(() => {
-//     errorMsg.value = null;
-//   }, 2000);
-// }
+function throwError(message: string) {
+  errorMsg.value = message;
+  setTimeout(() => errorMsg.value = null, 2000);
+}
 
-// function throwSuccess(message: string) {
-//   successMsg.value = message;
-//   setTimeout(() => {
-//     successMsg.value = null;
-//   }, 2000);
-// }
+function throwSuccess(message: string) {
+  successMsg.value = message;
+  setTimeout(() => successMsg.value = null, 2000);
+}
 
 function showPage() {
   window.setTimeout(() => {
@@ -119,12 +115,12 @@ function showPage() {
 }
 
 onMounted(() => {
-    showPage();
-    isMobileDevice.value = isMobile();
-    //metronome.addCallbacks(throwSuccess, throwError);
-    //metronome.setAccents()
+  showPage();
+  isMobileDevice.value = isMobile();
+  metronome.addCallbacks(throwSuccess, throwError);
 
-    metronome.setup();
-  });
+  if (metronome instanceof MetronomeV2) metronome.setup();
+  
+});
 
 </script>

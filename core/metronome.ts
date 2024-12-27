@@ -1,28 +1,14 @@
 import type { Accelerator } from '../utils/types';
 import { parseTimeSignature, validateBPM } from '../utils/utils';
 import { defaultAccelerator } from '~/constants';
-import type IMetronome  from '../interfaces/IMetronome';
+import type { IMetronome }  from '../interfaces/IMetronome';
+import BaseMetronome from './BaseMetronome';
 
-export default class Metronome implements IMetronome {
-  public bpm: number = 120;
-  public isRunning: boolean = false;
-  public beats: Beat[] = parseTimeSignature('4/4', this.bpm);
-  public accents: number[] = [1, 0, 0, 0];
-  public activeBar: number = -2
-  public timeoutIds: number[] = [];
-
+export default class Metronome extends BaseMetronome implements IMetronome {
   public accelerator: Accelerator = defaultAccelerator;
   public acceleratorEnabled: boolean = false;
 
   public drift: number = 0;
-
-  public successCallback:(message:string) => void = (message:string) => console.log(message);
-  public errorCallback: (message:string) => void = (message:string) => console.error(message);
-
-  public addCallbacks(successCallback: (message:string) => void, errorCallback: (message:string) => void) {
-    this.successCallback = successCallback;
-    this.errorCallback = errorCallback;
-  }
 
   public get numBeats(): number {
     return this.beats.length;
@@ -32,7 +18,8 @@ export default class Metronome implements IMetronome {
     return this.beats.map((beat: Beat) => beat.beatUnit);
   }
 
-  public start(){
+  public override start(){
+    super.start()
     let currentBeatIndex = 0;
     let currentBeatInAcceleratorLoop = 0;
     let numBeatsBeforeIncrement = 0;
@@ -61,37 +48,16 @@ export default class Metronome implements IMetronome {
         if (currentBeatInAcceleratorLoop == 0) {
           this.updateBpm(Math.min(this.accelerator.maxBpm, this.bpm + this.accelerator.bpmIncrement));
         }
+        console.log(`activeBar: ${this.activeBar}, currentBeatInAcceleratorLoop: ${currentBeatInAcceleratorLoop}`)
       }
     }
     
-    if (!this.isRunning) {
-      tic()
-      this.isRunning = true;
-    }
+    tic()
   }
 
-  public stop() {
-    if (this.timeoutIds.length > 0) {
-      this.timeoutIds.forEach(id => clearTimeout(id));
-      this.timeoutIds = [];
-    }
-    this.isRunning = false;
-    this.activeBar = -2;
+  public override stop() {
+    super.stop();
     this.accelerator.progress = 0;
-  }
-
-  public toggle() {
-    if (!validateBPM(this.bpm, this.errorCallback)) return;
-    if (this.isRunning) {
-      this.stop();
-    } else {
-      this.start();
-    }
-  }
-
-  public restart() {
-    this.stop();
-    this.start();
   }
 
   public updateBpm(newBpm: number) {

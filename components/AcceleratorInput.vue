@@ -30,17 +30,10 @@
 import { ref } from 'vue';
 import type { Ref } from 'vue';   
 import BaseCard from './BaseCard.vue';
-import { bpmIncrements } from '~/constants';
+import { bpmIncrements, defaultAccelerator } from '~/constants';
 import type { Accelerator } from '../utils/types';
 
-const acceleratorOptions: Ref<Accelerator> = ref({
-    numBarsToRepeat: 4,
-    bpmIncrement: 5,
-    startBPM: 120,
-    maxBpm: 180,
-    progress: 100
-
-});
+const acceleratorOptions: Ref<Accelerator> = ref(defaultAccelerator);
 
 const emits = defineEmits(["acceleratorOptionsSubmit"]);
 

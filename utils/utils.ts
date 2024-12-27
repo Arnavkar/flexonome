@@ -111,9 +111,7 @@ export const isMobile = (): boolean => {
 export const loadAudioBuffer = async (filePath: string, audioContext: AudioContext): Promise<AudioBuffer> => {
   const response = await fetch(filePath);
   if (!response.ok) {
-    throw new Error(`Failed to fetch audio file: ${filePath}`);
-  } else {
-    console.log(`Successfully fetched audio file: ${filePath}`);
+    console.error(`Failed to fetch audio file: ${filePath}`);
   }
   const arrayBuffer = await response.arrayBuffer();
   return await audioContext.decodeAudioData(arrayBuffer);
@@ -135,3 +133,17 @@ export const loadAudioBuffer = async (filePath: string, audioContext: AudioConte
 
   // return newBuffer;
 };
+
+export function playSound(buffer: AudioBuffer, audioContext: AudioContext, time: number) {
+  const source = audioContext.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioContext.destination);
+  source.start(time);
+}
+
+export async function setUpAudioBuffers(audioContext: AudioContext, audioPaths: string[]): Promise<AudioBuffer[]> {
+  const audioBuffers = await Promise.all(audioPaths.map(async (path) => {
+      return await loadAudioBuffer(path, audioContext!);
+  }));
+  return audioBuffers;
+}
