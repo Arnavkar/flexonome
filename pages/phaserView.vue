@@ -29,7 +29,7 @@ const width: Ref<number> = ref(0);
 function showPage() {
   window.setTimeout(() => {
     renderPage.value = true;
-  }, 500);
+  }, 200);
 }
 
 function getWidth(){

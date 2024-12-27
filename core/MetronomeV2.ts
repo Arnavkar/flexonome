@@ -15,7 +15,6 @@ export default class MetronomeV2 {
     public accelerator: Accelerator = defaultAccelerator;
     public acceleratorEnabled: boolean = false;
 
-    public unlocked: boolean = false;
     public audioContext: AudioContext | null = null;
     public audioBuffers: AudioBuffer[] = [];
     public nextNoteTime: number = 0; // Next note's scheduled time
@@ -34,18 +33,8 @@ export default class MetronomeV2 {
 
     public setup() {
         this.audioContext = new AudioContext();
-        this.setUpAudioContext()
         this.setUpAudioBuffers()
         //this.setUpWorker()
-    }
-
-    public setUpAudioContext() {
-        if (!this.audioContext) { console.log("No Audio Context"); return; }
-        const buffer = this.audioContext.createBuffer(1, 1, 22050);
-        const node = this.audioContext.createBufferSource();
-        node.buffer = buffer;
-        node.start(0);
-        this.unlocked = true;
     }
 
     public async setUpAudioBuffers() {
@@ -66,14 +55,13 @@ export default class MetronomeV2 {
 
     private scheduleNote() {
         const currentBeatIndex = this.activeBar;
-        const isAccent = this.accents[currentBeatIndex] === 1;
-
-        // Load or use pre-loaded audio buffer
-        const buffer = isAccent ? this.audioBuffers[2] : this.audioBuffers[0];
-
-        if (!buffer) return;
         
         this.activeBar = (currentBeatIndex + 1) % this.numBeats;
+        const isAccent = this.accents[this.activeBar] === 1;
+        // Load or use pre-loaded audio buffer
+        const buffer = isAccent ? this.audioBuffers[2] : this.audioBuffers[0];
+        if (!buffer) return;
+
         console.log(this.activeBar)
         if (this.activeBar >= 0)
             this.playSound(buffer, this.nextNoteTime);

@@ -115,7 +115,7 @@ const successMsg: Ref<string | null> = ref(null);
 function showPage() {
   window.setTimeout(() => {
     renderPage.value = true;
-  }, 500);
+  }, 200);
 }
 
 onMounted(() => {
