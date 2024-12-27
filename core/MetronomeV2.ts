@@ -55,29 +55,29 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
     }
 
     private advanceNote() {
-        console.log(`activeBar: ${this.activeBar}, currentBeatInAcceleratorLoop: ${this.currentBeatInAcceleratorLoop}`)
         if (this.activeBar < 0) {
             return;
         }
         const beatDuration = (60 / this.bpm) / ((this.beats[this.activeBar]).beatUnit / 4);
         this.nextNoteTime += beatDuration;
         if (this.acceleratorEnabled){
-            this.currentBeatInAcceleratorLoop = (this.currentBeatInAcceleratorLoop + 1) % this.numBeatsBeforeIncrement;
-            this.accelerator.progress = Math.floor((this.currentBeatInAcceleratorLoop / (this.numBeatsBeforeIncrement)) * 100)
             if (this.currentBeatInAcceleratorLoop == 0) {
-                window.setTimeout(() => this.updateBpm(Math.min(this.accelerator.maxBpm, this.bpm + this.accelerator.bpmIncrement)),50);
+                this.accelerator.progress = 100;
+            } else {
+                this.accelerator.progress = Math.floor(((this.currentBeatInAcceleratorLoop) / (this.numBeatsBeforeIncrement)) * 100)
+            }
+
+            this.currentBeatInAcceleratorLoop = (this.currentBeatInAcceleratorLoop + 1) % this.numBeatsBeforeIncrement;
+            if (this.currentBeatInAcceleratorLoop == 1) {
+                this.updateBpm(Math.min(this.accelerator.maxBpm, this.bpm + this.accelerator.bpmIncrement))
             }
         }
+
     }
 
     public updateBpm(newBpm: number) {
         if (!validateBPM(newBpm, this.errorCallback)) return;
         this.bpm = newBpm;
-
-        // if (this.isRunning) {
-        //     this.stop();
-        //     this.start();
-        // }
     }
 
     public updateTimeSignature(inputString: string) {
