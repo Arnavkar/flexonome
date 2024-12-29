@@ -1,7 +1,10 @@
 <template>
     <div class="flex flex-col items-center justify-center shadow-md shadow-neutral dark:shadow-black border-blue-200 dark:border-blue-950 border-2 rounded-2xl p-4 m-2"
-        :class="BaseCardSize">
-        <label class="text-4xl">{{ text }}</label>
+        :class="ModalCardSize">
+        <label v-if="text !== ''" class="text-4xl">{{ text }}</label>
+        <MdiIcon v-if="iconName !== ''" 
+            :icon="iconName" 
+            :class="IconStyle"/>
         <dialog :id="modalId" class="modal">
             <div class="modal-box w-full -ml-4 -mr-4 flex flex-col items-center justify-center">
                 <form method="dialog">
@@ -20,11 +23,19 @@ import { computed } from 'vue';
 const props = defineProps({
     size: {
         type: Number,
-        default: 80
+        default: 24
     },
     text: {
         type: String,
-        required: true
+        default: ''
+    },
+    iconName: {
+        type: String,
+        default: ''
+    },
+    iconEnabled:{
+        type: Boolean,
+        default: true
     },
     modalId: {
         type: String,
@@ -32,7 +43,11 @@ const props = defineProps({
     }
 });
 
-const BaseCardSize = computed(() => {
+const IconStyle = computed(() => {
+    return props.iconEnabled ? `text-primary` : `opacity-30`;
+})
+
+const ModalCardSize = computed(() => {
     return `w-${props.size} h-${props.size}`;
 });
 
