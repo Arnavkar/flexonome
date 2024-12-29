@@ -5,6 +5,9 @@ import type { IMetronome }  from '../interfaces/IMetronome';
 import BaseMetronome from './BaseMetronome';
 
 export default class Metronome extends BaseMetronome implements IMetronome {
+  public beats: Beat[] = parseTimeSignature('4/4');
+  public activeBar: number = -2;
+
   public accelerator: Accelerator = defaultAccelerator;
   public acceleratorEnabled: boolean = false;
 
@@ -14,7 +17,7 @@ export default class Metronome extends BaseMetronome implements IMetronome {
     return this.beats.length;
   }
 
-  public get beatUnit(): number[] {
+  public get beatUnitList(): number[] {
     return this.beats.map((beat: Beat) => beat.beatUnit);
   }
 
@@ -38,9 +41,10 @@ export default class Metronome extends BaseMetronome implements IMetronome {
       this.activeBar = currentBeat.beatIndex;
       currentBeatIndex = (currentBeatIndex + 1) % this.beats.length;
 
-      const timeoutId = window.setTimeout(tic, currentBeat.interval ? currentBeat.interval - timeDrift : 1000)
+      const interval = (60000 / this.bpm) / ((this.beats[this.activeBar]).beatUnit / 4);
+      const timeoutId = window.setTimeout(tic, interval - timeDrift)
       this.timeoutIds.push(timeoutId);
-      totalTime += currentBeat.interval;
+      totalTime += interval;
 
       if (this.acceleratorEnabled) {
         currentBeatInAcceleratorLoop = (currentBeatInAcceleratorLoop + 1) % numBeatsBeforeIncrement;
@@ -58,9 +62,11 @@ export default class Metronome extends BaseMetronome implements IMetronome {
   public override stop() {
     super.stop();
     this.accelerator.progress = 0;
+    this.activeBar = -2;
+
   }
 
-  public updateBpm(newBpm: number) {
+  public override updateBpm(newBpm: number) {
     if (!validateBPM(newBpm,this.errorCallback)) return;
     this.bpm = newBpm;
     this.beats.forEach(beat => {

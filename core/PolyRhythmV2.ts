@@ -3,9 +3,18 @@ import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
 import type { IMetronome } from '~/interfaces/IMetronome';
 import BaseMetronome from './BaseMetronome';
-export default class MetronomeV2 extends BaseMetronome implements IMetronome {
-    public beats: Beat[] = parseTimeSignature('4/4');
-    public activeBar: number = -1;
+
+export default class PolyRhythmV2 extends BaseMetronome implements IMetronome {
+    public ratios: number[] = [3, 4];
+    public baseRatio: 0 | 1 = 1;
+    public activeCircles: number[] = [-1, -1];
+    public get totalTime(): number {
+        if (this.baseRatio === 0){
+            return (60 / this.bpm) * this.ratios[0] // Total time span for one cycle of the polyrhythm in seconds
+        } else {
+            return (60 / this.bpm) * this.ratios[1]
+        }
+    }
 
     public accelerator: Accelerator = defaultAccelerator;
     public acceleratorEnabled: boolean = false;
@@ -14,16 +23,29 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
 
     public audioContext: AudioContext | null = null;
     public audioBuffers: AudioBuffer[] = [];
-    public nextNoteTime: number = 0; // Next note's scheduled time
+    public nextNoteTimes: number[] = [0,0]; // Next note's scheduled time
     public scheduleAheadTime: number = 0.1; // How far ahead to schedule (in seconds)
     public timerInterval: number = 25;
 
-    public get numBeats(): number {
-        return this.beats.length;
-    }
+    public get beatsLists(): Beat[][] {
+        const beats_1:Beat[] = []
+        for (let i = 0; i < this.ratios[0]; i++) {
+            beats_1.push({
+                beatIndex:i,
+                beatUnit: 4,
+                accent: 0
+            } as Beat)
+        }
 
-    public get beatUnitList(): number[] {
-        return this.beats.map((beat: Beat) => beat.beatUnit);
+        const beats_2:Beat[] = []
+        for (let i = 0; i < this.ratios[1]; i++) {
+            beats_2.push({
+                beatIndex: i + this.ratios[0],
+                beatUnit: 4,
+                accent: 2
+            } as Beat)
+        }
+        return [beats_1, beats_2]
     }
 
     public async setup() {
@@ -32,31 +54,36 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
         //this.setUpWorker()
     }
 
-    private scheduler() {
+    private scheduler(index: number) {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
-        while (this.nextNoteTime < this.audioContext.currentTime + this.scheduleAheadTime) {
-            this.scheduleNote();
-            this.advanceNote();
+        while (this.nextNoteTimes[index] < this.audioContext.currentTime + this.scheduleAheadTime) {
+            this.scheduleNote(index);
+            this.advanceNote(index);
         }
     }
 
-    private scheduleNote() {
+    private scheduleNote(index: number) {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
-        this.activeBar = (this.activeBar + 1) % this.numBeats;
-        const bufferIndex = this.beats[this.activeBar].accent;
+        const numBeats = this.ratios[index];
+        const beatList = this.beatsLists[index];
+
+        this.activeCircles[index] = (this.activeCircles[index] + 1) % numBeats;
+        const bufferIndex = beatList[this.activeCircles[index]].accent;
         const buffer = bufferIndex >= 0 ? this.audioBuffers[bufferIndex] : undefined
         if (!buffer) return;
 
-        if (this.activeBar >= 0)
-            playSound(buffer, this.audioContext, this.nextNoteTime);
+        if (this.activeCircles[index] >= 0)
+            playSound(buffer, this.audioContext, this.nextNoteTimes[index]);
     }
 
-    private advanceNote() {
-        if (this.activeBar < 0) {
+    private advanceNote(index: number) {
+        if (this.activeCircles[index] < 0) {
             return;
         }
-        const beatDuration = (60 / this.bpm) / ((this.beats[this.activeBar]).beatUnit / 4);
-        this.nextNoteTime += beatDuration;
+
+        const beatDuration = this.totalTime / this.ratios[index]
+        this.nextNoteTimes[index] += beatDuration;
+        console.log(this.nextNoteTimes)
         if (this.acceleratorEnabled) {
             if (this.currentBeatInAcceleratorLoop == 0) {
                 this.accelerator.progress = 100;
@@ -77,12 +104,14 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
 
         if (this.acceleratorEnabled) {
-            this.numBeatsBeforeIncrement = this.beats.length * this.accelerator.numBarsToRepeat;
+            this.numBeatsBeforeIncrement = this.ratios[this.baseRatio] * this.accelerator.numBarsToRepeat;
         }
         this.currentBeatInAcceleratorLoop = 1;
-        this.nextNoteTime = this.audioContext.currentTime;
-        const timeoutId = window.setInterval(() => this.scheduler(), this.timerInterval);
-        this.timeoutIds.push(timeoutId);
+        this.nextNoteTimes = [this.audioContext.currentTime, this.audioContext.currentTime];
+        const timeoutId_1 = window.setInterval(() => this.scheduler(0), this.timerInterval);
+        const timeoutId_2 = window.setInterval(() => this.scheduler(1), this.timerInterval);
+        this.timeoutIds.push(timeoutId_1);
+        this.timeoutIds.push(timeoutId_2);
     }
 
     public override stop() {
@@ -90,20 +119,11 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
         this.numBeatsBeforeIncrement = 1000;
         this.currentBeatInAcceleratorLoop = 1;
         this.accelerator.progress = 0;
-        this.activeBar = -1;
+        this.activeCircles = [-1, -1];
     }
 
-    public updateTimeSignature(inputString: string) {
-        try {
-            this.beats = parseTimeSignature(inputString);
-            this.successCallback("New Time Signature Applied");
-        } catch (e) {
-            this.errorCallback((e as Error).message);
-        }
-
-        if (this.isRunning == true) {
-            this.restart();
-        }
+    public updateRatio(index:number ,value: number) {
+        this.ratios[index] = value;
     }
 
     public toggleAccelerator() {

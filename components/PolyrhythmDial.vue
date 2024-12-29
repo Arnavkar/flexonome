@@ -7,12 +7,12 @@
       }">      
       <TransitionGroup name="list">
         <ColorButton
-        v-for="(n,index) in y"
-          :key="n"
+        v-for="(beat,index) in beats_2"
+          :key="index"
           ref=circleRefs2
-          :index = "index"
+          :beat = "beat"
           class = "border-4 rounded-full"
-          :style="getCircleStyle(1, index, y)"
+          :style="getCircleStyle(1, index, beats_2.length)"
         ></ColorButton>
       </TransitionGroup>
     </div>
@@ -22,12 +22,12 @@
       }">      
       <TransitionGroup name="list">
       <ColorButton
-        v-for="(n,index) in x"
-        :key="n"
+        v-for="(beat,index) in beats_1"
+        :key="index"
         ref=circleRefs1
-        :index = "index"
+        :beat = "beat"
         class = "border-4 rounded-full"
-        :style="getCircleStyle(0, index, x)"
+        :style="getCircleStyle(0, index, beats_1.length)"
       ></ColorButton>
       </TransitionGroup>
     </div>
@@ -36,14 +36,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import BaseCard from './BaseCard.vue';
 import ColorButton from './ColorButton.vue';
+import type { Beat } from '../utils/types';
 
 // Props
 const props = defineProps<{
-  x: number;
-  y: number;
+  beats_1: Beat[];
+  beats_2: Beat[];
   size: number;
   activeCircles_1: number;
   activeCircles_2: number;
@@ -75,37 +76,15 @@ const getCircleStyle = (index: number, i: number, count: number) => {
 };
 
 watch(()=> props.activeCircles_1, (newVal) => {
-  if (newVal >= 0 && newVal!== props.x) {
+  if (newVal >= 0 && newVal!== props.beats_1.length) {
     circleRefs1.value[newVal]?.tic();
   }
 });
 
 watch(()=> props.activeCircles_2, (newVal) => {
-  if (newVal >= 0 && newVal!== props.y) {
+  if (newVal >= 0 && newVal!== props.beats_2.length) {
     circleRefs2.value[newVal]?.tic();
   }
-});
-
-watch(()=> props.x, () => {
-  window.setTimeout(() => {
-    circleRefs2.value.forEach((circle:typeof ColorButton) => {
-      circle.setColorAndSound(2);
-    });
-  }, 10);
-});
-
-watch(()=> props.y, () => {
-  window.setTimeout(() => {
-    circleRefs2.value.forEach((circle: typeof ColorButton) => {
-      circle.setColorAndSound(2);
-    });
-  }, 10);
-});
-
-onMounted(() => {
-  circleRefs2.value.forEach((circle: typeof ColorButton) => {
-    circle.setColorAndSound(2);
-  });
 });
 
 </script>

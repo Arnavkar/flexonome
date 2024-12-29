@@ -13,7 +13,7 @@
 </template>
   
 <script setup lang="ts">
-import { ref, watch, onUpdated, nextTick, computed} from 'vue';
+import { ref, watch, nextTick, computed} from 'vue';
 import type { Beat } from '../utils/types';
 import ColorButton from './ColorButton.vue';
 
@@ -42,7 +42,4 @@ watch(() => beatUnitList, async(newBeatUnitList) => {
   });
 });
 
-//Make sure width styling is updated when beatUnit /num Bar changes
-onUpdated(() => {
-});
 </script>

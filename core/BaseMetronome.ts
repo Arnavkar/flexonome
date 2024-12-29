@@ -3,9 +3,6 @@ import type { IBaseMetronome } from "~/interfaces/IMetronome";
 export default class BaseMetronome implements IBaseMetronome{
   public bpm: number = 120;
   public isRunning: boolean = false;
-  public beats: Beat[] = parseTimeSignature('4/4');
-  public accents: number[] = [1, 0, 0, 0];
-  public activeBar: number = -1
   public timeoutIds: number[] = [];
 
   public successCallback:(message:string) => void = (message:string) => console.log(message);
@@ -15,6 +12,7 @@ export default class BaseMetronome implements IBaseMetronome{
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
   }
+
   public start(){
     if (this.isRunning) return;
     this.isRunning = true;
@@ -27,7 +25,6 @@ export default class BaseMetronome implements IBaseMetronome{
       this.timeoutIds = [];
     }
     this.isRunning = false;
-    this.activeBar = -1;
   }
 
   public toggle() {
@@ -43,5 +40,9 @@ export default class BaseMetronome implements IBaseMetronome{
     this.stop();
     this.start();
   }
-  
+
+  public updateBpm(newBpm: number) {
+    if (!validateBPM(newBpm, this.errorCallback)) return;
+    this.bpm = newBpm;
+  }
 }

@@ -25,7 +25,7 @@
             </SlideTransition>
           </div>
           <button class="btn btn-primary btn-outline mt-4 w-60" 
-            @click="() => {metronome.toggle();}">
+            @click="() => metronome.toggle()">
             {{ metronome.isRunning ? 'Stop' : 'Start' }}
           </button>
         </div>
@@ -42,7 +42,7 @@
             @toggleAccelerator="() => metronome.toggleAccelerator()" />
           <div class="flex justify-around items-center">
             <ModalCard 
-              :text="`${metronome.numBeats}/${getUniqueBeatUnitValues()}`" 
+              :text="`${metronome.numBeats}/${getUniqueBeatUnitValues(metronome.beats.map((beat: Beat) => beat.beatUnit))}`" 
               :modal-id="timeSignatureModalId"
               @click="show(timeSignatureModalId)">
               <TimeSignatureInput 
@@ -78,7 +78,7 @@ import CircularDial from '../components/CircularDial.vue';
 import TimeSignatureInput from '../components/TimeSignatureInput.vue';
 import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
-import { isMobile } from '../utils/utils';
+import { isMobile, getUniqueBeatUnitValues } from '../utils/utils';
 import ModalCard from '../components/ModalCard.vue';
 import type { Beat } from '../utils/types'
 
@@ -116,11 +116,6 @@ function showPage() {
 function show(id:string) {
   const modal = document.getElementById(id);
   if (modal) (modal as HTMLDialogElement).showModal();
-}
-
-function getUniqueBeatUnitValues() {
-  const beatUnitList = metronome.beats.map((beat: Beat) => beat.beatUnit);
-  return [...new Set(beatUnitList)].sort((a, b) => a - b).join('|');
 }
 
 function incrementBeatAccent(index: number) {

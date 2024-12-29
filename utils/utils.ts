@@ -28,7 +28,7 @@ export function validateAccelerator(accelerator:Accelerator, errorHandler?: Erro
   return true;
 }
 
-export function parseTimeSignature(input:string,): Beat[] {
+export function parseTimeSignature(input:string): Beat[] {
   const beats: Beat[] = []
 
   // Validate the input
@@ -85,16 +85,17 @@ export function parseTimeSignature(input:string,): Beat[] {
   return beats;
 }
 
-export function constructPolyrhythm(ratio_1: number, ratio_2: number, bpm: number): Polyrhythm {
-  const totalTime = (60000 / bpm) * Math.min(ratio_1, ratio_2); // Total time span for one cycle of the polyrhythm in milliseconds
-
-  // Calculate intervals for each ratio
-  const interval_1 = totalTime / ratio_1;
-  const interval_2 = totalTime / ratio_2;
+export function constructPolyrhythm(ratios:number[], bpm: number, selected:number): Polyrhythm {
+  let totalTime = (60 / bpm);
+  if (selected === 0){
+    totalTime *= ratios[0] // Total time span for one cycle of the polyrhythm in seconds
+  } else {
+    totalTime *= ratios[1]
+  }
 
   return {
-      ratios: [ratio_1, ratio_2],
-      intervals: [interval_1, interval_2]
+      ratios: ratios,
+      intervals: [totalTime / ratios[0], totalTime / ratios[1]]
   };
 }
 
@@ -127,4 +128,8 @@ export async function setUpAudioBuffers(audioContext: AudioContext, audioPaths: 
       return await loadAudioBuffer(path, audioContext!);
   }));
   return audioBuffers;
+}
+
+export function getUniqueBeatUnitValues(numList:number[]) {
+  return [...new Set(numList)].sort((a, b) => a - b).join('|');
 }
