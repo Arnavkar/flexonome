@@ -1,62 +1,45 @@
 <template>
-    <div class="flex flex-wrap gap-4 max-w-screen-sm m-4 pl-12 pr-12">
+    <div class="flex flex-wrap items-center justify-center gap-4 max-w-screen-sm m-4 pl-12 pr-12">
       <TransitionGroup name="list">
         <ColorButton 
-        v-for="n in numBeats"
-        :key="n"
-        ref = buttons
-        class = "rounded-lg"
+        v-for="(beat, index) in beats"
+        :key="index"
+        :beat="beat"
+        ref="buttons"
+        class="rounded-lg"
         />
       </TransitionGroup>
     </div>
 </template>
   
 <script setup lang="ts">
-import { ref, watch, onUpdated, onMounted, nextTick} from 'vue';
+import { ref, watch, onUpdated, nextTick, computed} from 'vue';
+import type { Beat } from '../utils/types';
 import ColorButton from './ColorButton.vue';
 
 // Define props
 const props = defineProps<{
-    numBeats: number
-    beatUnit: number[]
+    beats: Beat[]
     activeBar:number
-    accents:number[]
 }>();
-
-// Initialize numBars with the prop value or default to 4
-const beatUnit = ref(props.beatUnit);
-const accents = ref(props.accents);
 
 // Empty Reference to the ColorButton components declared in template
 const buttons = ref();
+const beatUnitList = computed(() => props.beats.map((beat) => beat.beatUnit));
 
 // Watch for changes in the activeBar prop and call tic on the corresponding button
-watch(() => props.activeBar, (newVal) => {
-  if (newVal >= 0 && newVal !== props.numBeats) {
-    buttons.value[newVal]?.tic();
+watch(() => props.activeBar, (newActiveBar) => {
+  if (newActiveBar >= 0 && newActiveBar !== props.beats.length) {
+    buttons.value[newActiveBar]?.tic();
   }
 });
 
-watch(() => props.beatUnit, async(newVal) => {
-  beatUnit.value = [...newVal];
+//If beats changes - update the width of the buttons accordingly
+watch(() => beatUnitList, async(newBeatUnitList) => {
   await nextTick();
   buttons.value.forEach((button:typeof ColorButton, index:number) => {
-    button.updateWidth(beatUnit.value[index]);
+    button.updateWidth(newBeatUnitList.value[index]);
   });
-});
-
-watch(() => props.accents, async (newVal) => {
-  accents.value = [...newVal];
-  await nextTick();
-  buttons.value.forEach((button:typeof ColorButton, index:number) => {
-    if (accents.value[index]==1){
-      button.setColorAndSound(1);
-    }
-  });
-});
-
-onMounted(() => {
-  buttons.value[0].cycleColorAndSound();
 });
 
 //Make sure width styling is updated when beatUnit /num Bar changes

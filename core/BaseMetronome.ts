@@ -3,7 +3,7 @@ import type { IBaseMetronome } from "~/interfaces/IMetronome";
 export default class BaseMetronome implements IBaseMetronome{
   public bpm: number = 120;
   public isRunning: boolean = false;
-  public beats: Beat[] = parseTimeSignature('4/4', this.bpm);
+  public beats: Beat[] = parseTimeSignature('4/4');
   public accents: number[] = [1, 0, 0, 0];
   public activeBar: number = -1
   public timeoutIds: number[] = [];

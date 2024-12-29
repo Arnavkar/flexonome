@@ -1,36 +1,39 @@
 <template>
   <div>
     <Transition name="fade-slide">
-      <div v-if="renderPage" class="flex flex-col items-center justify-between">
-        <MetronomeBars 
-          :numBeats="metronome.numBeats" 
-          :beatUnit="metronome.beatUnit" 
-          :activeBar="metronome.activeBar"
-          :accents="metronome.accents"/>
-        <div v-if="!isMobileDevice" class="grid grid-cols-3 mt-8">
-          <div class="flex flex-col items-end justify-center">
-            <TimeSignatureInput 
-              @timeSignatureChange="(inputStr) => metronome.updateTimeSignature(inputStr)"
-              @multipleTimeSignatureSubmit="(inputStr) => metronome.updateTimeSignature(inputStr)" />
+      <div v-if="renderPage" >
+        <div v-if="!isMobileDevice" class="flex flex-col items-center justify-between">
+          <MetronomeBars 
+            :beats="metronome.beats" 
+            :activeBar="metronome.activeBar"/>
+          <div  class="grid grid-cols-3 mt-0">
+            <div class="flex flex-col items-end justify-center">
+              <TimeSignatureInput 
+                @timeSignatureChange="(inputStr) => metronome.updateTimeSignature(inputStr)"
+                @multipleTimeSignatureSubmit="(inputStr) => metronome.updateTimeSignature(inputStr)" />
+            </div>
+            <CircularDial 
+              :bpm="metronome.bpm" 
+              :acceleratorOptions="metronome.accelerator"
+              :progress="metronome.accelerator.progress" 
+              @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
+              @toggleAccelerator="() => metronome.toggleAccelerator()" />
+            <SlideTransition>
+              <AcceleratorInput 
+                v-if="metronome.acceleratorEnabled"
+                @acceleratorOptionsSubmit="(options) => metronome.setAccelerator(options)" />
+            </SlideTransition>
           </div>
-          <CircularDial 
-            :bpm="metronome.bpm" 
-            :acceleratorOptions="metronome.accelerator"
-            :progress="metronome.accelerator.progress" 
-            @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
-            @toggleAccelerator="() => metronome.toggleAccelerator()" />
-          <SlideTransition>
-            <AcceleratorInput 
-              v-if="metronome.acceleratorEnabled"
-              @acceleratorOptionsSubmit="(options) => metronome.setAccelerator(options)" />
-          </SlideTransition>
+          <button class="btn btn-primary btn-outline mt-4 w-60" 
+            @click="() => {metronome.toggle();}">
+            {{ metronome.isRunning ? 'Stop' : 'Start' }}
+          </button>
         </div>
-        <button v-if="!isMobileDevice" class="btn btn-primary btn-outline mt-4 w-60" 
-          @click="() => {metronome.toggle();}">
-          {{ metronome.isRunning ? 'Stop' : 'Start' }}
-        </button>
 
-        <div v-if="isMobileDevice" class="flex-col w-auto gap-4">
+        <div v-if="isMobileDevice" class="flex flex-col items-center justify-between w-96 mt-10">
+          <MetronomeBars 
+            :beats="metronome.beats" 
+            :activeBar="metronome.activeBar"/>
           <CircularDial 
             :bpm="metronome.bpm" 
             :acceleratorOptions="metronome.accelerator"
@@ -39,7 +42,7 @@
             @toggleAccelerator="() => metronome.toggleAccelerator()" />
           <div class="flex justify-around items-center">
             <ModalCard 
-              :text="`${metronome.numBeats}/${metronome.beatUnit[0]}`" 
+              :text="`${metronome.numBeats}/${getUniqueBeatUnitValues()}`" 
               :modal-id="timeSignatureModalId"
               @click="show(timeSignatureModalId)">
               <TimeSignatureInput 
@@ -50,8 +53,9 @@
               {{ metronome.isRunning ? 'Stop' : 'Start' }}
             </button>
             <ModalCard 
-              :icon-name="'mdiClockFast'" 
+              :icon-name="'mdiFastForward'" 
               :icon-enabled="metronome.acceleratorEnabled"
+              :icon-label="'Settings'"
               :modal-id="acceleratorModalId"
                @click="metronome.acceleratorEnabled? show(acceleratorModalId) : null">
               <AcceleratorInput 
@@ -66,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, provide } from 'vue';
 import type { Ref } from 'vue';
 import MetronomeV2 from '../core/MetronomeV2';
 import MetronomeBars from '../components/MetronomeBars.vue';
@@ -76,6 +80,8 @@ import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
 import { isMobile } from '../utils/utils';
 import ModalCard from '../components/ModalCard.vue';
+import type { Beat } from '../utils/types'
+
 //eslint-disable-next-line
 const snackbar = useSnackbar();
 const timeSignatureModalId = "timeSignatureModal";
@@ -111,6 +117,17 @@ function show(id:string) {
   const modal = document.getElementById(id);
   if (modal) (modal as HTMLDialogElement).showModal();
 }
+
+function getUniqueBeatUnitValues() {
+  const beatUnitList = metronome.beats.map((beat: Beat) => beat.beatUnit);
+  return [...new Set(beatUnitList)].sort((a, b) => a - b).join('|');
+}
+
+function incrementBeatAccent(index: number) {
+  metronome.beats[index].accent = (metronome.beats[index].accent + 1) % 4;
+}
+
+provide('incrementBeatAccent',incrementBeatAccent)
 
 onMounted(() => {
   showPage();

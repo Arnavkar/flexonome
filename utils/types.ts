@@ -1,15 +1,8 @@
 export type Beat = {
     beatIndex: number;
     beatUnit: number;
-    interval: number;
-    isFirst: boolean;
-}
-
-export type BeatV2 = {
-    beatIndex: number;
-    beatUnit: number;
-    time: number;
-    isFirst: boolean;
+    accent: number;
+    interval?: number;
 }
 
 export type Polyrhythm = {

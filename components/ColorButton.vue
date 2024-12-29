@@ -1,78 +1,43 @@
 <template>
-    <button
-       class = "h-12 border-2"
-      :class="[currentBorderColor, currentBackgroundColor, currentWidth, { 'active-state': isFlashing, 'dark:bg-slate-800 bg-slate-200': !isFlashing }]"
-      @click="cycleColorAndSound"
-    >
-      <!-- Empty buton to just show border with color -->
-    </button>
-  </template>
+  <button 
+    class="border-2"
+    :class="[buttonHeight, currentBorderColor, currentBackgroundColor, currentWidth, {'active-state': isFlashing, 'dark:bg-slate-800 bg-slate-200': !isFlashing }]"
+    @click="incrementBeatAccent(beat.beatIndex)">
+  </button>
+</template>
 
-  <script setup lang="ts">
-  import { ref , onMounted } from 'vue';
-  import { audioPaths } from "../constants"
+<script setup lang="ts">
+import { ref, computed, inject } from 'vue';
+import type { Beat } from '../utils/types';
+import { buttonWidthMap } from '../constants';
+import { isMobile } from '../utils/utils';
 
-  let audioObjects:HTMLAudioElement[] = [];
-  
-  // Define color classes as typed array of Strings
-  const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent','border-gray-400'];
-  const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent','bg-gray-400'];
-  
-  const buttonWidths: Record<number, string> = {
-    2: 'w-16',
-    4: 'w-12',
-    8: 'w-8',
-    16: 'w-4'
-  }
-  
-  const currentIndex = ref(0);
-  const currentSound = ref();
-  const isFlashing = ref(false);
+const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent', 'border-gray-400'];
+const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-gray-400'];
 
-  const currentBorderColor = ref(borderColors[currentIndex.value]);
-  const currentBackgroundColor = ref(bgColors[currentIndex.value]);
-  const currentWidth = ref(buttonWidths[4])
-  
-  function cycleColorAndSound() {
-    currentIndex.value = (currentIndex.value + 1) % borderColors.length;
-    currentBorderColor.value = borderColors[currentIndex.value];
-    currentBackgroundColor.value = bgColors[currentIndex.value];
-    currentSound.value = audioObjects[currentIndex.value];
-  }
+const props = defineProps<{beat: Beat}>();
+const incrementBeatAccent = inject('incrementBeatAccent');
 
-  function setColorAndSound(index:number){
-    currentIndex.value = index;
-    currentBorderColor.value = borderColors[currentIndex.value];
-    currentBackgroundColor.value = bgColors[currentIndex.value];
-    currentSound.value = audioObjects[currentIndex.value];
-  }
-  
-  function tic() {
-    isFlashing.value = true;
-    if (currentIndex.value !== 3) {
-      //currentSound.value.play();
-    }
-    
-    setTimeout(() => {
-      isFlashing.value = false;
-    }, 50); // Flash duration in milliseconds
-  }
+const isFlashing = ref(false);
 
-  function updateWidth(newBeatUnit:number){
-    currentWidth.value = buttonWidths[newBeatUnit];
-  }
+const currentBorderColor = computed(() => borderColors[props.beat.accent]);
+const currentBackgroundColor = computed(() => bgColors[props.beat.accent]);
+const currentWidth = computed(() => buttonWidthMap[props.beat.beatUnit]);
+const  buttonHeight = computed(() => isMobile()? 'h-8' : 'h-12');
 
-  defineExpose({ tic, cycleColorAndSound, updateWidth, setColorAndSound });
+function tic() {
+  isFlashing.value = true;
+  setTimeout(() => {
+    isFlashing.value = false;
+  }, 50); // Flash duration in milliseconds
+}
 
-  onMounted(() => {
-    audioObjects = audioPaths.map(path => new Audio(path));
-    currentSound.value = audioObjects[0];
-  });
-  </script>
-  
-  <style scoped>
-  .active-state {
-    background-color: currentBackgroundColor;
-  }
-  </style>
-  
+defineExpose({ tic });
+
+</script>
+
+<style scoped>
+.active-state {
+  background-color: 'white';
+}
+</style>

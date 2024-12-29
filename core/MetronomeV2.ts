@@ -1,11 +1,8 @@
-// import type { Accelerator } from '../utils/types';
 import { playSound } from '~/utils/utils';
 import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
 import type { IMetronome } from '~/interfaces/IMetronome';
 import BaseMetronome from './BaseMetronome';
-//import type { BeatV2 } from '~/utils/types';
-
 export default class MetronomeV2 extends BaseMetronome implements IMetronome {
     public accelerator: Accelerator = defaultAccelerator;
     public acceleratorEnabled: boolean = false;
@@ -22,7 +19,7 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
         return this.beats.length;
     }
 
-    public get beatUnit(): number[] {
+    public get beatUnitList(): number[] {
         return this.beats.map((beat: Beat) => beat.beatUnit);
     }
 
@@ -42,12 +39,9 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
 
     private scheduleNote() {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
-        const currentBeatIndex = this.activeBar;
-
-        this.activeBar = (currentBeatIndex + 1) % this.numBeats;
-        const isAccent = this.accents[this.activeBar] === 1;
-        // Load or use pre-loaded audio buffer
-        const buffer = isAccent ? this.audioBuffers[2] : this.audioBuffers[0];
+        this.activeBar = (this.activeBar + 1) % this.numBeats;
+        const bufferIndex = this.beats[this.activeBar].accent;
+        const buffer = bufferIndex >= 0? this.audioBuffers[bufferIndex] : undefined
         if (!buffer) return;
 
         if (this.activeBar >= 0)
@@ -82,9 +76,8 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
 
     public updateTimeSignature(inputString: string) {
         try {
-            this.beats = parseTimeSignature(inputString, this.bpm);
-            this.setAccents();
-            this.successCallback("Multiple time signature applied");
+            this.beats = parseTimeSignature(inputString);
+            this.successCallback("New Time Signature Applied");
         } catch (e) {
             this.errorCallback((e as Error).message);
         }
@@ -92,10 +85,6 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
         if (this.isRunning == true) {
             this.restart();
         }
-    }
-
-    public setAccents(){
-        this.accents = this.beats.map((beat:Beat) => beat.isFirst? 1:0);
     }
 
     public override start() {
@@ -128,6 +117,6 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
         this.stop();
         this.accelerator = accelerator;
         this.updateBpm(accelerator.startBPM);
-        this.successCallback("Accelerator settings applied");
+        this.successCallback("Accelerator Settings Applied");
     }
 }

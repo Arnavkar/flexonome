@@ -73,9 +73,8 @@ export default class Metronome extends BaseMetronome implements IMetronome {
 
   public updateTimeSignature(inputString: string) {
     try {
-      this.beats = parseTimeSignature(inputString, this.bpm);
-      this.setAccents();
-      this.successCallback("Multiple time signature applied");
+      this.beats = parseTimeSignature(inputString);
+      this.successCallback("New Time Signature Applied");
     } catch (e) {
       this.errorCallback((e as Error).message);
     }
@@ -85,16 +84,12 @@ export default class Metronome extends BaseMetronome implements IMetronome {
     }
   };
 
-  public setAccents(){
-    this.accents = this.beats.map((beat:Beat) => beat.isFirst? 1:0);
-  }
-
   public setAccelerator(accelerator: Accelerator) {
     if (!validateAccelerator(accelerator,this.errorCallback)) return;
     this.stop();
     this.accelerator = accelerator;
     this.updateBpm(accelerator.startBPM);
-    this.successCallback("Accelerator settings applied");
+    this.successCallback("Accelerator Settings Applied");
   }
   
   public toggleAccelerator() {

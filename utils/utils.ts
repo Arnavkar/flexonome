@@ -28,8 +28,8 @@ export function validateAccelerator(accelerator:Accelerator, errorHandler?: Erro
   return true;
 }
 
-export function parseTimeSignature(input:string, bpm:number): Beat[] {
-  const result: Beat[] = []
+export function parseTimeSignature(input:string,): Beat[] {
+  const beats: Beat[] = []
 
   // Validate the input
   if (typeof input !== 'string' || input.trim() === '') {
@@ -72,19 +72,17 @@ export function parseTimeSignature(input:string, bpm:number): Beat[] {
 
       for (let i = 0; i < repeat; i++) {
         for (let j = 0; j < numBeats; j++) {
-          const interval = (60 / bpm) * 1000 / (beatUnit / 4);
-          result.push({
+          beats.push({
             beatIndex: currentBeatIndex,
             beatUnit: beatUnit,
-            interval: interval,
-            isFirst: j === 0
-          });
+            accent: j === 0 ? 1 : 0
+          } as Beat);
           currentBeatIndex++;
         }
       }
     });
   });
-  return result;
+  return beats;
 }
 
 export function constructPolyrhythm(ratio_1: number, ratio_2: number, bpm: number): Polyrhythm {
@@ -115,23 +113,6 @@ export const loadAudioBuffer = async (filePath: string, audioContext: AudioConte
   }
   const arrayBuffer = await response.arrayBuffer();
   return await audioContext.decodeAudioData(arrayBuffer);
-
-  // const sampleRate = audioBuffer.sampleRate;
-  // const frameCount = Math.min(audioBuffer.length, sampleRate * duration);
-
-  // const newBuffer = audioContext.createBuffer(
-  //   audioBuffer.numberOfChannels,
-  //   frameCount,
-  //   sampleRate
-  // );
-
-  // for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-  //   const oldData = audioBuffer.getChannelData(channel);
-  //   const newData = newBuffer.getChannelData(channel);
-  //   newData.set(oldData.subarray(0, frameCount));
-  // }
-
-  // return newBuffer;
 };
 
 export function playSound(buffer: AudioBuffer, audioContext: AudioContext, time: number) {
