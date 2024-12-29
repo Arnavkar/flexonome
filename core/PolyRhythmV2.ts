@@ -6,14 +6,9 @@ import BaseMetronome from './BaseMetronome';
 
 export default class PolyRhythmV2 extends BaseMetronome implements IMetronome {
     public ratios: number[] = [3, 4];
-    public baseRatio: 0 | 1 = 1;
     public activeCircles: number[] = [-1, -1];
     public get totalTime(): number {
-        if (this.baseRatio === 0){
-            return (60 / this.bpm) * this.ratios[0] // Total time span for one cycle of the polyrhythm in seconds
-        } else {
-            return (60 / this.bpm) * this.ratios[1]
-        }
+        return (60 / this.bpm) * this.ratios[0] 
     }
 
     public accelerator: Accelerator = defaultAccelerator;
@@ -27,31 +22,40 @@ export default class PolyRhythmV2 extends BaseMetronome implements IMetronome {
     public scheduleAheadTime: number = 0.1; // How far ahead to schedule (in seconds)
     public timerInterval: number = 25;
 
-    public get beatsLists(): Beat[][] {
-        const beats_1:Beat[] = []
-        for (let i = 0; i < this.ratios[0]; i++) {
-            beats_1.push({
-                beatIndex:i,
-                beatUnit: 4,
-                accent: 0
-            } as Beat)
-        }
+    public beats: Beat[] = this.constructBeats();
 
-        const beats_2:Beat[] = []
-        for (let i = 0; i < this.ratios[1]; i++) {
-            beats_2.push({
-                beatIndex: i + this.ratios[0],
-                beatUnit: 4,
-                accent: 2
-            } as Beat)
-        }
-        return [beats_1, beats_2]
+    public get beats_1(): Beat[] {
+        return this.beats.slice(0, this.ratios[0])
+    }
+
+    public get beats_2(): Beat[] {
+        return this.beats.slice(this.ratios[0], undefined)
     }
 
     public async setup() {
         this.audioContext = new AudioContext();
         this.audioBuffers = await setUpAudioBuffers(this.audioContext, audioPaths);
         //this.setUpWorker()
+    }
+
+    private constructBeats(): Beat[] {
+        const beats:Beat[] = []
+        for (let i = 0; i < this.ratios[0]; i++) {
+            beats.push({
+                beatIndex:i,
+                beatUnit: 4,
+                accent: 0
+            } as Beat)
+        }
+
+        for (let i = 0; i < this.ratios[1]; i++) {
+            beats.push({
+                beatIndex: i + this.ratios[0],
+                beatUnit: 4,
+                accent: 2
+            } as Beat)
+        }
+        return beats
     }
 
     private scheduler(index: number) {
@@ -65,7 +69,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IMetronome {
     private scheduleNote(index: number) {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
         const numBeats = this.ratios[index];
-        const beatList = this.beatsLists[index];
+        const beatList = index == 0 ? this.beats_1 : this.beats_2;
 
         this.activeCircles[index] = (this.activeCircles[index] + 1) % numBeats;
         const bufferIndex = beatList[this.activeCircles[index]].accent;
@@ -83,7 +87,6 @@ export default class PolyRhythmV2 extends BaseMetronome implements IMetronome {
 
         const beatDuration = this.totalTime / this.ratios[index]
         this.nextNoteTimes[index] += beatDuration;
-        console.log(this.nextNoteTimes)
         if (this.acceleratorEnabled) {
             if (this.currentBeatInAcceleratorLoop == 0) {
                 this.accelerator.progress = 100;
@@ -104,7 +107,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IMetronome {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
 
         if (this.acceleratorEnabled) {
-            this.numBeatsBeforeIncrement = this.ratios[this.baseRatio] * this.accelerator.numBarsToRepeat;
+            this.numBeatsBeforeIncrement = this.ratios[0] * this.accelerator.numBarsToRepeat + this.ratios[1] * this.accelerator.numBarsToRepeat;
         }
         this.currentBeatInAcceleratorLoop = 1;
         this.nextNoteTimes = [this.audioContext.currentTime, this.audioContext.currentTime];

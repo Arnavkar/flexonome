@@ -15,8 +15,8 @@
             @toggleAccelerator="() => polyrhythm.toggleAccelerator()" />
         </div>
         <PolyrhythmDial
-          :beats_1="polyrhythm.beatsLists[0]" 
-          :beats_2="polyrhythm.beatsLists[1]" 
+          :beats_1="polyrhythm.beats_1" 
+          :beats_2="polyrhythm.beats_2" 
           :activeCircles_1="polyrhythm.activeCircles[0]" 
           :activeCircles_2="polyrhythm.activeCircles[1]"
           :size="350" />
@@ -71,7 +71,7 @@ function throwSuccess(message: string) {
 // }
 
 function incrementBeatAccent(index: number) {
-  console.log(`Button ${index} called  incrementBeatAccent`)
+  polyrhythm.beats[index].accent = (polyrhythm.beats[index].accent + 1) % 4;
 }
 
 provide('incrementBeatAccent',incrementBeatAccent)

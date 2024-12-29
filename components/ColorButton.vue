@@ -23,7 +23,7 @@ const isFlashing = ref(false);
 const currentBorderColor = computed(() => borderColors[props.beat.accent]);
 const currentBackgroundColor = computed(() => bgColors[props.beat.accent]);
 const currentWidth = computed(() => buttonWidthMap[props.beat.beatUnit]);
-const  buttonHeight = computed(() => isMobile()? 'h-8' : 'h-12');
+const buttonHeight = computed(() => isMobile()? 'h-8' : 'h-12');
 
 function tic() {
   isFlashing.value = true;
