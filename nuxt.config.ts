@@ -8,6 +8,13 @@ export default defineNuxtConfig({
 
   ],
 
+  modules: ['nuxt-snackbar'],
+  snackbar: {
+    bottom: true,
+    right: true,
+    duration: 5000
+  },
+
   pages: true,
 
   postcss: {

@@ -6,16 +6,17 @@
           </Transition>
         </div>
         <NuxtPage />
+        <NuxtSnackbar />
     </div>
 </template>
 
 <script setup lang="ts">
 
 import { useRoute } from 'vue-router';
-import { ref,computed, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import NavBar from '~/components/NavBar.vue';
 //Check the current URL path
-const isIntro: ref<boolean> = computed(() => {
+const isIntro = computed(() => {
     const route = useRoute().path;
     return route === '/';
 });

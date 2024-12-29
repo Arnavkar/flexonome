@@ -1,13 +1,13 @@
 import type { Beat, Polyrhythm, Errorhandler } from './types';
 
-
 export function validateBPM(bpm_value:number, errorHandler?: Errorhandler):boolean{
   const errorHandlerFunc = errorHandler ?? console.error;
   if (bpm_value < 20 || bpm_value > 300) {
     errorHandlerFunc("BPM must be between 20 and 300");
     return false;
+  } else {
+    return true;
   }
-  return true;
 };
 
 export function validateAccelerator(accelerator:Accelerator, errorHandler?: Errorhandler):boolean{

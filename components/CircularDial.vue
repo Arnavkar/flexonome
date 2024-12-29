@@ -3,7 +3,7 @@
         <template #single>
         <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
-                <input type="number" v-model="bpm" class="input input-ghost text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold remove-arrow"/>
+                <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
                 <div class="text-lg">
                     BPM (♩)
                 </div>
@@ -43,9 +43,11 @@
 
 <script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted, watch, defineProps } from 'vue';
+import { isMobile } from '../utils/utils';
 import type { Ref } from 'vue';
 import BaseCard from './BaseCard.vue';
 import type { Accelerator } from '../utils/types';
+export type AppTouchEvent = TouchEvent;
 
 const props = defineProps<{ 
     bpm: number,
@@ -62,7 +64,6 @@ const dial:Ref<HTMLElement|null> = ref(null);
 const isAccelerator:Ref<boolean> = ref(false);
 
 function startDrag(event: MouseEvent){
-    console.log('startDrag');
     event.preventDefault(); //Prevents highlighting etc.
     dragging.value = true;
     //Once the drag has started
@@ -71,7 +72,6 @@ function startDrag(event: MouseEvent){
 };
 
 function startDragMobile(event: TouchEvent){
-    console.log('startDragMobile');
     event.preventDefault(); //Prevents highlighting etc.
     dragging.value = true;
     //Once the drag has started
@@ -85,12 +85,12 @@ function onDrag(event: MouseEvent | TouchEvent){
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     let x,y;
-    if (event instanceof TouchEvent){
-        x = event.touches[0].clientX - centerX;
-        y = event.touches[0].clientY - centerY;
+    if (isMobile()){
+        x = (event as TouchEvent).touches[0].clientX - centerX;
+        y = (event as TouchEvent).touches[0].clientY - centerY;
     } else {
-        x = event.clientX - centerX;
-        y = event.clientY - centerY;
+        x = (event as MouseEvent).clientX - centerX;
+        y = (event as MouseEvent).clientY - centerY;
     }
     let newAngle = Math.atan2(y, x) * (180 / Math.PI);
 
