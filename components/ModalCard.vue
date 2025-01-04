@@ -1,20 +1,13 @@
 <template>
     <div class="flex flex-col items-center justify-center shadow-md shadow-neutral dark:shadow-black border-blue-200 dark:border-blue-950 border-2 rounded-2xl p-4 m-2"
         :class="ModalCardSize">
-        <label v-if="text !== ''" class="text-2xl">{{ textNumerator }}</label>
-        <div v-if="text !== ''" class="divider divider-primary mt-0 mb-0"></div>
-        <label v-if="text !== ''" class="text-2xl">{{ textDenominator }}</label>
-        
-        <MdiIcon v-if="iconName !== ''" 
-            :icon="iconName as any" 
-            :class="IconStyle"/>
-        <label v-if="iconLabel !== ''" :class="iconEnabled? 'text-primary': 'opacity-30'" class="text-xs text-center p-0 m-0">{{ iconLabel }}</label>
+        <slot name="buttonui"></slot>
         <dialog :id="modalId" class="modal">
             <div class="modal-box w-full -ml-4 -mr-4 flex flex-col items-center justify-center">
                 <form method="dialog">
                     <button class="btn btn-sm text-lg btn-circle btn-ghost absolute right-2 top-2 stroke-none">x</button>
                 </form>
-                <slot></slot>
+                <slot name="modal"></slot>
             </div>
         </dialog>
     </div>
@@ -29,42 +22,14 @@ const props = defineProps({
         type: Number,
         default: 24
     },
-    text: {
-        type: String,
-        default: ''
-    },
-    iconName: {
-        type: String,
-        default: ''
-    },
-    iconEnabled:{
-        type: Boolean,
-        default: false
-    },
-    iconLabel: {
-        type: String,
-        default: ''
-    },
     modalId: {
         type: String,
         required: true
     }
 });
 
-const IconStyle = computed(() => {
-    return props.iconEnabled ? `text-primary` : `opacity-30`;
-})
-
 const ModalCardSize = computed(() => {
     return `w-${props.size} h-${props.size}`;
-});
-
-const textNumerator = computed(() => {
-    return props.text.split('/')[0];
-});
-
-const textDenominator = computed(() => {
-    return props.text.split('/')[1];
 });
 
 </script>

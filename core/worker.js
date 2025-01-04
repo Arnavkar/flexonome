@@ -28,5 +28,3 @@ self.onmessage=function(e){
 		timerID=null;
 	}
 };
-
-postMessage('hi there');

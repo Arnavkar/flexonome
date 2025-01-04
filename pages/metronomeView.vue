@@ -42,25 +42,36 @@
             @toggleAccelerator="() => metronome.toggleAccelerator()" />
           <div class="flex justify-around items-center">
             <ModalCard 
-              :text="`${metronome.numBeats}/${getUniqueBeatUnitValues(metronome.beats.map((beat: Beat) => beat.beatUnit))}`" 
               :modal-id="timeSignatureModalId"
               @click="show(timeSignatureModalId)">
+              <template #buttonui>
+                <label class="text-2xl">{{ metronome.numBeats }}</label>
+                <div class="divider divider-primary mt-0 mb-0"></div>
+                <label class="text-2xl">{{ getUniqueBeatUnitValues(metronome.beats.map((beat: Beat) => beat.beatUnit)) }}</label>
+              </template>
+              <template #modal>
               <TimeSignatureInput 
                 @timeSignatureChange="(inputStr) => metronome.updateTimeSignature(inputStr)"
                 @multipleTimeSignatureSubmit="(inputStr) => metronome.updateTimeSignature(inputStr)" />
+              </template>
             </ModalCard>
             <button class="btn btn-primary btn-outline w-24 h-24" @click="() => metronome.toggle()">
               {{ metronome.isRunning ? 'Stop' : 'Start' }}
             </button>
             <ModalCard 
-              :icon-name="'mdiFastForward'" 
-              :icon-enabled="metronome.acceleratorEnabled"
-              :icon-label="'Settings'"
               :modal-id="acceleratorModalId"
                @click="metronome.acceleratorEnabled? show(acceleratorModalId) : null">
-              <AcceleratorInput 
-                v-if="metronome.acceleratorEnabled"
-                @acceleratorOptionsSubmit="(options) => metronome.setAccelerator(options)"/>
+               <template #buttonui>
+                <MdiIcon
+                  icon="mdiFastForward" 
+                  :class="IconStyle"/>
+                <label :class="IconStyle" class="text-xs text-center p-0 m-0"> settings </label>
+              </template>
+              <template #modal>
+                <AcceleratorInput 
+                  v-if="metronome.acceleratorEnabled"
+                  @acceleratorOptionsSubmit="(options) => metronome.setAccelerator(options)"/>
+              </template>
             </ModalCard>
           </div>
         </div>
@@ -70,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, provide } from 'vue';
+import { ref, onMounted, reactive, provide, computed } from 'vue';
 import type { Ref } from 'vue';
 import MetronomeV2 from '../core/MetronomeV2';
 import MetronomeBars from '../components/MetronomeBars.vue';
@@ -91,6 +102,10 @@ const renderPage: Ref<boolean> = ref(false);
 const isMobileDevice: Ref<boolean | null> = ref(null);
 
 const metronome = reactive(new MetronomeV2());
+
+const IconStyle = computed(() => {
+    return metronome.acceleratorEnabled? `text-primary` : `opacity-30`;
+})
 
 function throwError(message: string) {
   if (!snackbar) return;

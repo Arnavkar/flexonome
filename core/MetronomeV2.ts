@@ -17,6 +17,7 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
     public nextNoteTime: number = 0; // Next note's scheduled time
     public scheduleAheadTime: number = 0.1; // How far ahead to schedule (in seconds)
     public timerInterval: number = 25;
+    //public timerWorker: Worker | null = null;
 
     public get numBeats(): number {
         return this.beats.length;
@@ -31,6 +32,18 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
         this.audioBuffers = await setUpAudioBuffers(this.audioContext, audioPaths);
         //this.setUpWorker()
     }
+
+    //TODO: Use Worker threads for audio event scheduling
+    // private setUpWorker(){
+    //     this.timerWorker = new Worker('./worker.js');
+    //     this.timerWorker.onmessage = (e) => {
+    //         if (e.data === 'tick') {
+    //             this.scheduler();
+    //         } else {
+    //             console.log('message: ' + e.data);
+    //         }
+    //     };
+    // }
 
     private scheduler() {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
@@ -81,12 +94,14 @@ export default class MetronomeV2 extends BaseMetronome implements IMetronome {
         }
         this.currentBeatInAcceleratorLoop = 1;
         this.nextNoteTime = this.audioContext.currentTime;
+        //timerWorker.postMessage("start");
         const timeoutId = window.setInterval(() => this.scheduler(), this.timerInterval);
         this.timeoutIds.push(timeoutId);
     }
 
     public override stop() {
         super.stop()
+        //timerWorker.postMessage("stop");
         this.numBeatsBeforeIncrement = 1000;
         this.currentBeatInAcceleratorLoop = 1;
         this.accelerator.progress = 0;

@@ -43,7 +43,6 @@
 
 <script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted, watch} from 'vue';
-import { isMobile } from '../utils/utils';
 import type { Ref } from 'vue';
 import BaseCard from './BaseCard.vue';
 import type { Accelerator } from '../utils/types';
@@ -85,10 +84,10 @@ function onDrag(event: MouseEvent | TouchEvent){
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     let x,y;
-    if (isMobile()){
+    try { //Try Touch Event first, fall back to Mouse Event
         x = (event as TouchEvent).touches[0].clientX - centerX;
         y = (event as TouchEvent).touches[0].clientY - centerY;
-    } else {
+    } catch {
         x = (event as MouseEvent).clientX - centerX;
         y = (event as MouseEvent).clientY - centerY;
     }
