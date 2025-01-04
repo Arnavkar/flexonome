@@ -22,7 +22,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IMetronome {
     public scheduleAheadTime: number = 0.1; // How far ahead to schedule (in seconds)
     public timerInterval: number = 25;
 
-    public beats: Beat[] = this.constructBeats();
+    public get beats(): Beat[]{ return this.constructBeats(); }
 
     public get beats_1(): Beat[] {
         return this.beats.slice(0, this.ratios[0])

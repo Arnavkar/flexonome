@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import BaseCard from './BaseCard.vue';
 import ColorButton from './ColorButton.vue';
 import type { Beat } from '../utils/types';
@@ -75,13 +75,15 @@ const getCircleStyle = (index: number, i: number, count: number) => {
   };
 };
 
-watch(()=> props.activeCircles_1, (newVal) => {
+watch(()=> props.activeCircles_1, async(newVal) => {
+  await nextTick();
   if (newVal >= 0 && newVal!== props.beats_1.length) {
     circleRefs1.value[newVal]?.tic();
   }
 });
 
-watch(()=> props.activeCircles_2, (newVal) => {
+watch(()=> props.activeCircles_2, async(newVal) => {
+  await nextTick();
   if (newVal >= 0 && newVal!== props.beats_2.length) {
     circleRefs2.value[newVal]?.tic();
   }

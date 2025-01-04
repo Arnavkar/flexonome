@@ -30,3 +30,10 @@ const emitRatio2Change = () => {
     emits("ratio2Change", ratio_2.value);
 };
 </script>
+
+<style scoped>
+/* Change here is necessary because text-align-center does not work with safari */
+select {
+    text-align-last: center;
+}
+</style>

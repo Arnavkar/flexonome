@@ -40,23 +40,38 @@
           @toggleAccelerator="() => polyrhythm.toggleAccelerator()" />
           <div class="flex justify-around items-center">
             <ModalCard 
-              :text="`${polyrhythm.ratios[0]}:${polyrhythm.ratios[1]}`" 
               :modal-id="ratioModalId"
               @click="show(ratioModalId)">
-              <p>test</p>
+              <template #buttonui>
+                <span>
+                  <label class="text-2xl">{{ polyrhythm.ratios[0] }}</label>
+                  <label class="text-2xl"> : </label>
+                  <label class="text-2xl">{{ polyrhythm.ratios[1] }}</label>
+                </span>
+              </template>
+              <template #modal>
+                <RatioInput 
+                  @ratio1Change="(newVal) => polyrhythm.updateRatio(0,newVal)" 
+                  @ratio2Change="(newVal) => polyrhythm.updateRatio(1,newVal)"/>
+              </template>
             </ModalCard>
             <button class="btn btn-primary btn-outline w-24 h-24" @click="() => polyrhythm.toggle()">
               {{ polyrhythm.isRunning ? 'Stop' : 'Start' }}
             </button>
             <ModalCard 
-              :icon-name="'mdiFastForward'" 
-              :icon-enabled="polyrhythm.acceleratorEnabled"
-              :icon-label="'Settings'"
               :modal-id="acceleratorModalId"
-                @click="polyrhythm.acceleratorEnabled? show(acceleratorModalId) : null">
-              <AcceleratorInput 
-                v-if="polyrhythm.acceleratorEnabled"
-                @acceleratorOptionsSubmit="(options) => polyrhythm.setAccelerator(options)"/>
+               @click="polyrhythm.acceleratorEnabled? show(acceleratorModalId) : null">
+               <template #buttonui>
+                <MdiIcon
+                  icon="mdiFastForward" 
+                  :class="IconStyle"/>
+                <label :class="IconStyle" class="text-xs text-center p-0 m-0"> settings </label>
+              </template>
+              <template #modal>
+                <AcceleratorInput 
+                  v-if="polyrhythm.acceleratorEnabled"
+                  @acceleratorOptionsSubmit="(options) => polyrhythm.setAccelerator(options)"/>
+              </template>
             </ModalCard>
           </div>
       </div>
@@ -66,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, provide } from 'vue';
+import { ref, onMounted, reactive, provide, computed } from 'vue';
 import type { Ref } from 'vue';
 import CircularDial from '../components/CircularDial.vue';
 import SlideTransition from '../components/SlideTransition.vue';
@@ -83,6 +98,10 @@ const polyrhythm = reactive(new PolyRhythmV2());
 
 const ratioModalId = "ratioModal";
 const acceleratorModalId = "acceleratorModal";
+
+const IconStyle = computed(() => {
+    return polyrhythm.acceleratorEnabled? `text-primary` : `opacity-30`;
+})
 
 function throwError(message: string) {
   if (!snackbar) return;
