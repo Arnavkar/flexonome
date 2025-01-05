@@ -1,5 +1,5 @@
 <template>
-  <BaseCard :isTabbed="false" :size="96">
+  <BaseCard :isTabbed="false" :size="props.isMobile? '60':'96'" :class="props.isMobile? 'border-0 shadow-none mt-10 -mb-7':''">
   <div class="ring-circles">
     <div class="border-accent border-2 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"  :style="{
         width: `${radii[1] * 2}px`,
@@ -45,24 +45,31 @@ import type { Beat } from '../utils/types';
 const props = defineProps<{
   beats_1: Beat[];
   beats_2: Beat[];
-  size: number;
   activeCircles_1: number;
   activeCircles_2: number;
+  isMobile: boolean;
 }>();
 
 const circleRefs1 = ref();
 const circleRefs2 = ref();
+const ringSize = props.isMobile? 250: 350;
 
 const radii = computed(() => {
-  const maxRadius = props.size / 2 - 10; // Leave some padding
-  const minRadius = maxRadius * 0.5+30;
-  return [minRadius, maxRadius];
+  if (!props.isMobile) {
+    const maxRadius = ringSize / 2 - 10; // Leave some padding
+    const minRadius = maxRadius * 0.5+30;
+    return [minRadius, maxRadius];
+  } else {
+    const maxRadius = ringSize / 3 ; // Leave some padding
+    const minRadius = maxRadius * 0.65;
+    return [minRadius, maxRadius];
+  }
 });
 
 const getCircleStyle = (index: number, i: number, count: number) => {
   const angle = (i * 2 * Math.PI) / count - Math.PI / 2;
   const radius = radii.value[index];
-  const circleDiameter = 30
+  const circleDiameter = props.isMobile? 20: 30
   const x = radius * Math.cos(angle) - circleDiameter / 2;
   const y = radius * Math.sin(angle) - circleDiameter / 2;
 

@@ -1,15 +1,13 @@
 <template>
-    <BaseCard :isTabbed="false" :size="80">
+    <BaseCard :isTabbed="false" :size="cardSize">
         <div class="flex items-center justify-center">
-            <span class="text-5xl">
-                <select class="input input-ghost text-5xl text-primary focus:text-primary text-center w-24 h-20" v-model.number="ratio_1" @change="emitRatio1Change">
+                <select :class="textSize" class="input input-ghost text-primary focus:text-primary" v-model.number="ratio_1" @change="emitRatio1Change">
                     <option v-for="value in 15" :key="value" :value="value">{{ value }}</option>
-                </select>  
-                :   
-                <select class="input input-ghost text-5xl text-accent focus:text-accent text-center w-24 h-20" v-model.number="ratio_2" @change="emitRatio2Change">
+                </select>    
+                <label :class="textSize" class="mx-2">:</label>
+                <select :class="textSize" class="input input-ghost text-accent focus:text-accent" v-model.number="ratio_2" @change="emitRatio2Change">
                     <option v-for="value in 15" :key="value" :value="value">{{ value }}</option>
                 </select>
-            </span>
         </div>
     </BaseCard>
 </template>
@@ -17,6 +15,16 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import BaseCard from './BaseCard.vue';
+
+const props = defineProps({ 
+    isMobile: {
+        type: Boolean,
+        default: false
+    }
+});
+
+const cardSize = props.isMobile ? '24' : '80';
+const textSize = props.isMobile ? "text-2xl p-0" : "text-5xl";
 
 const emits = defineEmits(["ratio1Change", "ratio2Change"]);
 const ratio_1 = ref(3);

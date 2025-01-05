@@ -7,10 +7,10 @@
         <div class="flex flex-col items-center">
             <SlideTransition>
                 <div v-if="activeTab === 'tab-1'">
-                    <slot name="single"></slot> 
+                    <slot name="tab1"></slot> 
                 </div>
                 <div v-else-if="activeTab === 'tab-2'">
-                    <slot name="multiple"></slot> 
+                    <slot name="tab2"></slot> 
                 </div>
             </SlideTransition>
         </div>
@@ -29,8 +29,8 @@ import SlideTransition from './SlideTransition.vue';
 const props = defineProps({ 
     isTabbed: Boolean,
     size: {
-        type: Number,
-        default: 80
+        type: String,
+        default: '80'
     },
     firstTab: {
         type: String,

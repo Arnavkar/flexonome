@@ -1,5 +1,5 @@
 <template>
-    <BaseCard :isTabbed="false" :size="72">
+    <BaseCard :isTabbed="false" :size="'72'">
         <div class="flex flex-col items-center m-2 gap-2">
             <div class = "flex items-center justify-between w-full">
                 <span class="text-md">Number of Repeats</span>

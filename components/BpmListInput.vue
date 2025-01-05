@@ -1,5 +1,5 @@
 <template>        
-  <BaseCard :isTabbed="false" :size="80">
+  <BaseCard :isTabbed="false" :size="'80'">
     <div class= "flex items-center gap-10">
         <div class="flex flex-col items-center gap-4">
         <div v-for="(input, index) in inputs" :key="index">

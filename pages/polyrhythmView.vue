@@ -6,8 +6,8 @@
         <div class="grid grid-cols-3 mt-8">
           <div class="flex flex-col items-end justify-center">
             <RatioInput 
-              @ratio1Change="(newVal) => polyrhythm.updateRatio(0,newVal)" 
-              @ratio2Change="(newVal) => polyrhythm.updateRatio(1,newVal)"/>
+              @ratio1Change="(newVal:number) => polyrhythm.updateRatio(0,newVal)" 
+              @ratio2Change="(newVal:number) => polyrhythm.updateRatio(1,newVal)"/>
             <CircularDial 
               :bpm="polyrhythm.bpm" 
               :acceleratorOptions="polyrhythm.accelerator" 
@@ -15,12 +15,12 @@
               @updateBpm="(newBpm) => polyrhythm.updateBpm(newBpm)"
               @toggleAccelerator="() => polyrhythm.toggleAccelerator()" />
           </div>
-          <PolyrhythmDial
+          <PolyrhythmCircles
             :beats_1="polyrhythm.beats_1" 
             :beats_2="polyrhythm.beats_2" 
             :activeCircles_1="polyrhythm.activeCircles[0]" 
             :activeCircles_2="polyrhythm.activeCircles[1]"
-            :size="350" />
+            :isMobile="false"/>
           <div class="flex flex-col items-start justify-center">
             <SlideTransition>
               <AcceleratorInput 
@@ -31,49 +31,44 @@
         </div>
         <button @click="() => polyrhythm.toggle()" class="btn btn-primary btn-outline mt-4 w-60">{{ polyrhythm.isRunning ? 'Stop' : 'Start'}}</button>
       </div>
-      <div v-if="isMobileDevice" class="flex flex-col items-center justify-between w-96 mt-10">
+
+      <div v-if="isMobileDevice" class="flex flex-col items-center space-between w-96 h-11/12 ">
+        <PolyrhythmCircles
+          :beats_1="polyrhythm.beats_1" 
+            :beats_2="polyrhythm.beats_2" 
+            :activeCircles_1="polyrhythm.activeCircles[0]" 
+            :activeCircles_2="polyrhythm.activeCircles[1]"
+            :isMobile="true" />
         <CircularDial 
           :bpm="polyrhythm.bpm" 
           :acceleratorOptions="polyrhythm.accelerator" 
           :progress="polyrhythm.accelerator.progress" 
           @updateBpm="(newBpm) => polyrhythm.updateBpm(newBpm)"
-          @toggleAccelerator="() => polyrhythm.toggleAccelerator()" />
-          <div class="flex justify-around items-center">
-            <ModalCard 
-              :modal-id="ratioModalId"
-              @click="show(ratioModalId)">
+          @toggleAccelerator="() => polyrhythm.toggleAccelerator()"/>
+        <div class="flex justify-around items-center">
+          <RatioInput 
+            :isMobile="true"
+            @ratio1Change="(newVal:number) => polyrhythm.updateRatio(0,newVal)" 
+            @ratio2Change="(newVal:number) => polyrhythm.updateRatio(1,newVal)"/>
+          <button class="btn btn-primary btn-outline w-24 h-24" @click="() => polyrhythm.toggle()">
+            {{ polyrhythm.isRunning ? 'Stop' : 'Start' }}
+          </button>
+          <ModalCard 
+            :modal-id="acceleratorModalId"
+              @click="polyrhythm.acceleratorEnabled? show(acceleratorModalId) : null">
               <template #buttonui>
-                <span>
-                  <label class="text-2xl">{{ polyrhythm.ratios[0] }}</label>
-                  <label class="text-2xl"> : </label>
-                  <label class="text-2xl">{{ polyrhythm.ratios[1] }}</label>
-                </span>
-              </template>
-              <template #modal>
-                <RatioInput 
-                  @ratio1Change="(newVal) => polyrhythm.updateRatio(0,newVal)" 
-                  @ratio2Change="(newVal) => polyrhythm.updateRatio(1,newVal)"/>
-              </template>
-            </ModalCard>
-            <button class="btn btn-primary btn-outline w-24 h-24" @click="() => polyrhythm.toggle()">
-              {{ polyrhythm.isRunning ? 'Stop' : 'Start' }}
-            </button>
-            <ModalCard 
-              :modal-id="acceleratorModalId"
-               @click="polyrhythm.acceleratorEnabled? show(acceleratorModalId) : null">
-               <template #buttonui>
-                <MdiIcon
-                  icon="mdiFastForward" 
-                  :class="IconStyle"/>
-                <label :class="IconStyle" class="text-xs text-center p-0 m-0"> settings </label>
-              </template>
-              <template #modal>
-                <AcceleratorInput 
-                  v-if="polyrhythm.acceleratorEnabled"
-                  @acceleratorOptionsSubmit="(options) => polyrhythm.setAccelerator(options)"/>
-              </template>
-            </ModalCard>
-          </div>
+              <MdiIcon
+                icon="mdiFastForward" 
+                :class="IconStyle"/>
+              <label :class="IconStyle" class="text-xs text-center p-0 m-0"> settings </label>
+            </template>
+            <template #modal>
+              <AcceleratorInput 
+                v-if="polyrhythm.acceleratorEnabled"
+                @acceleratorOptionsSubmit="(options) => polyrhythm.setAccelerator(options)"/>
+            </template>
+          </ModalCard>
+        </div>
       </div>
     </div>
   </Transition>
@@ -87,7 +82,7 @@ import CircularDial from '../components/CircularDial.vue';
 import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
 import PolyRhythmV2 from '../core/PolyRhythmV2';
-import PolyrhythmDial from '~/components/PolyrhythmDial.vue';
+import PolyrhythmCircles from '~/components/PolyrhythmCircles.vue';
 import { isMobile } from '../utils/utils';
 
 //eslint-disable-next-line
@@ -96,7 +91,6 @@ const renderPage: Ref<boolean> = ref(false);
 const isMobileDevice: Ref<boolean | null> = ref(null);
 const polyrhythm = reactive(new PolyRhythmV2());
 
-const ratioModalId = "ratioModal";
 const acceleratorModalId = "acceleratorModal";
 
 const IconStyle = computed(() => {

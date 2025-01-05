@@ -1,6 +1,6 @@
 <template>
-    <BaseCard :isTabbed="true" :size="80" @activeTab="handleTabChange">
-        <template #single>
+    <BaseCard :isTabbed="true" :size="'80'" @activeTab="handleTabChange">
+        <template #tab1>
             <div class="flex flex-col h-44 items-center justify-center">
                 <select 
                 class="input input-ghost text-5xl focus:text-primary h-20"
@@ -15,7 +15,7 @@
                 </select>      
             </div>
         </template>
-        <template #multiple>
+        <template #tab2>
         <div class="flex flex-col justify-between mt-4 items-center">
             <textarea 
             type="text" 

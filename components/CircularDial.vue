@@ -1,6 +1,6 @@
 <template>
-    <BaseCard :isTabbed="true" :size="80" firstTab="Standard" secondTab="Accelerator" @activeTab="getActiveTab">
-        <template #single>
+    <BaseCard :isTabbed="true" :size="'80'" firstTab="Standard" secondTab="Accelerator" @activeTab="getActiveTab">
+        <template #tab1>
         <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
                 <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
@@ -26,7 +26,8 @@
             </ul>
         </div>
         </template>
-        <template #multiple>
+
+        <template #tab2>
             <div class="radial-progress mt-2 dark:text-gray-700 text-gray-200" role="progressbar" style="--value:100; --size:15rem; --thickness: 4px; ">
                 <div class="radial-progress text-secondary" role="progressbar"  style=" --size:15rem; --thickness: 4px;" :style="{'--value':progress}">
                     <div class="absolute inset-0 flex flex-col justify-center items-center">

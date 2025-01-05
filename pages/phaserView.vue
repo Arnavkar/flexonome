@@ -2,7 +2,7 @@
   <div class="flex flex-col items-center justify-center w-full h-full">
     <Transition name="fade-slide">
       <div v-if="renderPage" class="flex flex-row items-center justify-between w-9/12">
-        <BaseCard :isTabbed="false" :size="96" class="w-full">
+        <BaseCard :isTabbed="false" :size="'96'" class="w-full">
           <div id="slidebeatcontainer" class="items-start w-11/12 border-l-4 border-r-4 border-accent">
             <SlidingBeats :bpms="bpmList" :isRunning="isRunning" :width="width"/>
           </div>
