@@ -1,5 +1,5 @@
 <template>
-  <BaseCard :isTabbed="false" :size="props.isMobile? '60':'96'" :class="props.isMobile? 'border-0 shadow-none mt-10 -mb-7':''">
+  <BaseCard :isTabbed="false" :hideCard="true" :size="props.isMobile? '60':'96'" :class="props.isMobile? 'border-hidden shadow-none mt-10 -mb-7':''">
   <div class="ring-circles">
     <div class="border-accent border-2 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"  :style="{
         width: `${radii[1] * 2}px`,
