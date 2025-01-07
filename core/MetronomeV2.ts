@@ -1,9 +1,9 @@
 import { playSound } from '~/utils/utils';
 import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
-import type { IMetronome } from '~/interfaces/IMetronome';
+import type { IAcceleratorMetronome } from '~/interfaces/IAcceleratorMetronome';
 import BaseMetronome from './BaseMetronome';
-export default class MetronomeV2 extends BaseMetronome implements IMetronome {
+export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMetronome {
     public beats: Beat[] = parseTimeSignature('4/4');
     public activeBar: number = -1;
 

@@ -25,6 +25,7 @@ export default class BaseMetronome implements IBaseMetronome{
       this.timeoutIds = [];
     }
     this.isRunning = false;
+    console.log("Metronome stopped");
   }
 
   public toggle() {

@@ -1,8 +1,9 @@
 <template>
     <div class="flex flex-col gap-4">
         <ColorButton 
-        v-for="(bpm, index) in bpms" 
+        v-for="(beat, index) in beats" 
         :key="index" 
+        :beat="beat"
         :style="bounceStyle(index)" 
         class="size-10 rounded-lg bounce"
         ref = buttons></ColorButton>
@@ -10,17 +11,18 @@
   </template>
     
   <script setup lang="ts">
-  import { ref, computed, watch} from 'vue';
+  import { ref, computed} from 'vue';
   import ColorButton from './ColorButton.vue';
-  
+  import type { Beat } from '../utils/types';
+ 
   const props = defineProps<{
     bpms: number[];
+    beats: Beat[];
     isRunning: boolean;
     width: number;
   }>();
 
   const buttons = ref();
-  const intervals = ref<number[]>([]);
   // Compute the duration in seconds based on the BPM
   const durations = computed(() => props.bpms.map(bpm => 60*2 / bpm));
   // Create a style object for the bounce animation
@@ -33,19 +35,19 @@
     });
   };
 
-  watch(() => props.isRunning, () => {
-    if (props.isRunning) {
-      buttons.value.forEach((button: typeof ColorButton, index:number) => {
-        intervals.value.push(window.setInterval(() => {
-          button.tic();
-        }, durations.value[index]*1000/2));
-      });
-    } else {
-      intervals.value.forEach(interval => {
-        window.clearInterval(interval);
-      });
-    }
-  });
+  // watch(() => props.isRunning, () => {
+  //   if (props.isRunning) {
+  //     buttons.value.forEach((button: typeof ColorButton, index:number) => {
+  //       intervals.value.push(window.setInterval(() => {
+  //         button.tic();
+  //       }, durations.value[index]*1000/2));
+  //     });
+  //   } else {
+  //     intervals.value.forEach(interval => {
+  //       window.clearInterval(interval);
+  //     });
+  //   }
+  // });
 
 
   </script>

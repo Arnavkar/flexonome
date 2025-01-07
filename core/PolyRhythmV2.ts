@@ -1,10 +1,10 @@
 import { playSound } from '~/utils/utils';
 import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
-import type { IMetronome } from '~/interfaces/IMetronome';
+import type { IAcceleratorMetronome } from '~/interfaces/IAcceleratorMetronome';
 import BaseMetronome from './BaseMetronome';
 
-export default class PolyRhythmV2 extends BaseMetronome implements IMetronome {
+export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorMetronome {
     public ratios: number[] = [3, 4];
     public activeCircles: number[] = [-1, -1];
     public get totalTime(): number {

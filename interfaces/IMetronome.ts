@@ -2,6 +2,8 @@ export interface IBaseMetronome {
     bpm: number;
     isRunning: boolean;
     timeoutIds: number[];
+
+    updateBpm:(newBpm: number) => void;
     
     successCallback: (message: string) => void;
     errorCallback: (message: string) => void;
@@ -10,13 +12,4 @@ export interface IBaseMetronome {
     stop:() => void;
     toggle:() => void;
     restart:() => void;
-}
-
-export interface IMetronome {
-    accelerator: Accelerator;
-    acceleratorEnabled: boolean;
-
-    updateBpm:(newBpm: number) => void;
-    toggleAccelerator:() => void;
-    setAccelerator:(accelerator: Accelerator) => void;
 }
