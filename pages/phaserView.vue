@@ -12,7 +12,9 @@
           </div>
         </BaseCard>
         <BpmListInput
-          :bpmList="phaser.bpmList"/>
+          :bpmList="phaser.bpmList"
+          :addBpm="phaser.addBpm"
+          :removeBpm="phaser.removeBpm"/>
         <button @click="togglePhaser" class="btn btn-primary ml-2  h-3/5">{{ phaser.isRunning ? 'Stop' : 'Start' }}</button>
       </div>
     </Transition>
@@ -65,12 +67,6 @@ function togglePhaser(){
   phaser.toggle()
   getWidth();
 }
-
-// function updateBpmList(newBpmList: number[]){
-//   console.log("Happens")
-//   phaser.bpmList = newBpmList;
-//   console.log(phaser.bpmList)
-// }
 
 function incrementBeatAccent(index: number) {
   phaser.beats[index].accent = (phaser.beats[index].accent + 1) % 4;
