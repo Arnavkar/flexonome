@@ -1,21 +1,54 @@
 <template>
   <div class="flex flex-col items-center justify-center w-full h-full">
     <Transition name="fade-slide">
-      <div v-if="renderPage" class="flex flex-row items-center justify-between w-9/12">
-        <BaseCard :isTabbed="false" :size="'96'" class="w-full">
-          <div id="slidebeatcontainer" class="items-start w-11/12 border-l-4 border-r-4 border-accent">
-            <SlidingBeats 
-              :bpms="phaser.bpmList" 
-              :isRunning="phaser.isRunning" 
-              :beats="phaser.beats"
-              :width="width"/>
+      <div v-if="renderPage" class="flex flex-row items-center justify-between w-10/12" >
+        <div v-if="!isMobileDevice" class="flex flex-row items-center justify-between w-10/12">
+          <BaseCard :isTabbed="false" :size="'96'" class="w-full">
+            <div id="slidebeatcontainer" class="items-start w-11/12 border-l-4 border-r-4 border-accent">
+              <SlidingBeats 
+                :bpms="phaser.bpmList" 
+                :isRunning="phaser.isRunning" 
+                :beats="phaser.beats"
+                :width="width"/>
+            </div>
+          </BaseCard>
+          <BpmListInput
+            :bpmList="phaser.bpmList"
+            :addBpm="phaser.addBpm"
+            :removeBpm="phaser.removeBpm"/>
+          <button @click="togglePhaser" class="btn btn-primary ml-2  h-3/5">{{ phaser.isRunning ? 'Stop' : 'Start' }}</button>
+        </div>
+
+        <div v-if="isMobileDevice" class="flex flex-col items-center justify-center w-full">
+          <BaseCard :isTabbed="false" :size="'96'" class="w-full">
+            <div id="slidebeatcontainer" class="items-start w-full border-l-4 border-r-4 border-accent">
+              <SlidingBeats 
+                :bpms="phaser.bpmList" 
+                :isRunning="phaser.isRunning" 
+                :beats="phaser.beats"
+                :width="width"/>
+            </div>
+          </BaseCard>
+          <div class="flex items-center">
+          <ModalCard 
+              :modal-id="phaserModalId"
+               @click="show(phaserModalId)">
+               <template #buttonui>
+                <MdiIcon
+                  icon="mdiCog"
+                  class="text-primary" />
+                <label class="text-xs text-center p-0 m-0"> Bpm List </label>
+              </template>
+              <template #modal>
+                <BpmListInput
+                :bpmList="phaser.bpmList"
+                :addBpm="phaser.addBpm"
+                :removeBpm="phaser.removeBpm"/>
+              </template>
+            </ModalCard>
+            <button @click="togglePhaser" class="btn btn-primary">{{ phaser.isRunning ? 'Stop' : 'Start' }}</button>
           </div>
-        </BaseCard>
-        <BpmListInput
-          :bpmList="phaser.bpmList"
-          :addBpm="phaser.addBpm"
-          :removeBpm="phaser.removeBpm"/>
-        <button @click="togglePhaser" class="btn btn-primary ml-2  h-3/5">{{ phaser.isRunning ? 'Stop' : 'Start' }}</button>
+        </div>
       </div>
     </Transition>
   </div>
@@ -36,11 +69,17 @@ const phaser = reactive(new PhaserV2());
 const renderPage: Ref<boolean> = ref(false);
 const width: Ref<number> = ref(0);
 const isMobileDevice: Ref<boolean | null> = ref(null);
+const phaserModalId = 'phaserModal';
 
 function showPage() {
   window.setTimeout(() => {
     renderPage.value = true;
   }, 200);
+}
+
+function show(id:string) {
+  const modal = document.getElementById(id);
+  if (modal) (modal as HTMLDialogElement).showModal();
 }
 
 function throwError(message: string) {

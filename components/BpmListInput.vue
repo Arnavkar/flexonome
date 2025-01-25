@@ -1,6 +1,6 @@
 <template>        
-  <BaseCard :isTabbed="false" :size="'80'">
-    <div class= "flex items-center gap-10">
+  <BaseCard :isTabbed="false" :size="'66'">
+    <div class= "flex items-center gap-1">
         <div class="flex flex-col items-center gap-4">
         <div v-for="(_, index) in inputList" :key="index">
             <input type="number" v-model="inputList[index]" class="input border-2 dark:border-gray-700 border-gray-300 text-3xl text-primary text-center w-24 h-12" />
