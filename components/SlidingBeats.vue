@@ -45,7 +45,8 @@
     return({
       '--bounce-duration': `${durations.value[index]}s`,
       '--animation-state': props.isRunning? 'running' : 'start',
-      '--bounce-width': `${props.width-55}px`,
+      '--full-width': `${props.width-55}px`,
+      '--mid-width': `${(props.width-55)/2}px`,
       '--base-opacity':0.1,
       '--flash-opacity':1,
       '--color-var':color_var
@@ -57,32 +58,38 @@
   <style scoped>
   .bounce {
     animation: left-right var(--bounce-duration) var(--animation-state) infinite;
-    animation-timing-function: ease-out;
+    animation-timing-function: linear;
   }
 
   @keyframes left-right {
     0% {
-      transform: translateX(0%);
+      -webkit-transform: translateX(0%) translateY(0%) scale(100%);
       background-color: var(--color-var, oklch(var(--color-var)/var(--flash-opacity)));
     }
     3% {
       background-color: var(--fallback-p,oklch(var(--p)/var(--base-opacity)))
     }
+    25%{
+      -webkit-transform: translateX(var(--mid-width)) translateY(5px) scale(125%);
+    }
     47% {
       background-color: var(--fallback-p,oklch(var(--p)/var(--base-opacity)))
     }
     50% {
-      transform: translateX(var(--bounce-width));
+      -webkit-transform: translateX(var(--full-width)) translateY(0%) scale(100%);
       background-color: var(--color-var,oklch(var(--color-var)/var(--flash-opacity)));
     }
     53%{
       background-color: var(--fallback-p,oklch(var(--p)/var(--base-opacity)))
     }
+    75%{
+      -webkit-transform: translateX(var(--mid-width)) translateY(-10px) scale(60%);
+    }
     97%{
       background-color: var(--fallback-p,oklch(var(--p)/var(--base-opacity)))
     }
     100% {
-      transform: translateX(0%);
+      -webkit-transform: translateX(0%) translateY(0%) scale(100%);
       background-color: var(--color-var,oklch(var(--color-var)/var(--flash-opacity)));
     }
   }

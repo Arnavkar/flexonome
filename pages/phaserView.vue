@@ -17,8 +17,8 @@
           <BpmListInput
             :bpmList="phaser.bpmList"
             :beats="phaser.beats"
-            :addBpm="() => phaser.addBpm"
-            :removeBpm="() => phaser.removeBpm"/>
+            :addBpm="phaser.addBpm"
+            :removeBpm="phaser.removeBpm"/>
           <button @click="togglePhaser" class="btn btn-primary ml-2  h-3/5">{{ phaser.isRunning ? 'Stop' : 'Start' }}</button>
         </div>
 
