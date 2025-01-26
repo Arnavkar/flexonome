@@ -7,7 +7,7 @@
         </div>
         </div>
         <div class="flex flex-col items-center">
-            <button v-if="props.bpmList.length < 10" @click="() => props.addBpm(120)" class="w-12 h-12 border-primary text-primary border-2 rounded-md m-2">+</button>
+            <button v-if="props.bpmList.length < 10" @click="() => props.addBpm()" class="w-12 h-12 border-primary text-primary border-2 rounded-md m-2">+</button>
             <button v-if="props.bpmList.length > 1" @click="() => props.removeBpm()" class="w-12 h-12 border-secondary text-secondary border-2 rounded-md m-2">-</button>
         </div>
     </div>
@@ -18,10 +18,12 @@
   import { ref } from 'vue';
   import type { Ref } from 'vue';
   import BaseCard from './BaseCard.vue';
+  import type { Beat } from '../utils/types';
 
   const props = defineProps<{
     bpmList: number[];
-    addBpm: (bpm: number) => void;
+    beats: Beat[];
+    addBpm: () => void;
     removeBpm: () => void;
   }>();
 

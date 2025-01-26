@@ -14,8 +14,9 @@
           </BaseCard>
           <BpmListInput
             :bpmList="phaser.bpmList"
-            :addBpm="phaser.addBpm"
-            :removeBpm="phaser.removeBpm"/>
+            :beats="phaser.beats"
+            :addBpm="() => phaser.addBpm"
+            :removeBpm="() => phaser.removeBpm"/>
           <button @click="togglePhaser" class="btn btn-primary ml-2  h-3/5">{{ phaser.isRunning ? 'Stop' : 'Start' }}</button>
         </div>
 
@@ -37,10 +38,10 @@
                 <MdiIcon
                   icon="mdiCog"
                   class="text-primary" />
-                <label class="text-xs text-center p-0 m-0"> Bpm List </label>
               </template>
               <template #modal>
                 <BpmListInput
+                :beats="phaser.beats"
                 :bpmList="phaser.bpmList"
                 :addBpm="phaser.addBpm"
                 :removeBpm="phaser.removeBpm"/>

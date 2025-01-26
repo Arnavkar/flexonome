@@ -1,10 +1,10 @@
 import type { Accelerator } from '../utils/types';
 import { parseTimeSignature, validateBPM } from '../utils/utils';
 import { defaultAccelerator } from '~/constants';
-import type { IMetronome }  from '../interfaces/IMetronome';
+import type { IBaseMetronome }  from '../interfaces/IMetronome';
 import BaseMetronome from './BaseMetronome';
 
-export default class Metronome extends BaseMetronome implements IMetronome {
+export default class Metronome extends BaseMetronome implements IBaseMetronome {
   public beats: Beat[] = parseTimeSignature('4/4');
   public activeBar: number = -2;
 
@@ -52,7 +52,6 @@ export default class Metronome extends BaseMetronome implements IMetronome {
         if (currentBeatInAcceleratorLoop == 0) {
           this.updateBpm(Math.min(this.accelerator.maxBpm, this.bpm + this.accelerator.bpmIncrement));
         }
-        console.log(`activeBar: ${this.activeBar}, currentBeatInAcceleratorLoop: ${currentBeatInAcceleratorLoop}`)
       }
     }
     

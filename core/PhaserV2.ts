@@ -1,23 +1,21 @@
 import { playSound } from '~/utils/utils';
 import { audioPaths } from "../constants"
 import BaseMetronome from './BaseMetronome';
-
 export default class PhaserV2 extends BaseMetronome {
     public bpmList = [120,60]
-    public get beats(): Beat[] {
-        const beats = []
-        for (let i = 0; i < this.bpmList.length; i++) {
-            beats.push({
-                beatIndex:i,
-                beatUnit: 4,
-                accent: 0
-            } as Beat)
-        }
-        return beats
-    }
-
-
-
+    public beats: Beat[] = [
+        {
+            beatIndex:0,
+            beatUnit: 4,
+            accent: 0
+        } as Beat,
+        {
+            beatIndex:1,
+            beatUnit: 4,
+            accent: 0
+        } as Beat
+    ];
+    
     public audioContext: AudioContext | null = null;
     public audioBuffers: AudioBuffer[] = [];
     public nextNoteTimes: number[] = [0,0]; // Next note's scheduled time
@@ -41,10 +39,8 @@ export default class PhaserV2 extends BaseMetronome {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
         const bufferIndex = this.beats[index].accent;
         const buffer = bufferIndex >= 0 ? this.audioBuffers[bufferIndex] : undefined
-        console.log(index)
         if (!buffer) return;
 
-        
         playSound(buffer, this.audioContext, this.nextNoteTimes[index]);
     }
 
@@ -58,17 +54,25 @@ export default class PhaserV2 extends BaseMetronome {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
         this.nextNoteTimes = this.bpmList.map(() => this.audioContext!.currentTime);
         for (let i = 0; i < this.bpmList.length; i++) {
-            console.log("Starting", i)
             const timeoutId = window.setInterval(() => this.scheduler(i), this.timerInterval);
             this.timeoutIds.push(timeoutId);
         }
     }
 
     public addBpm(){
-        this.bpmList.push(120)
+        this.bpmList.push(120)  
+        const newIndex = this.beats.length    
+        this.beats.push(
+            {
+                beatIndex:newIndex,
+                beatUnit: 4,
+                accent: 0
+            } as Beat
+        )
     }
 
     public removeBpm(){
-        this.bpmList.pop()
+        this.bpmList.pop();
+        this.beats.pop();
     }
 }
