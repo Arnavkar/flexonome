@@ -133,3 +133,8 @@ export async function setUpAudioBuffers(audioContext: AudioContext, audioPaths: 
 export function getUniqueBeatUnitValues(numList:number[]) {
   return [...new Set(numList)].sort((a, b) => a - b).join('|');
 }
+
+export function showModalById(id:string) {
+  const modal = document.getElementById(id);
+  if (modal) (modal as HTMLDialogElement).showModal();
+}

@@ -2,6 +2,7 @@
   <div>
     <Transition name="fade-slide">
       <div v-if="renderPage" >
+        <!-- DESKTOP VIEW -->
         <div v-if="!isMobileDevice" class="flex flex-col items-center justify-between">
           <MetronomeBars 
             :beats="metronome.beats" 
@@ -30,6 +31,7 @@
           </button>
         </div>
 
+        <!-- MOBILE VIEW -->
         <div v-if="isMobileDevice" class="flex flex-col items-center justify-between w-96 mt-10">
           <MetronomeBars 
             :beats="metronome.beats" 
@@ -43,7 +45,7 @@
           <div class="flex justify-around items-center">
             <ModalCard 
               :modal-id="timeSignatureModalId"
-              @click="show(timeSignatureModalId)">
+              @click="showModalById(timeSignatureModalId)">
               <template #buttonui>
                 <label class="text-2xl">{{ metronome.numBeats }}</label>
                 <div class="divider divider-primary mt-0 mb-0"></div>
@@ -60,7 +62,7 @@
             </button>
             <ModalCard 
               :modal-id="acceleratorModalId"
-               @click="metronome.acceleratorEnabled? show(acceleratorModalId) : null">
+               @click="metronome.acceleratorEnabled? showModalById(acceleratorModalId) : null">
                <template #buttonui>
                 <MdiIcon
                   icon="mdiFastForward" 
@@ -89,7 +91,7 @@ import CircularDial from '../components/CircularDial.vue';
 import TimeSignatureInput from '../components/TimeSignatureInput.vue';
 import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
-import { isMobile, getUniqueBeatUnitValues } from '../utils/utils';
+import { isMobile, getUniqueBeatUnitValues, showModalById } from '../utils/utils';
 import ModalCard from '../components/ModalCard.vue';
 import type { Beat } from '../utils/types'
 
@@ -126,11 +128,6 @@ function showPage() {
   window.setTimeout(() => {
     renderPage.value = true;
   }, 200);
-}
-
-function show(id:string) {
-  const modal = document.getElementById(id);
-  if (modal) (modal as HTMLDialogElement).showModal();
 }
 
 function incrementBeatAccent(index: number) {

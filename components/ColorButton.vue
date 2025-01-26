@@ -9,11 +9,10 @@
 <script setup lang="ts">
 import { ref, computed, inject } from 'vue';
 import type { Beat } from '../utils/types';
-import { buttonWidthMap } from '../constants';
+import { buttonWidthMap, bgColors } from '../constants';
 import { isMobile } from '../utils/utils';
 
 const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent', 'border-gray-400'];
-const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-gray-400'];
 
 const props = defineProps<{beat: Beat}>();
 const incrementBeatAccent = inject('incrementBeatAccent');

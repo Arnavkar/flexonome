@@ -7,7 +7,7 @@
         </div>
         </div>
         <div class="flex flex-col items-center">
-            <button v-if="props.bpmList.length < 10" @click="() => props.addBpm()" class="w-12 h-12 border-primary text-primary border-2 rounded-md m-2">+</button>
+            <button v-if="props.bpmList.length < MAX_BPMS" @click="() => props.addBpm()" class="w-12 h-12 border-primary text-primary border-2 rounded-md m-2">+</button>
             <button v-if="props.bpmList.length > 1" @click="() => props.removeBpm()" class="w-12 h-12 border-secondary text-secondary border-2 rounded-md m-2">-</button>
         </div>
     </div>
@@ -28,6 +28,7 @@
   }>();
 
   const inputList:Ref<number[]> = ref(props.bpmList)
+  const MAX_BPMS = 8
 
   </script>
   

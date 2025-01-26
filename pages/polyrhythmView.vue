@@ -2,6 +2,7 @@
   <div>
   <Transition name="fade-slide">
     <div v-if="renderPage">
+      <!-- DESKTOP VIEW -->
       <div v-if="!isMobileDevice" class="flex flex-col items-center justify-between">
         <div class="grid grid-cols-3 mt-8">
           <div class="flex flex-col items-end justify-center">
@@ -32,6 +33,7 @@
         <button @click="() => polyrhythm.toggle()" class="btn btn-primary btn-outline mt-4 w-60">{{ polyrhythm.isRunning ? 'Stop' : 'Start'}}</button>
       </div>
 
+      <!-- MOBILE VIEW -->
       <div v-if="isMobileDevice" class="flex flex-col items-center space-between w-96 h-11/12 ">
         <PolyrhythmCircles
           :beats_1="polyrhythm.beats_1" 
@@ -55,7 +57,7 @@
           </button>
           <ModalCard 
             :modal-id="acceleratorModalId"
-              @click="polyrhythm.acceleratorEnabled? show(acceleratorModalId) : null">
+              @click="polyrhythm.acceleratorEnabled? showModalById(acceleratorModalId) : null">
               <template #buttonui>
               <MdiIcon
                 icon="mdiFastForward" 
@@ -83,7 +85,7 @@ import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
 import PolyRhythmV2 from '../core/PolyRhythmV2';
 import PolyrhythmCircles from '~/components/PolyrhythmCircles.vue';
-import { isMobile } from '../utils/utils';
+import { isMobile, showModalById } from '../utils/utils';
 
 //eslint-disable-next-line
 const snackbar = useSnackbar();
@@ -110,11 +112,6 @@ function throwSuccess(message: string) {
     type: 'success',
     text: message
   })
-}
-
-function show(id:string) {
-  const modal = document.getElementById(id);
-  if (modal) (modal as HTMLDialogElement).showModal();
 }
 
 function incrementBeatAccent(index: number) {
