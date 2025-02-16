@@ -1,21 +1,27 @@
 <template>
   <button 
     class="border-2"
-    :class="[buttonHeight, currentBorderColor, currentBackgroundColor, currentWidth, {'active-state': isFlashing, 'dark:bg-slate-800 bg-slate-200': !isFlashing }]"
-    @click="incrementBeatAccent(beat.beatIndex)">
+    :class="[
+      buttonHeight, 
+      currentBorderColor, 
+      currentWidth,
+      isFlashing ? currentBackgroundColor : 'dark:bg-slate-800 bg-slate-200'
+    ]"
+    @click="incrementBeatAccent(beat.beatIndex); console.log(`Beat ${beat.beatIndex} accent incremented`);">
   </button>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, inject } from 'vue';
 import type { Beat } from '../utils/types';
-import { buttonWidthMap, bgColors } from '../constants';
+import { buttonWidthMap } from '../constants';
 import { isMobile } from '../utils/utils';
 
 const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent', 'border-gray-400'];
+const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-gray-400'];
 
 const props = defineProps<{beat: Beat}>();
-const incrementBeatAccent = inject('incrementBeatAccent');
+const incrementBeatAccent = inject('incrementBeatAccent') as (beatIndex: number) => void;
 
 const isFlashing = ref(false);
 
@@ -34,9 +40,3 @@ function tic() {
 defineExpose({ tic });
 
 </script>
-
-<style scoped>
-.active-state {
-  background-color: 'white';
-}
-</style>

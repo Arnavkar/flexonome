@@ -22,7 +22,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
     public scheduleAheadTime: number = 0.1; // How far ahead to schedule (in seconds)
     public timerInterval: number = 25;
 
-    public get beats(): Beat[]{ return this.constructBeats(); }
+    public beats: Beat[] = this.constructBeats();
 
     public get beats_1(): Beat[] {
         return this.beats.slice(0, this.ratios[0])
@@ -127,6 +127,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
 
     public updateRatio(index:number ,value: number) {
         this.ratios[index] = value;
+        this.beats = this.constructBeats();
     }
 
     public toggleAccelerator() {
