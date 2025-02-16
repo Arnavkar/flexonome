@@ -31,18 +31,21 @@
 </template>
 
 <script setup lang="ts">
-import { themes} from '../constants';
+import { themes } from '../constants';
 import { onMounted } from 'vue';
 
 function toggleTheme() {
   const theme = document.documentElement.getAttribute('data-theme');
   setTheme(theme === themes[0] ? themes[1] : themes[0]);
 }
+
 function setTheme(theme: string) {
   document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
 }
 
 onMounted(() => {
-  setTheme(themes[0]);
+  const savedTheme = localStorage.getItem('theme') || themes[0];
+  setTheme(savedTheme);
 });
 </script>
