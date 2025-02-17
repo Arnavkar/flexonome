@@ -1,5 +1,5 @@
 <template>
-  <BaseCard :isTabbed="false" :size="props.isMobile? '56':'96'" :class="props.isMobile? 'border-hidden shadow-none mb-10':''">
+  <BaseCard :isTabbed="false" :hideCard="true" :size="props.isMobile? '60':'96'" :class="props.isMobile? 'border-hidden shadow-none mt-10 -mb-7':''">
   <div class="ring-circles">
     <div class="border-accent border-2 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"  :style="{
         width: `${radii[1] * 2}px`,
@@ -11,7 +11,7 @@
           :key="index"
           ref=circleRefs2
           :beat = "beat"
-          class = "border-2 rounded-full"
+          class = "border-4 rounded-full"
           :style="getCircleStyle(1, index, beats_2.length)"
         ></ColorButton>
       </TransitionGroup>
@@ -26,7 +26,7 @@
         :key="index"
         ref=circleRefs1
         :beat = "beat"
-        class = "border-2 rounded-full"
+        class = "border-4 rounded-full"
         :style="getCircleStyle(0, index, beats_1.length)"
       ></ColorButton>
       </TransitionGroup>
@@ -60,8 +60,8 @@ const radii = computed(() => {
     const minRadius = maxRadius * 0.5+30;
     return [minRadius, maxRadius];
   } else {
-    const maxRadius = ringSize / 5 ; // Leave some padding
-    const minRadius = maxRadius * 0.6;
+    const maxRadius = ringSize / 3 ; // Leave some padding
+    const minRadius = maxRadius * 0.65;
     return [minRadius, maxRadius];
   }
 });
@@ -69,7 +69,7 @@ const radii = computed(() => {
 const getCircleStyle = (index: number, i: number, count: number) => {
   const angle = (i * 2 * Math.PI) / count - Math.PI / 2;
   const radius = radii.value[index];
-  const circleDiameter = props.isMobile? 12: 30
+  const circleDiameter = props.isMobile? 20: 30
   const x = radius * Math.cos(angle) - circleDiameter / 2;
   const y = radius * Math.sin(angle) - circleDiameter / 2;
 

@@ -34,7 +34,7 @@
       </div>
 
       <!-- MOBILE VIEW -->
-      <div v-if="isMobileDevice" class="flex flex-col items-center justify-end h-svh mb-4">
+      <div v-if="isMobileDevice" class="flex flex-col items-center space-between w-96 h-11/12 ">
         <PolyrhythmCircles
           :beats_1="polyrhythm.beats_1" 
             :beats_2="polyrhythm.beats_2" 

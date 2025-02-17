@@ -32,7 +32,7 @@
         </div>
 
         <!-- MOBILE VIEW -->
-        <div v-if="isMobileDevice" class="flex flex-col items-center justify-end h-svh pb-5">
+        <div v-if="isMobileDevice" class="flex flex-col items-center justify-between w-96 mt-10">
           <MetronomeBars 
             :beats="metronome.beats" 
             :activeBar="metronome.activeBar"/>
