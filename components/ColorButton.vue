@@ -12,12 +12,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, inject } from 'vue';
+import { ref, computed, inject, type Ref } from 'vue';
 import type { Beat } from '../utils/types';
 import { buttonWidthMap } from '../constants';
-import { useDevice } from '../composables/useDevice';
 
-const { isMobile } = useDevice();
+const isMobile = inject('isMobile') as Ref<boolean>;
 const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent', 'border-gray-400'];
 const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-gray-400'];
 

@@ -3,7 +3,7 @@
         :class="ModalCardSize">
         <slot name="buttonui"></slot>
         <dialog :id="modalId" class="modal">
-            <div class="modal-box w-full -ml-4 -mr-4 flex flex-col items-center justify-center">
+            <div class="modal-box -ml-4 -mr-4 flex flex-col items-center justify-center">
                 <form method="dialog">
                     <button class="btn btn-sm text-lg btn-circle btn-ghost absolute right-2 top-2 stroke-none">x</button>
                 </form>

@@ -40,7 +40,7 @@ function checkSession() {
 }
 
 onMounted(() => {
-  checkSession();
+  //checkSession();
 });
 </script>
 

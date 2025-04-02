@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- DESKTOP VIEW -->
-    <div v-if="!isMobile" class="flex flex-col items-center justify-between">
+    <div v-if="!isMobile" class="flex flex-col h-[100dvh] w-full items-center justify-center gap-4">
       <div class="grid grid-cols-3 mt-8">
         <div class="flex flex-col items-end justify-center">
           <RatioInput @ratio1Change="(newVal: number) => polyrhythm.updateRatio(0, newVal)"
@@ -25,7 +25,7 @@
     </div>
 
     <!-- MOBILE VIEW -->
-    <div v-if="isMobile" class="flex flex-col items-center space-between w-96 h-11/12 ">
+    <div v-if="isMobile" class="flex flex-col h-[100dvh] w-full items-center justify-center">
       <PolyrhythmCircles :beats_1="polyrhythm.beats_1" :beats_2="polyrhythm.beats_2"
         :activeCircles_1="polyrhythm.activeCircles[0]" :activeCircles_2="polyrhythm.activeCircles[1]"
         :isMobile="true" />
@@ -55,14 +55,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, provide, computed } from 'vue';
+import { onMounted, reactive, provide, computed, inject } from 'vue';
 import CircularDial from '../components/CircularDial.vue';
 import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
 import PolyRhythmV2 from '../core/PolyRhythmV2';
 import PolyrhythmCircles from '~/components/PolyrhythmCircles.vue';
 import { showModalById } from '../utils/utils';
-import { useDevice } from '../composables/useDevice';
 defineOptions({
   name: 'PolyrhythmPage'
 });
@@ -70,7 +69,7 @@ defineOptions({
 //eslint-disable-next-line
 const snackbar = useSnackbar();
 const polyrhythm = reactive(new PolyRhythmV2());
-const { isMobile } = useDevice();
+const isMobile = inject('isMobile');
 const acceleratorModalId = "acceleratorModal";
 
 const IconStyle = computed(() => {

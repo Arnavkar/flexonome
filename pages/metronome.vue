@@ -1,8 +1,7 @@
 <template>
-
   <div>
     <!-- DESKTOP VIEW -->
-    <div v-if="!isMobile" class="flex flex-col items-center justify-between">
+    <div v-if="!isMobile" class="flex flex-col h-[100dvh] w-full items-center justify-center gap-4">
       <MetronomeBars :beats="metronome.beats" :activeBar="metronome.activeBar" />
       <div class="grid grid-cols-3 mt-0">
         <div class="flex flex-col items-end justify-center">
@@ -23,12 +22,12 @@
     </div>
 
     <!-- MOBILE VIEW -->
-    <div v-if="isMobile" class="flex flex-col items-center justify-between w-96 mt-10">
-      <MetronomeBars :beats="metronome.beats" :activeBar="metronome.activeBar" />
+    <div v-if="isMobile" class="flex flex-col h-[100dvh] w-full items-center justify-center gap-4">
+      <MetronomeBars :beats="metronome.beats" :activeBar="metronome.activeBar"/>
       <CircularDial :bpm="metronome.bpm" :acceleratorOptions="metronome.accelerator"
         :progress="metronome.accelerator.progress" @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
         @toggleAccelerator="() => metronome.toggleAccelerator()" />
-      <div class="flex justify-around items-center">
+      <div class="flex justify-around items-center gap-2">
         <ModalCard :modal-id="timeSignatureModalId" @click="showModalById(timeSignatureModalId)">
           <template #buttonui>
             <label class="text-2xl">{{ metronome.numBeats }}</label>
@@ -44,7 +43,7 @@
         <button class="btn btn-primary btn-outline w-24 h-24" @click="() => metronome.toggle()">
           {{ metronome.isRunning ? 'Stop' : 'Start' }}
         </button>
-        <ModalCard :modal-id="acceleratorModalId"
+        <ModalCard :modal-id="acceleratorModalId" 
           @click="metronome.acceleratorEnabled ? showModalById(acceleratorModalId) : null">
           <template #buttonui>
             <MdiIcon icon="mdiFastForward" :class="IconStyle" />
@@ -61,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, provide, computed } from 'vue';
+import { onMounted, reactive, provide, inject, computed } from 'vue';
 import MetronomeV2 from '../core/MetronomeV2';
 import MetronomeBars from '../components/MetronomeBars.vue';
 import CircularDial from '../components/CircularDial.vue';
@@ -71,7 +70,6 @@ import AcceleratorInput from '../components/AcceleratorInput.vue';
 import { getUniqueBeatUnitValues, showModalById } from '../utils/utils';
 import ModalCard from '../components/ModalCard.vue';
 import type { Beat } from '../utils/types'
-import { useDevice } from '../composables/useDevice';
 
 defineOptions({
   name: 'MetronomePage'
@@ -82,7 +80,7 @@ const snackbar = useSnackbar();
 const timeSignatureModalId = "timeSignatureModal";
 const acceleratorModalId = "acceleratorModal";
 
-const { isMobile } = useDevice();
+const isMobile = inject('isMobile');
 
 const metronome = reactive(new MetronomeV2());
 

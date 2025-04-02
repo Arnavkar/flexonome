@@ -19,9 +19,9 @@
             <ul
             tabindex="0"
             class="menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-            <li><NuxtLink to="/metronome">Metronome</NuxtLink></li>
-            <li><NuxtLink to="/polyrhythm">Polyrhythm</NuxtLink></li>
-            <li><NuxtLink to="/phaser">Phaser</NuxtLink></li>
+            <li><NuxtLink to="/metronome" @click="closeDropdown">Metronome</NuxtLink></li>
+            <li><NuxtLink to="/polyrhythm" @click="closeDropdown">Polyrhythm</NuxtLink></li>
+            <li><NuxtLink to="/phaser" @click="closeDropdown">Phaser</NuxtLink></li>
             </ul>
         </div>
         </div>
@@ -38,4 +38,8 @@
 <script setup lang="ts">
 import ThemeController from './ThemeController.vue';
 
+const closeDropdown = () => {
+    const dropdown = document.querySelector('.menu') as HTMLElement;
+    if (dropdown) dropdown.blur();
+};
 </script>

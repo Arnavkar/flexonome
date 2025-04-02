@@ -19,7 +19,7 @@
         <div class="flex flex-col justify-between mt-4 items-center">
             <textarea 
             type="text" 
-            class="input border-2 dark:border-gray-500 border-gray-200 text-xl w-full h-28 text-center dark:focus:bg-neutral focus:bg-gray-200"
+            class="input border-2 dark:border-gray-900 border-gray-100 text-xl w-full h-28 text-center dark:focus:bg-gray-900 focus:bg-gray-200"
             v-model="inputString"
             placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"></textarea>
             <div class="grid mt-2 mb-2">

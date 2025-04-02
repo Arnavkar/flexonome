@@ -1,6 +1,6 @@
 <template>
-  <div class="relative flex flex-col justify-center items-center h-screen">
-    <div class="absolute top-0 w-full p-4">
+  <div class="relative flex flex-col justify-center items-center">
+    <div class="absolute top-0 w-full pl-4 pr-4">
       <NavBar :class="{ 'opacity-0': isIntro, 'transition-opacity duration-500': true }" />
     </div>
     <slot/>
@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { computed, provide } from 'vue';
+import { computed, provide} from 'vue';
 import NavBar from '~/components/NavBar.vue';
 import { useDevice } from '~/composables/useDevice';
 
@@ -18,7 +18,7 @@ defineOptions({
   name: 'DefaultLayout'
 });
 
-const { isMobile } = useDevice();
+const { isMobile }= useDevice();
 provide('isMobile', isMobile); // Make isMobile available to all child components
 
 const isIntro = computed(() => {
