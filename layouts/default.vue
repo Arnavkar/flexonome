@@ -1,6 +1,6 @@
 <template>
   <div class="relative flex flex-col justify-center items-center">
-    <div class="absolute top-0 w-full pl-4 pr-4">
+    <div class="fixed top-0 w-full pl-4 pr-4 z-50">
       <NavBar :class="{ 'opacity-0': isIntro, 'transition-opacity duration-500': true }" />
     </div>
     <slot/>

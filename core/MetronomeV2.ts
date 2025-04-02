@@ -5,7 +5,7 @@ import type { IAcceleratorMetronome } from '~/interfaces/IAcceleratorMetronome';
 import BaseMetronome from './BaseMetronome';
 export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMetronome {
     public beats: Beat[] = parseTimeSignature('4/4');
-    public activeBar: number = -1;
+    public activeBeat: number = -1;
 
     public accelerator: Accelerator = defaultAccelerator;
     public acceleratorEnabled: boolean = false;
@@ -55,20 +55,20 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
 
     private scheduleNote() {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
-        this.activeBar = (this.activeBar + 1) % this.numBeats;
-        const bufferIndex = this.beats[this.activeBar].accent;
+        this.activeBeat = (this.activeBeat + 1) % this.numBeats;
+        const bufferIndex = this.beats[this.activeBeat].accent;
         const buffer = bufferIndex >= 0 ? this.audioBuffers[bufferIndex] : undefined
         if (!buffer) return;
 
-        if (this.activeBar >= 0)
+        if (this.activeBeat >= 0)
             playSound(buffer, this.audioContext, this.nextNoteTime);
     }
 
     private advanceNote() {
-        if (this.activeBar < 0) {
+        if (this.activeBeat < 0) {
             return;
         }
-        const beatDuration = (60 / this.bpm) / ((this.beats[this.activeBar]).beatUnit / 4);
+        const beatDuration = (60 / this.bpm) / ((this.beats[this.activeBeat]).beatUnit / 4);
         this.nextNoteTime += beatDuration;
         if (this.acceleratorEnabled) {
             if (this.currentBeatInAcceleratorLoop == 0) {
@@ -105,7 +105,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
         this.numBeatsBeforeIncrement = 1000;
         this.currentBeatInAcceleratorLoop = 1;
         this.accelerator.progress = 0;
-        this.activeBar = -1;
+        this.activeBeat = -1;
     }
 
     public updateTimeSignature(inputString: string) {

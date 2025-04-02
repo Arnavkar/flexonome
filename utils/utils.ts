@@ -38,6 +38,7 @@ export function parseTimeSignature(input:string): Beat[] {
 
   const sections = input.split('&');
   let currentBeatIndex = 0;
+  let currentBar = 1;
 
   sections.forEach(section => {
     const matches = section.match(/(\((\d+)\/(\d+)\)\*(\d+)|(\d+)\/(\d+))/g);
@@ -75,10 +76,12 @@ export function parseTimeSignature(input:string): Beat[] {
           beats.push({
             beatIndex: currentBeatIndex,
             beatUnit: beatUnit,
-            accent: j === 0 ? 1 : 0
+            accent: j === 0 ? 1 : 0,
+            bar: currentBar
           } as Beat);
           currentBeatIndex++;
         }
+        currentBar++;
       }
     });
   });

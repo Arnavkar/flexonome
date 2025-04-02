@@ -67,16 +67,16 @@ function startDrag(event: MouseEvent){
     event.preventDefault(); //Prevents highlighting etc.
     dragging.value = true;
     //Once the drag has started
-    document.addEventListener('mousemove', onDrag);
-    document.addEventListener('mouseup', stopDrag);
+    dial.value?.addEventListener('mousemove', onDrag);
+    dial.value?.addEventListener('mouseup', stopDrag);
 };
 
 function startDragMobile(event: TouchEvent){
     event.preventDefault(); //Prevents highlighting etc.
     dragging.value = true;
     //Once the drag has started
-    document.addEventListener('touchmove', onDrag);
-    document.addEventListener('touchup', stopDragMobile);
+    dial.value?.addEventListener('touchmove', onDrag);
+    dial.value?.addEventListener('touchup', stopDragMobile);
 };
 
 function onDrag(event: MouseEvent | TouchEvent){
@@ -106,18 +106,19 @@ function onDrag(event: MouseEvent | TouchEvent){
     } else if (delta < 0) {
         bpm.value = Math.max(20, bpm.value - 1);
     }
+    event.preventDefault();
 };
 
 function stopDrag(){
     dragging.value = false;
-    document.removeEventListener('mousemove', onDrag);
-    document.removeEventListener('mouseup', stopDrag);
+    dial.value?.removeEventListener('mousemove', onDrag);
+    dial.value?.removeEventListener('mouseup', stopDrag);
 };
 
 function stopDragMobile(){
     dragging.value = false;
-    document.removeEventListener('touchmove', onDrag);
-    document.removeEventListener('touchup', stopDrag);
+    dial.value?.removeEventListener('touchmove', onDrag);
+    dial.value?.removeEventListener('touchup', stopDrag);
 };
 
 const knobStyle = computed(() => {
@@ -142,11 +143,11 @@ function getActiveTab(tab: string){
 }
 
 onMounted(() => {
-    document.addEventListener('mouseup', stopDrag);
+    dial.value?.addEventListener('mouseup', stopDrag);
 });
 
 onUnmounted(() => {
-    document.removeEventListener('mouseup', stopDrag);
+    dial.value?.removeEventListener('mouseup', stopDrag);
 });
 //Mainly to update internal state when prop changes
 watch(props, (newProps) => {

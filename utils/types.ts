@@ -3,6 +3,7 @@ export type Beat = {
     beatUnit: number;
     accent: number;
     interval?: number;
+    bar?: number;
 }
 
 export type Polyrhythm = {

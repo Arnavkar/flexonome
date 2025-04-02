@@ -2,7 +2,7 @@
   <div>
     <!-- DESKTOP VIEW -->
     <div v-if="!isMobile" class="flex flex-col h-[100dvh] w-full items-center justify-center gap-4">
-      <MetronomeBars :beats="metronome.beats" :activeBar="metronome.activeBar" />
+      <MetronomeBars :beats="metronome.beats" :activeBeat="metronome.activeBeat"/>
       <div class="grid grid-cols-3 mt-0">
         <div class="flex flex-col items-end justify-center">
           <TimeSignatureInput @timeSignatureChange="(inputStr) => metronome.updateTimeSignature(inputStr)"
@@ -23,7 +23,7 @@
 
     <!-- MOBILE VIEW -->
     <div v-if="isMobile" class="flex flex-col h-[100dvh] w-full items-center justify-center gap-4">
-      <MetronomeBars :beats="metronome.beats" :activeBar="metronome.activeBar"/>
+      <MetronomeBars :beats="metronome.beats" :activeBeat="metronome.activeBeat"/>
       <CircularDial :bpm="metronome.bpm" :acceleratorOptions="metronome.accelerator"
         :progress="metronome.accelerator.progress" @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
         @toggleAccelerator="() => metronome.toggleAccelerator()" />

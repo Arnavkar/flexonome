@@ -1,36 +1,69 @@
 <template>
-    <div class="flex flex-wrap items-center justify-center gap-4 max-w-screen-sm m-4 pl-12 pr-12">
+    <div class="max-h-[25vh] overflow-y-auto scrollbar-thumb-primary scrollbar-track-base-200 p-2 scroll-smooth max-w-[90vw]" :class="isMobile ? 'pt-10' : ''" ref="container">
       <TransitionGroup name="list">
-        <ColorButton 
-        v-for="(beat, index) in beats"
-        :key="index"
-        :beat="beat"
-        ref="buttons"
-        class="rounded-lg"
-        />
+        <div v-for="barNumber in maxBar" 
+             :key="barNumber" 
+             :ref="el => { if(barNumber === currentBar) activeBarRef = el as HTMLElement }"
+             class="flex items-center gap-4 m-4 relative">
+          <span class="absolute -left-6 text-sm opacity-50 w-4">{{ barNumber }}</span>
+          <div class="overflow-x-auto  w-full">
+            <div class="flex gap-4 items-center justify-center min-w-max px-4">
+              <ColorButton 
+                v-for="beat in getBeatsForBar(barNumber)"
+                :key="beat.beatIndex"
+                :beat="beat"
+                ref="buttons"
+                class="rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
       </TransitionGroup>
     </div>
 </template>
   
 <script setup lang="ts">
-import { ref, watch, nextTick, computed} from 'vue';
+import { ref, watch, nextTick, computed, inject, type Ref } from 'vue';
 import type { Beat } from '../utils/types';
 import ColorButton from './ColorButton.vue';
 
 // Define props
 const props = defineProps<{
     beats: Beat[]
-    activeBar:number
+    activeBeat: number
 }>();
 
-// Empty Reference to the ColorButton components declared in template
+const container = ref<HTMLElement | null>(null);
+const activeBarRef = ref<HTMLElement | null>(null); //
 const buttons = ref();
 const beatUnitList = computed(() => props.beats.map((beat) => beat.beatUnit));
+const maxBar = computed(() => Math.max(...props.beats.map(beat => beat.bar || 1)));
+const isMobile = inject('isMobile') as Ref<boolean>;
+
+const currentBar = computed(() => {
+  const activeBarIndex = props.activeBeat;
+  return props.beats[activeBarIndex]?.bar || 1;
+});
+
+function getBeatsForBar(barNumber: number) {
+  return props.beats.filter(beat => (beat.bar || 1) === barNumber);
+}
 
 // Watch for changes in the activeBar prop and call tic on the corresponding button
-watch(() => props.activeBar, (newActiveBar) => {
-  if (newActiveBar >= 0 && newActiveBar !== props.beats.length) {
-    buttons.value[newActiveBar]?.tic();
+watch(() => props.activeBeat, (newActiveBeat) => {
+  if (newActiveBeat >= 0 && newActiveBeat !== props.beats.length) {
+    buttons.value[newActiveBeat]?.tic();
+  }
+});
+
+// Watch for bar changes and scroll verticallyto make it visible
+watch(activeBarRef, async () => {
+  await nextTick();
+  if (activeBarRef.value && container.value) {
+    activeBarRef.value.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'center'
+    });
   }
 });
 
@@ -41,5 +74,12 @@ watch(() => beatUnitList, async(newBeatUnitList) => {
     button.updateWidth(newBeatUnitList.value[index]);
   });
 });
-
 </script>
+
+<style scoped>
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 4px;
+  background-color: rgba(240, 240, 240, 0.2);
+}
+</style>
