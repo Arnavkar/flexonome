@@ -1,6 +1,6 @@
 <template>
-    <BaseCard :isTabbed="true" :size="'80'" @activeTab="handleTabChange">
-        <template #tab1>
+    <BaseCard :isTabbed="false" :size="'80'"> <!-- @activeTab="handleTabChange" -->
+        <!-- <template #tab1>
             <div class="flex flex-col h-44 items-center justify-center">
                 <select 
                 class="input input-ghost text-5xl focus:text-primary h-20"
@@ -14,12 +14,12 @@
                     <option v-for="value in beatUnitValues" :key="value" :value="value">{{ value }}</option>
                 </select>      
             </div>
-        </template>
-        <template #tab2>
+        </template> -->
+        <!-- <template> -->
         <div class="flex flex-col justify-between mt-4 items-center">
             <textarea 
             type="text" 
-            class="input border-2 border-gray-500 text-xl w-60 h-28 text-center dark:focus:bg-neutral focus:bg-gray-200"
+            class="input border-2 dark:border-gray-500 border-gray-200 text-xl w-full h-28 text-center dark:focus:bg-neutral focus:bg-gray-200"
             v-model="inputString"
             placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"></textarea>
             <div class="grid mt-2 mb-2">
@@ -28,9 +28,10 @@
                 </a>
             </div>
         </div>
-        <div class="flex justify-evenly">
+        <div class="flex w-full justify-evenly">
             <button class="btn btn-outline btn-primary" @click="emitInputStringChange">Submit</button>
-            <button class="btn  btn-neutral" onclick="help_modal.showModal()">Help</button>
+            <button class="btn btn-outline btn-secondary" @click="inputString = ''">Clear</button>
+            <button class="btn btn-grey" onclick="help_modal.showModal()">Help</button>
         </div>
         <!-- Open the modal using ID.showModal() method -->
         <dialog id="help_modal" class="modal modal-bottom sm:modal-middle">
@@ -49,35 +50,35 @@
             </div>
         </div>
         </dialog>
-        </template>
+        <!-- </template> -->
     </BaseCard>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { numBeatValues, beatUnitValues } from '../constants';
+// import { numBeatValues, beatUnitValues } from '../constants';
 import BaseCard from './BaseCard.vue';
 
 const emits = defineEmits(["timeSignatureChange","multipleTimeSignatureSubmit"]);
-const numBeats = ref(4);
-const beatUnit = ref(4);
+// const numBeats = ref(4);
+// const beatUnit = ref(4);
 const inputString = ref("");
 
-const emitTimeSignatureChange = () => {
-    emits("timeSignatureChange", `${numBeats.value}/${beatUnit.value}`);
-};
+// const emitTimeSignatureChange = () => {
+//     emits("timeSignatureChange", `${numBeats.value}/${beatUnit.value}`);
+// };
 
 const emitInputStringChange = () => {
     emits("multipleTimeSignatureSubmit", inputString.value);
 };
 
-function handleTabChange(tab: string) {
-    if (tab === "tab-1") {
-        emitTimeSignatureChange();
-    } else if (inputString.value !== '') {
-        emitInputStringChange();
-    }
-}
+// function handleTabChange(tab: string) {
+//     if (tab === "tab-1") {
+//         emitTimeSignatureChange();
+//     } else if (inputString.value !== '') {
+//         emitInputStringChange();
+//     }
+// }
 
 function AddTimeSig(timeSigString: string) {
     if (inputString.value === "") {

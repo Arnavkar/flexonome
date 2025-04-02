@@ -19,15 +19,15 @@
             <ul
             tabindex="0"
             class="menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-            <li><a href="/metronomeView">Metronome</a></li>
-            <li><a href="/polyrhythmView">Polyrhythm</a></li>
-            <li><a href="/phaserView">Phaser</a></li>
+            <li><NuxtLink to="/metronome">Metronome</NuxtLink></li>
+            <li><NuxtLink to="/polyrhythm">Polyrhythm</NuxtLink></li>
+            <li><NuxtLink to="/phaser">Phaser</NuxtLink></li>
             </ul>
         </div>
         </div>
         <div class="navbar-center">
-            <h1 class = "font-italic [&::selection]:text-base-content bg-[linear-gradient(90deg,theme(colors.error)_0%,theme(colors.secondary)_9%,theme(colors.secondary)_42%,theme(colors.primary)_47%,theme(colors.accent)_100%)] bg-clip-text [-webkit-text-fill-color:transparent] [&::selection]:bg-blue-700/20 [@supports(color:oklch(0%_0_0))]:bg-[linear-gradient(90deg,oklch(var(--s))_4%,color-mix(in_oklch,oklch(var(--s)),oklch(var(--er)))_22%,oklch(var(--p))_45%,color-mix(in_oklch,oklch(var(--p)),oklch(var(--a)))_67%,oklch(var(--a))_100.2%)]">
-                <a href="/">GrooveTrainer </a></h1>
+            <h1 class = "font-orbitron [&::selection]:text-base-content bg-[linear-gradient(90deg,theme(colors.error)_0%,theme(colors.secondary)_9%,theme(colors.secondary)_42%,theme(colors.primary)_47%,theme(colors.accent)_100%)] bg-clip-text [-webkit-text-fill-color:transparent] [&::selection]:bg-blue-700/20 [@supports(color:oklch(0%_0_0))]:bg-[linear-gradient(90deg,oklch(var(--s))_4%,color-mix(in_oklch,oklch(var(--s)),oklch(var(--er)))_22%,oklch(var(--p))_45%,color-mix(in_oklch,oklch(var(--p)),oklch(var(--a)))_67%,oklch(var(--a))_100.2%)]">
+                <a href="/">Flexonome </a></h1>
         </div>
         <div class="navbar-end">
         <ThemeController />

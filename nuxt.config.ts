@@ -26,8 +26,28 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  build: {
+    transpile: ['gsap'],
+  },
   app: {
-    pageTransition: { name: 'page', mode: 'out-in' }
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in'
+    },
+    head: {
+      script: [
+        {
+          innerHTML: `
+            (function() {
+              const theme = localStorage.getItem('theme') || 'light';
+              document.documentElement.setAttribute('data-theme', theme);
+            })();
+          `,
+          type: 'text/javascript',
+          tagPosition: 'head'
+        }
+      ]
+    }
   },
 
   compatibilityDate: '2024-08-12',

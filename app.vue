@@ -1,33 +1,20 @@
 <template>
-    <div class="relative flex flex-col justify-center items-center h-screen">
-        <div class="absolute top-0 w-full p-4">
-          <Transition name="fade-slide" mode="out-in">
-            <NavBar v-if="!isIntro"/>
-          </Transition>
-        </div>
-        <NuxtPage />
-        <NuxtSnackbar />
-    </div>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted } from 'vue';
 
-import { useRoute } from 'vue-router';
-import { computed, onMounted } from 'vue';
-import NavBar from '~/components/NavBar.vue';
-//Check the current URL path
-const isIntro = computed(() => {
-    const route = useRoute().path;
-    return route === '/';
-});
+const router = useRouter();
 
-function setCookie(c_name:string,value:string,exdays:number){
-  //Create visited cookie
+function setCookie(c_name:string, value:string, exdays:number) {
   document.cookie = `${c_name}=${value}; expires=${new Date(Date.now() + exdays * 24 * 60 * 60 * 1000).toUTCString()}`;
 }
 
-function getCookie(c_name:string){
-  //Get the value of the visited cookie
+function getCookie(c_name:string) {
   if (document.cookie.length > 0) {
     let c_start = document.cookie.indexOf(c_name + "=");
     if (c_start !== -1) {
@@ -36,17 +23,17 @@ function getCookie(c_name:string){
       if (c_end === -1) {
         c_end = document.cookie.length;
       }
-      return unescape(document.cookie.substring(c_start, c_end));
+      return decodeURIComponent(document.cookie.substring(c_start, c_end));
     }
   }
   return "";
 }
 
-function checkSession(){
-  if (useRoute().path == "/"){
+function checkSession() {
+  if (useRoute().path == "/") {
     var c = getCookie("visited");
     if (c === "yes") {
-      window.location.href = "/metronomeView";
+      router.push("/metronome");
     } 
     setCookie("visited", "yes", 7);
   }
@@ -55,8 +42,15 @@ function checkSession(){
 onMounted(() => {
   checkSession();
 });
-
 </script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+
+.font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+</style>
 
 <style>
 .page-enter-active,

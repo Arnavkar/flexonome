@@ -99,14 +99,6 @@ export function constructPolyrhythm(ratios:number[], bpm: number, selected:numbe
   };
 }
 
-export const isMobile = (): boolean => {
-  if(/Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    return true
-  } else {
-    return false
-  }
-}
-
 export const loadAudioBuffer = async (filePath: string, audioContext: AudioContext): Promise<AudioBuffer> => {
   const response = await fetch(filePath);
   if (!response.ok) {

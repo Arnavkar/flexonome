@@ -1,10 +1,8 @@
 <template>
   <div class="flex flex-col items-center justify-center w-full h-full">
-    <Transition name="fade-slide">
-      <div v-if="renderPage" class="flex flex-row items-center justify-between w-10/12" >
-
+      <div class="flex flex-row items-center justify-between w-10/12" >
         <!-- DESKTOP VIEW -->
-        <div v-if="!isMobileDevice" class="flex flex-row items-center justify-between w-10/12">
+        <div v-if="!isMobile" class="flex flex-row items-center justify-between w-10/12">
           <BaseCard :isTabbed="false" :size="'96'" class="w-full">
             <div id="slidebeatcontainer" class="items-start w-11/12 border-l-4 border-r-4 border-accent">
               <SlidingBeats 
@@ -23,7 +21,7 @@
         </div>
 
         <!-- MOBILE VIEW -->
-        <div v-if="isMobileDevice" class="flex flex-col items-center justify-center w-full">
+        <div v-if="isMobile" class="flex flex-col items-center justify-center w-full">
           <BaseCard :isTabbed="false" :size="'96'" class="w-full">
             <div id="slidebeatcontainer" class="items-start w-full border-l-4 border-r-4 border-accent">
               <SlidingBeats 
@@ -54,32 +52,29 @@
           </div>
         </div>
       </div>
-    </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, provide } from 'vue';
 import type { Ref } from 'vue';
-import { isMobile, showModalById } from '../utils/utils';
+import { showModalById } from '../utils/utils';
 import SlidingBeats from '~/components/SlidingBeats.vue';
 import BpmListInput from '~/components/BpmListInput.vue';
 import BaseCard from '~/components/BaseCard.vue';
 import PhaserV2 from '~/core/PhaserV2';
+import { useDevice } from '../composables/useDevice';
 
 //eslint-disable-next-line
 const snackbar = useSnackbar();
 const phaser = reactive(new PhaserV2());
-const renderPage: Ref<boolean> = ref(false);
 const width: Ref<number> = ref(0);
-const isMobileDevice: Ref<boolean | null> = ref(null);
 const phaserModalId = 'phaserModal';
+const { isMobile } = useDevice();
 
-function showPage() {
-  window.setTimeout(() => {
-    renderPage.value = true;
-  }, 200);
-}
+defineOptions({
+  name: 'PhaserPage'
+});
 
 function throwError(message: string) {
   if (!snackbar) return;
@@ -113,9 +108,7 @@ function incrementBeatAccent(index: number) {
 provide('incrementBeatAccent',incrementBeatAccent)
 
 onMounted(() => {
-  showPage();
   getWidth();
-  isMobileDevice.value = isMobile();
   phaser.addCallbacks(throwSuccess, throwError);
 
   if (phaser instanceof PhaserV2) phaser.setup();
