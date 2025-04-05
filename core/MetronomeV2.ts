@@ -133,4 +133,9 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
         this.updateBpm(accelerator.startBPM);
         this.successCallback("Accelerator Settings Applied");
     }
+
+    public clear() {
+        this.stop();
+        this.audioContext?.close();
+    }
 }

@@ -24,8 +24,10 @@
         The world's first programmable metronome
       </p>
       <!-- Responsive button size -->
-      <button @click="goToMetronome" class="btn btn-primary w-full sm:w-auto">Get Started</button>
+      <button @click="goToMetronome" class="btn btn-soft btn-primary w-full sm:w-auto">Get Started</button>
     </div>
+    <!-- Responsive button size -->
+    <button @click="goToMetronome" class="absolute bottom-2 right-2 btn btn-neutral sm:w-auto">Skip</button>
   </div>
 </template>
 
@@ -173,6 +175,7 @@ onUnmounted(() => {
   if (gsapCtx) {
     gsapCtx.revert();
   }
+  metronome.clear();
 });
 </script>
 

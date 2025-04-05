@@ -39,7 +39,8 @@ export default defineNuxtConfig({
         {
           innerHTML: `
             (function() {
-              const theme = localStorage.getItem('theme') || 'light';
+              const theme = localStorage.getItem('theme') || 'dark';
+              console.log(theme);
               document.documentElement.setAttribute('data-theme', theme);
             })();
           `,

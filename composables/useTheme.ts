@@ -5,6 +5,7 @@ export const useTheme = () => {
   // Initialize with the current theme from localStorage or default
   const savedTheme = typeof localStorage !== 'undefined' ? localStorage.getItem('theme') || themes[0] : themes[0];
   const currentTheme = ref(savedTheme);
+  console.log(currentTheme.value);
 
   const setTheme = (theme: string) => {
     document.documentElement.setAttribute('data-theme', theme);
