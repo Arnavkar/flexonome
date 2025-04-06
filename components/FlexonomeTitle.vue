@@ -33,12 +33,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, reactive } from 'vue';
-import { useRouter } from 'vue-router';
 import MetronomeV2 from '../core/MetronomeV2';
 import gsap from 'gsap';
 import P5Background from './p5Background.vue';
 
-const router = useRouter();
 // Props and emits
 const props = defineProps({
   bpm: {
@@ -72,7 +70,7 @@ const isAccent = (index: number) => [0, 4, 6].includes(index);
 const showSubmit = ref(false);
 
 const goToMetronome = () => {
-  router.push("/metronome");
+  window.location.href = "/metronome";
 };
 
 const handleSubmit = () => {
