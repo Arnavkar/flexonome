@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, provide, inject, computed } from 'vue';
+import { onMounted, reactive, provide, inject, computed, onUnmounted } from 'vue';
 import MetronomeV2 from '../core/MetronomeV2';
 import MetronomeBars from '../components/MetronomeBars.vue';
 import CircularDial from '../components/CircularDial.vue';
@@ -113,6 +113,10 @@ onMounted(() => {
   metronome.addCallbacks(throwSuccess, throwError);
 
   if (metronome instanceof MetronomeV2) metronome.setup();
+});
+
+onUnmounted(() => {
+  metronome.clear();
 });
 
 </script>

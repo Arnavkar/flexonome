@@ -142,4 +142,9 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
         this.updateBpm(accelerator.startBPM);
         this.successCallback("Accelerator Settings Applied");
     }
+
+    public clear() {
+        this.stop();
+        this.audioContext?.close();
+    }
 }

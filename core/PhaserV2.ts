@@ -75,4 +75,9 @@ export default class PhaserV2 extends BaseMetronome {
         this.bpmList.pop();
         this.beats.pop();
     }
+
+    public clear() {
+        this.stop();
+        this.audioContext?.close();
+    }
 }

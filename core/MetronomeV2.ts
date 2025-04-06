@@ -119,6 +119,8 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
         if (this.isRunning == true) {
             this.restart();
         }
+
+        console.log(this.beats)
     }
 
     public toggleAccelerator() {

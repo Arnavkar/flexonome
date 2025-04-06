@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, provide, computed, inject } from 'vue';
+import { onMounted, reactive, provide, computed, inject, onUnmounted } from 'vue';
 import CircularDial from '../components/CircularDial.vue';
 import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
@@ -101,6 +101,10 @@ onMounted(() => {
   polyrhythm.addCallbacks(throwSuccess, throwError);
 
   if (polyrhythm instanceof PolyRhythmV2) polyrhythm.setup();
+});
+
+onUnmounted(() => {
+  polyrhythm.clear();
 });
 
 </script>

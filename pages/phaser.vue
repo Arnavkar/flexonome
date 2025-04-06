@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, provide, inject } from 'vue';
+import { ref, onMounted, reactive, provide, inject, onUnmounted } from 'vue';
 import type { Ref } from 'vue';
 import { showModalById } from '../utils/utils';
 import SlidingBeats from '~/components/SlidingBeats.vue';
@@ -94,5 +94,8 @@ onMounted(() => {
   if (phaser instanceof PhaserV2) phaser.setup();
 });
 
+onUnmounted(() => {
+  phaser.clear();
+});
 
 </script>

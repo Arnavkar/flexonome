@@ -1,18 +1,19 @@
 <template>
-    <div class="max-h-[25vh] overflow-y-auto scrollbar-thumb-primary scrollbar-track-base-200 p-2 scroll-smooth max-w-[90vw]" :class="isMobile ? 'pt-10' : ''" ref="container">
+    <div class="max-h-[25vh] overflow-y-auto scrollbar-thumb-primary scrollbar-track-base-200 p-2 scroll-smooth max-w-[90vw]" :class="isMobile ? 'pt-10' : ''">
       <TransitionGroup name="list">
         <div v-for="barNumber in maxBar" 
              :key="barNumber" 
              :ref="el => { if(barNumber === currentBar) activeBarRef = el as HTMLElement }"
              class="flex items-center gap-4 m-4 relative">
           <span class="absolute -left-6 text-sm opacity-50 w-4">{{ barNumber }}</span>
-          <div class="overflow-x-auto  w-full">
+          <div class="overflow-x-auto w-full" :id="`bar-container-${barNumber}`">
             <div class="flex gap-4 items-center justify-center min-w-max px-4">
               <ColorButton 
                 v-for="beat in getBeatsForBar(barNumber)"
                 :key="beat.beatIndex"
                 :beat="beat"
                 ref="buttons"
+                :id="`beat-${beat.beatIndex}`"
                 class="rounded-lg"
               />
             </div>
@@ -33,33 +34,44 @@ const props = defineProps<{
     activeBeat: number
 }>();
 
-const container = ref<HTMLElement | null>(null);
-const activeBarRef = ref<HTMLElement | null>(null); //
+const activeBarRef = ref<HTMLElement | null>(null);
 const buttons = ref();
 const beatUnitList = computed(() => props.beats.map((beat) => beat.beatUnit));
 const maxBar = computed(() => Math.max(...props.beats.map(beat => beat.bar || 1)));
 const isMobile = inject('isMobile') as Ref<boolean>;
 
 const currentBar = computed(() => {
-  const activeBarIndex = props.activeBeat;
-  return props.beats[activeBarIndex]?.bar || 1;
+  return props.beats[props.activeBeat]?.bar || 1;
 });
 
 function getBeatsForBar(barNumber: number) {
   return props.beats.filter(beat => (beat.bar || 1) === barNumber);
 }
 
-// Watch for changes in the activeBar prop and call tic on the corresponding button
-watch(() => props.activeBeat, (newActiveBeat) => {
+// Watch for changes in the activeBeat prop and call tic on the corresponding button
+watch(() => props.activeBeat, async (newActiveBeat) => {
   if (newActiveBeat >= 0 && newActiveBeat !== props.beats.length) {
     buttons.value[newActiveBeat]?.tic();
   }
+  
+  // Scroll to active beat horizontally
+  await nextTick();
+  const activeBeatElement = document.getElementById(`beat-${newActiveBeat}`);
+  const barContainer = document.getElementById(`bar-container-${currentBar.value}`);
+  
+  if (activeBeatElement && barContainer) {
+    activeBeatElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center'
+    });
+  }
 });
 
-// Watch for bar changes and scroll verticallyto make it visible
+// Watch for bar changes and scroll vertically to make it visible
 watch(activeBarRef, async () => {
-  await nextTick();
-  if (activeBarRef.value && container.value) {
+  await nextTick()
+  if (activeBarRef.value) {
     activeBarRef.value.scrollIntoView({ 
       behavior: 'smooth', 
       block: 'center'
