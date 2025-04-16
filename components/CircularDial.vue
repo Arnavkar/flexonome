@@ -3,7 +3,14 @@
         <template #tab1>
         <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 ">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
-                <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
+                <input 
+                    type="number" 
+                    v-model="bpm" 
+                    class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold bg-transparent remove-arrow"
+                    min="20"
+                    max="300"
+                    @change="validateBpm"
+                />
                 <div class="text-lg">
                     BPM (♩)
                 </div>
@@ -31,7 +38,14 @@
             <div class="radial-progress mt-2 dark:text-gray-700 text-gray-200" role="progressbar" style="--value:100; --size:15rem; --thickness: 4px; ">
                 <div class="radial-progress text-secondary" role="progressbar"  style=" --size:15rem; --thickness: 4px;" :style="{'--value':progress}">
                     <div class="absolute inset-0 flex flex-col justify-center items-center">
-                        <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
+                        <input 
+                            type="number" 
+                            v-model="bpm" 
+                            class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold bg-transparent remove-arrow"
+                            min="20"
+                            max="300"
+                            @change="validateBpm"
+                        />
                         <div class="text-lg dark:text-white text-black">
                             BPM (♩)
                         </div>
@@ -62,6 +76,20 @@ const dragging:Ref<boolean>= ref(false);
 const bpm:Ref<number> = ref(props.bpm);
 const dial:Ref<HTMLElement|null> = ref(null);
 const isAccelerator:Ref<boolean> = ref(false);
+let debounceTimeout: number | null = null;
+const debounceTime = 600;
+
+function validateBpm() {
+    if (bpm.value < 20) bpm.value = 20;
+    if (bpm.value > 300) bpm.value = 300;
+    updateAngleFromBpm();
+}
+
+function updateAngleFromBpm() {
+    // Map BPM to angle (20-300 BPM to 0-360 degrees)
+    const normalizedBpm = (bpm.value - 20) / (300 - 20);
+    angle.value = normalizedBpm * 360;
+}
 
 function startDrag(event: MouseEvent){
     event.preventDefault(); //Prevents highlighting etc.
@@ -76,7 +104,7 @@ function startDragMobile(event: TouchEvent){
     dragging.value = true;
     //Once the drag has started
     dial.value?.addEventListener('touchmove', onDrag);
-    dial.value?.addEventListener('touchup', stopDragMobile);
+    dial.value?.addEventListener('touchup', stopDrag);
 };
 
 function onDrag(event: MouseEvent | TouchEvent){
@@ -113,10 +141,6 @@ function stopDrag(){
     dragging.value = false;
     dial.value?.removeEventListener('mousemove', onDrag);
     dial.value?.removeEventListener('mouseup', stopDrag);
-};
-
-function stopDragMobile(){
-    dragging.value = false;
     dial.value?.removeEventListener('touchmove', onDrag);
     dial.value?.removeEventListener('touchup', stopDrag);
 };
@@ -144,18 +168,30 @@ function getActiveTab(tab: string){
 
 onMounted(() => {
     dial.value?.addEventListener('mouseup', stopDrag);
+    updateAngleFromBpm();
 });
 
 onUnmounted(() => {
     dial.value?.removeEventListener('mouseup', stopDrag);
+    if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+    }
 });
+
 //Mainly to update internal state when prop changes
 watch(props, (newProps) => {
     bpm.value = newProps.bpm;
+    updateAngleFromBpm();
 });
 
+// Debounced BPM update
 watch(bpm, (newBpm) => {
-    emits('updateBpm', newBpm);
+    if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+    }
+    debounceTimeout = window.setTimeout(() => {
+        emits('updateBpm', newBpm);
+    }, debounceTime); // 150ms debounce
 });
 
 watch(isAccelerator, () => {
@@ -167,14 +203,27 @@ watch(isAccelerator, () => {
 <style scoped>
 .radial-progress::after{
     content: none;
-    
 }
+
 .remove-arrow::-webkit-inner-spin-button,
 .remove-arrow::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
 .remove-arrow {
     -moz-appearance: textfield;
+}
+
+input[type="number"] {
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: center;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    box-shadow: none;
 }
 </style>
