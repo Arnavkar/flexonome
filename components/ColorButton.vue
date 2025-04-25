@@ -5,9 +5,9 @@
       :class="[
         buttonHeight, 
         currentBorderColor, 
-        currentWidth,
         isFlashing ? currentBackgroundColor : 'dark:bg-slate-800 bg-slate-200'
       ]"
+      :style="currentWidth"
       @click="incrementBeatAccent(beat.beatIndex);">
     </button>
     
@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { ref, computed, inject, type Ref } from 'vue';
 import type { Beat } from '../utils/types';
-import { buttonWidthMap } from '../constants';
+import { calculateButtonWidth } from '../utils/utils';
 
 const isMobile = inject('isMobile') as Ref<boolean>;
 const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent', 'border-gray-400'];
@@ -43,7 +43,7 @@ const isFlashing = ref(false);
 
 const currentBorderColor = computed(() => borderColors[props.beat.accent]);
 const currentBackgroundColor = computed(() => bgColors[props.beat.accent]);
-const currentWidth = computed(() => buttonWidthMap[props.beat.beatUnit]);
+const currentWidth = computed(() => calculateButtonWidth(props.beat.beatUnit));
 const buttonHeight = computed(() => isMobile.value? 'h-8' : 'h-12');
 
 function toggleSubdivision(index: number) {
@@ -65,6 +65,7 @@ function tic() {
     isFlashing.value = false;
   }, 50); // Flash duration in milliseconds
 }
+
 
 defineExpose({ tic });
 

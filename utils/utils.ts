@@ -28,6 +28,33 @@ export function validateAccelerator(accelerator:Accelerator, errorHandler?: Erro
   return true;
 }
 
+// Calculate button width based on beat unit
+// The smaller the beat unit value, the wider the button
+export function calculateButtonWidth(beatUnit: number): string {
+  // Base sizes in pixels
+  const minWidth = 20; // Width for largest beat unit value (e.g., 32nd note) in pixels
+  const maxWidth = 70; // Width for smallest beat unit value (e.g., whole note) in pixels
+  
+  // Map from 2 (whole) to 32 (thirty-second note)
+  const minBeatUnit = 2;
+  const maxBeatUnit = 16;
+  
+  // Normalize and invert the beat unit (smaller beat unit = larger width)
+  // We use logarithmic scale to better distribute the widths
+  const normalizedValue = Math.max(0, Math.min(1, 
+      Math.log(maxBeatUnit / Math.max(minBeatUnit, Math.min(maxBeatUnit, beatUnit))) / 
+      Math.log(maxBeatUnit / minBeatUnit)
+  ));
+  
+  // Calculate the width based on the normalized value
+  const width = minWidth + normalizedValue * (maxWidth - minWidth);
+  
+  // Round to nearest pixel
+  const pixelValue = Math.round(width);
+  
+  return `width: ${pixelValue}px`;
+}
+
 export function parseTimeSignature(input:string): Beat[] {
   const beats: Beat[] = []
   const countInBeats: Beat[] = []
