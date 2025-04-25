@@ -30,6 +30,7 @@ export function validateAccelerator(accelerator:Accelerator, errorHandler?: Erro
 
 export function parseTimeSignature(input:string): Beat[] {
   const beats: Beat[] = []
+  const countInBeats: Beat[] = []
 
   // Validate the input
   if (typeof input !== 'string' || input.trim() === '') {
@@ -41,23 +42,33 @@ export function parseTimeSignature(input:string): Beat[] {
   let currentBar = 1;
 
   sections.forEach(section => {
-    const matches = section.match(/(\((\d+)\/(\d+)\)\*(\d+)|(\d+)\/(\d+))/g);
+    const matches = section.match(/((?:ci)?\((\d+)\/(\d+)\)(?:\*(\d+))?|(\d+)\/(\d+))/gi);
 
     if (!matches) {
       throw new Error(`Invalid format in section: ${section}`);
     }
 
     matches.forEach(match => {
-      let numBeats, beatUnit, repeat = 1;
+      const lowerMatch = match.toLowerCase();
+      const isCountIn = lowerMatch.startsWith('ci(');
+      let numBeats: number, beatUnit: number, repeat = 1;
 
-      if (match.includes('(')) {
-        const parts = match.match(/\((\d+)\/(\d+)\)\*(\d+)/);
-        if (!parts || parts.length !== 4) {
+      if (isCountIn) {
+        const parts = match.match(/ci\((\d+)\/(\d+)\)(?:\*(\d+))?/i);
+        if (!parts) {
+          throw new Error(`Invalid count-in format: ${match}`);
+        }
+        numBeats = parseInt(parts[1], 10);
+        beatUnit = parseInt(parts[2], 10);
+        repeat = parts[3] ? parseInt(parts[3], 10) : 1;
+      } else if (match.startsWith('(')) {
+        const parts = match.match(/\((\d+)\/(\d+)\)(?:\*(\d+))?/);
+        if (!parts) {
           throw new Error(`Invalid time signature format: ${match}`);
         }
         numBeats = parseInt(parts[1], 10);
         beatUnit = parseInt(parts[2], 10);
-        repeat = parseInt(parts[3], 10);
+        repeat = parts[3] ? parseInt(parts[3], 10) : 1;
       } else {
         const parts = match.match(/(\d+)\/(\d+)/);
         if (!parts || parts.length !== 3) {
@@ -72,19 +83,41 @@ export function parseTimeSignature(input:string): Beat[] {
       }
 
       for (let i = 0; i < repeat; i++) {
-        for (let j = 0; j < numBeats; j++) {
-          beats.push({
-            beatIndex: currentBeatIndex,
-            beatUnit: beatUnit,
-            accent: j === 0 ? 1 : 0,
-            bar: currentBar
-          } as Beat);
-          currentBeatIndex++;
+        if (isCountIn) {
+          for (let j = 0; j < numBeats; j++) {
+            countInBeats.push({
+              beatIndex: 0, // Temporary value, will be updated after all count-in beats are collected
+              beatUnit,
+              accent: 3,
+              bar: -1,
+            } as Beat);
+          }
+        } else {
+          for (let j = 0; j < numBeats; j++) {
+            beats.push({
+              beatIndex: currentBeatIndex++,
+              beatUnit: beatUnit,
+              accent: j === 0 ? 1 : 0,
+              bar: currentBar
+            } as Beat);
+          }
+          currentBar++;
         }
-        currentBar++;
       }
     });
   });
+
+  // Assign negative indices to count-in beats, counting backward from total length
+  if (countInBeats.length > 0) {
+    for (let i = 0; i < countInBeats.length; i++) {
+      countInBeats[i].beatIndex = -(countInBeats.length - i);
+    }
+    
+    // Prepend count-in beats to the main beats array
+    beats.unshift(...countInBeats);
+  }
+
+  console.log(beats);
   return beats;
 }
 

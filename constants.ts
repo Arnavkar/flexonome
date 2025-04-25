@@ -3,7 +3,7 @@ import type { Accelerator } from "./utils/types";
 //Themes from Daisy UI (night for dark theme, winter for light theme)
 export const themes = ['night', 'winter']; //Specific values for the bottom part of the time signature
 
-export const audioPaths:string[] = ['./Low.m4a', './Mid.m4a', './High.m4a']
+export const audioPaths:string[] = ['./Low.m4a', './Mid.m4a', './High.m4a', './Tic.m4a']
 export const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-gray-400'];
 export const buttonWidthMap: Record<number, string> = {
     2: 'w-16',

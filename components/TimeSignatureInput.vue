@@ -33,7 +33,7 @@
                     <div class="form-control mt-3">
                         <label class="cursor-pointer label">
                             <span class="label-text">Add Count-in Bar</span>
-                            <input type="checkbox" class="checkbox checkbox-primary" v-model="countInBar"/>
+                            <input type="checkbox" class="checkbox checkbox-primary" v-model="countInBar" @change="emitTimeSignatureChange"/>
                         </label>
                     </div>
                 </div>
@@ -92,7 +92,11 @@ const beatsPerSubdivision = ref(1);
 const countInBar = ref(false);
 
 const emitTimeSignatureChange = () => {
-    emits("timeSignatureChange", `${numBeats.value}/${beatUnit.value}`);
+    if(countInBar.value) {
+        emits("timeSignatureChange", ` ci(${numBeats.value}/${beatUnit.value}) & ${numBeats.value}/${beatUnit.value}`);
+    } else {
+        emits("timeSignatureChange", `${numBeats.value}/${beatUnit.value}`);
+    }
 };
 
 const emitInputStringChange = () => {

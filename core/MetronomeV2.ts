@@ -5,7 +5,15 @@ import type { IAcceleratorMetronome } from '~/interfaces/IAcceleratorMetronome';
 import BaseMetronome from './BaseMetronome';
 export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMetronome {
     public beats: Beat[] = parseTimeSignature('4/4');
-    public activeBeat: number = -1;
+    public activeBeat: number = -1 - this.countInBeats.length;
+
+    public get countInBeats(): Beat[] {
+        return this.beats.filter(beat => beat.bar === -1);
+    }
+
+    public get mainBeats(): Beat[] {
+        return this.beats.filter(beat => beat.bar !== -1);
+    }
 
     public accelerator: Accelerator = defaultAccelerator;
     public acceleratorEnabled: boolean = false;
@@ -20,11 +28,11 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
     //public timerWorker: Worker | null = null;
 
     public get numBeats(): number {
-        return this.beats.length;
+        return this.mainBeats.length;
     }
 
     public get beatUnitList(): number[] {
-        return this.beats.map((beat: Beat) => beat.beatUnit);
+        return this.mainBeats.map((beat: Beat) => beat.beatUnit);
     }
 
     public async setup() {
@@ -55,34 +63,79 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
 
     private scheduleNote() {
         if (!this.audioContext) { console.error("No Audio Context"); return; }
-        this.activeBeat = (this.activeBeat + 1) % this.numBeats;
-        const bufferIndex = this.beats[this.activeBeat].accent;
-        const buffer = bufferIndex >= 0 ? this.audioBuffers[bufferIndex] : undefined
+        
+        // Update activeBeat
+        if (this.activeBeat < -1) {
+            this.activeBeat += 1;
+        } else {
+            this.activeBeat = (this.activeBeat + 1) % this.numBeats;
+        }
+        
+        // Find the actual beat index in the array
+        let beatIndex = this.activeBeat;
+        if (beatIndex < 0) {
+            // For negative indices, find the count-in beat
+            const countInIndex = this.countInBeats.findIndex(beat => beat.beatIndex === beatIndex);
+            if (countInIndex === -1) {
+                console.error(`Count-in beat with index ${beatIndex} not found`);
+                return;
+            }
+            beatIndex = countInIndex;
+        } else {
+            // For regular indices, offset by the count-in beats count
+            beatIndex = this.countInBeats.length + beatIndex;
+        }
+                
+        // Make sure the beat exists before accessing it
+        if (beatIndex < 0 || beatIndex >= this.beats.length) {
+            console.error(`Beat index ${beatIndex} out of bounds (0-${this.beats.length-1})`);
+            return;
+        }
+        
+        const bufferIndex = this.beats[beatIndex].accent;
+        const buffer = bufferIndex >= 0 ? this.audioBuffers[bufferIndex] : undefined;
         if (!buffer) return;
-
-        if (this.activeBeat >= 0)
-            playSound(buffer, this.audioContext, this.nextNoteTime);
+        
+        playSound(buffer, this.audioContext, this.nextNoteTime);
     }
 
     private advanceNote() {
-        if (this.activeBeat < 0) {
+        // Get the correct index in the beats array
+        let beatIndex = this.activeBeat;
+        if (beatIndex < 0) {
+            // For negative indices, find the count-in beat
+            const countInIndex = this.countInBeats.findIndex(beat => beat.beatIndex === beatIndex);
+            if (countInIndex === -1) {
+                console.error(`Count-in beat with index ${beatIndex} not found in advanceNote`);
+                return;
+            }
+            beatIndex = countInIndex;
+        } else {
+            // For regular indices, offset by the count-in beats count
+            beatIndex = this.countInBeats.length + beatIndex;
+        }
+        
+        // Make sure the beat exists
+        if (beatIndex < 0 || beatIndex >= this.beats.length) {
+            console.error(`Beat index ${beatIndex} out of bounds in advanceNote (0-${this.beats.length-1})`);
             return;
         }
-        const beatDuration = (60 / this.bpm) / ((this.beats[this.activeBeat]).beatUnit / 4);
+        
+        const beatDuration = (60 / this.bpm) / ((this.beats[beatIndex]).beatUnit / 4);
         this.nextNoteTime += beatDuration;
-        if (this.acceleratorEnabled) {
+        
+        if (this.acceleratorEnabled && this.activeBeat >= 0) {
             if (this.currentBeatInAcceleratorLoop == 0) {
                 this.accelerator.progress = 100;
             } else {
-                this.accelerator.progress = Math.floor(((this.currentBeatInAcceleratorLoop) / (this.numBeatsBeforeIncrement)) * 100)
+                this.accelerator.progress = Math.floor(((this.currentBeatInAcceleratorLoop) / (this.numBeatsBeforeIncrement)) * 100);
             }
 
             this.currentBeatInAcceleratorLoop = (this.currentBeatInAcceleratorLoop + 1) % this.numBeatsBeforeIncrement;
             if (this.currentBeatInAcceleratorLoop == 1) {
-                this.updateBpm(Math.min(this.accelerator.maxBpm, this.bpm + this.accelerator.bpmIncrement))
+                this.updateBpm(Math.min(this.accelerator.maxBpm, this.bpm + this.accelerator.bpmIncrement));
             }
         }
-
     }
 
     public override start() {
@@ -90,7 +143,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
         if (!this.audioContext) { console.error("No Audio Context"); return; }
 
         if (this.acceleratorEnabled) {
-            this.numBeatsBeforeIncrement = this.beats.length * this.accelerator.numBarsToRepeat;
+            this.numBeatsBeforeIncrement = this.mainBeats.length * this.accelerator.numBarsToRepeat;
         }
         this.currentBeatInAcceleratorLoop = 1;
         this.nextNoteTime = this.audioContext.currentTime;
@@ -105,12 +158,13 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
         this.numBeatsBeforeIncrement = 1000;
         this.currentBeatInAcceleratorLoop = 1;
         this.accelerator.progress = 0;
-        this.activeBeat = -1;
+        this.activeBeat = -1 - this.countInBeats.length;
     }
 
     public updateTimeSignature(inputString: string) {
         try {
             this.beats = parseTimeSignature(inputString);
+            this.activeBeat = -1 - this.countInBeats.length;
             // this.successCallback("New Time Signature Applied");
         } catch (e) {
             this.errorCallback((e as Error).message);

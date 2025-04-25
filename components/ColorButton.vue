@@ -7,7 +7,7 @@
       currentWidth,
       isFlashing ? currentBackgroundColor : 'dark:bg-slate-800 bg-slate-200'
     ]"
-    @click="incrementBeatAccent(beat.beatIndex); console.log(`Beat ${beat.beatIndex} accent incremented`);">
+    @click="incrementBeatAccent(beat.beatIndex);">
   </button>
 </template>
 

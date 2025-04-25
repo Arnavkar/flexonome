@@ -37,15 +37,16 @@ const props = defineProps<{
 const activeBarRef = ref<HTMLElement | null>(null);
 const buttons = ref();
 const beatUnitList = computed(() => props.beats.map((beat) => beat.beatUnit));
-const maxBar = computed(() => Math.max(...props.beats.map(beat => beat.bar || 1)));
+const maxBar = computed(() => Math.max(...props.beats.filter(beat => beat.bar !== -1).map(beat => beat.bar || 1)));
 const isMobile = inject('isMobile') as Ref<boolean>;
 
 const currentBar = computed(() => {
-  return props.beats[props.activeBeat]?.bar || 1;
+  const currentBeat = props.beats[props.activeBeat];
+  return currentBeat?.bar === -1 ? 1 : (currentBeat?.bar || 1);
 });
 
 function getBeatsForBar(barNumber: number) {
-  return props.beats.filter(beat => (beat.bar || 1) === barNumber);
+  return props.beats.filter(beat => beat.bar === barNumber);
 }
 
 // Watch for changes in the activeBeat prop and call tic on the corresponding button
