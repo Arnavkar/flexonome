@@ -92,11 +92,28 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
             return;
         }
         
-        const bufferIndex = this.beats[beatIndex].accent;
+        const beat = this.beats[beatIndex];
+        const bufferIndex = beat.accent;
         const buffer = bufferIndex >= 0 ? this.audioBuffers[bufferIndex] : undefined;
         if (!buffer) return;
         
+        // Play the main beat
         playSound(buffer, this.audioContext, this.nextNoteTime);
+        
+        // Schedule subdivision notes if subdivision > 1
+        if (beat.subdivision > 1 && this.audioContext) {
+            const subdivisionBuffer = this.audioBuffers[2]; // Use bufferIndex 2 for subdivisions
+            if (subdivisionBuffer) {
+                const beatDuration = (60 / this.bpm) / (beat.beatUnit / 4);
+                const subdivisionDuration = beatDuration / beat.subdivision;
+                
+                // Schedule subdivision notes (skip the first one since we already played the main beat)
+                for (let i = 1; i < beat.subdivision; i++) {
+                    const noteTime = this.nextNoteTime + (i * subdivisionDuration);
+                    playSound(subdivisionBuffer, this.audioContext, noteTime);
+                }
+            }
+        }
     }
 
     private advanceNote() {

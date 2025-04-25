@@ -42,7 +42,12 @@ export function parseTimeSignature(input:string): Beat[] {
   let currentBar = 1;
 
   sections.forEach(section => {
-    const matches = section.match(/((?:ci)?\((\d+)\/(\d+)\)(?:\*(\d+))?|(\d+)\/(\d+))/gi);
+    // Updated regex to handle both n*(num/den) and num[sub]/den formats
+    // Case 1: ci(num[sub]/den)
+    // Case 2: n*(num[sub]/den)
+    // Case 3: (num[sub]/den)
+    // Case 4: num[sub]/den
+    const matches = section.match(/((?:ci)?\((\d+)(?:\[(\d+)\])?\/(\d+)\)|(\d+)\*\((\d+)(?:\[(\d+)\])?\/(\d+)\)|(\d+)(?:\[(\d+)\])?\/(\d+))/gi);
 
     if (!matches) {
       throw new Error(`Invalid format in section: ${section}`);
@@ -51,34 +56,51 @@ export function parseTimeSignature(input:string): Beat[] {
     matches.forEach(match => {
       const lowerMatch = match.toLowerCase();
       const isCountIn = lowerMatch.startsWith('ci(');
-      let numBeats: number, beatUnit: number, repeat = 1;
+      let numBeats: number, beatUnit: number, repeat = 1, subdivision = 1;
 
-      if (isCountIn) {
-        const parts = match.match(/ci\((\d+)\/(\d+)\)(?:\*(\d+))?/i);
+      // Match for multiplier format: n*(num/den) or n*(num[sub]/den)
+      if (lowerMatch.includes('*')) {
+        const parts = match.match(/(\d+)\*\((\d+)(?:\[(\d+)\])?\/(\d+)\)/i);
+        if (!parts) {
+          throw new Error(`Invalid multiplier format: ${match}`);
+        }
+        repeat = parseInt(parts[1], 10);
+        numBeats = parseInt(parts[2], 10);
+        subdivision = parts[3] ? parseInt(parts[3], 10) : 1;
+        beatUnit = parseInt(parts[4], 10);
+      }
+      // Match for count-in: ci(num/den) or ci(num[sub]/den)
+      else if (isCountIn) {
+        const parts = match.match(/ci\((\d+)(?:\[(\d+)\])?\/(\d+)\)/i);
         if (!parts) {
           throw new Error(`Invalid count-in format: ${match}`);
         }
         numBeats = parseInt(parts[1], 10);
-        beatUnit = parseInt(parts[2], 10);
-        repeat = parts[3] ? parseInt(parts[3], 10) : 1;
-      } else if (match.startsWith('(')) {
-        const parts = match.match(/\((\d+)\/(\d+)\)(?:\*(\d+))?/);
+        subdivision = parts[2] ? parseInt(parts[2], 10) : 1;
+        beatUnit = parseInt(parts[3], 10);
+      } 
+      // Match for parenthesized: (num/den) or (num[sub]/den)
+      else if (match.startsWith('(')) {
+        const parts = match.match(/\((\d+)(?:\[(\d+)\])?\/(\d+)\)/);
         if (!parts) {
           throw new Error(`Invalid time signature format: ${match}`);
         }
         numBeats = parseInt(parts[1], 10);
-        beatUnit = parseInt(parts[2], 10);
-        repeat = parts[3] ? parseInt(parts[3], 10) : 1;
-      } else {
-        const parts = match.match(/(\d+)\/(\d+)/);
-        if (!parts || parts.length !== 3) {
+        subdivision = parts[2] ? parseInt(parts[2], 10) : 1;
+        beatUnit = parseInt(parts[3], 10);
+      } 
+      // Match for simple: num/den or num[sub]/den
+      else {
+        const parts = match.match(/(\d+)(?:\[(\d+)\])?\/(\d+)/);
+        if (!parts) {
           throw new Error(`Invalid time signature format: ${match}`);
         }
         numBeats = parseInt(parts[1], 10);
-        beatUnit = parseInt(parts[2], 10);
+        subdivision = parts[2] ? parseInt(parts[2], 10) : 1;
+        beatUnit = parseInt(parts[3], 10);
       }
 
-      if (isNaN(numBeats) || isNaN(beatUnit) || isNaN(repeat)) {
+      if (isNaN(numBeats) || isNaN(beatUnit) || isNaN(repeat) || isNaN(subdivision)) {
         throw new Error(`Invalid numbers in time signature: ${match}`);
       }
 
@@ -90,6 +112,7 @@ export function parseTimeSignature(input:string): Beat[] {
               beatUnit,
               accent: 3,
               bar: -1,
+              subdivision: subdivision
             } as Beat);
           }
         } else {
@@ -98,7 +121,8 @@ export function parseTimeSignature(input:string): Beat[] {
               beatIndex: currentBeatIndex++,
               beatUnit: beatUnit,
               accent: j === 0 ? 1 : 0,
-              bar: currentBar
+              bar: currentBar,
+              subdivision: subdivision
             } as Beat);
           }
           currentBar++;
@@ -109,6 +133,11 @@ export function parseTimeSignature(input:string): Beat[] {
 
   // Assign negative indices to count-in beats, counting backward from total length
   if (countInBeats.length > 0) {
+    // Check if there are only count-in beats and no regular beats
+    if (beats.length === 0) {
+      throw new Error("Invalid time signature: Cannot have only count-in bars without regular bars");
+    }
+    
     for (let i = 0; i < countInBeats.length; i++) {
       countInBeats[i].beatIndex = -(countInBeats.length - i);
     }

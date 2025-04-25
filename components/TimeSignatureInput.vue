@@ -20,9 +20,9 @@
                 <div class="collapse-content">
                     <div class="flex justify-between w-full">
                         <label class="label">
-                            <span class="label-text">Beats per Subdivision</span>
+                            <span class="label-text">Subdivisions per Beat </span>
                         </label>
-                        <select class="select select-bordered" v-model="beatsPerSubdivision">
+                        <select class="select select-bordered" v-model="beatsPerSubdivision" @change="emitTimeSignatureChange">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -92,11 +92,11 @@ const beatsPerSubdivision = ref(1);
 const countInBar = ref(false);
 
 const emitTimeSignatureChange = () => {
+    let timeSigString = `${numBeats.value}[${beatsPerSubdivision.value}]/${beatUnit.value}`;
     if(countInBar.value) {
-        emits("timeSignatureChange", ` ci(${numBeats.value}/${beatUnit.value}) & ${numBeats.value}/${beatUnit.value}`);
-    } else {
-        emits("timeSignatureChange", `${numBeats.value}/${beatUnit.value}`);
+        timeSigString = `ci(${timeSigString}) & ${timeSigString}`;
     }
+    emits("timeSignatureChange", timeSigString);
 };
 
 const emitInputStringChange = () => {

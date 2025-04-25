@@ -1,14 +1,25 @@
 <template>
-  <button 
-    class="border-2"
-    :class="[
-      buttonHeight, 
-      currentBorderColor, 
-      currentWidth,
-      isFlashing ? currentBackgroundColor : 'dark:bg-slate-800 bg-slate-200'
-    ]"
-    @click="incrementBeatAccent(beat.beatIndex);">
-  </button>
+  <div class="flex items-center">
+    <button 
+      class="border-2 relative rounded-lg"
+      :class="[
+        buttonHeight, 
+        currentBorderColor, 
+        currentWidth,
+        isFlashing ? currentBackgroundColor : 'dark:bg-slate-800 bg-slate-200'
+      ]"
+      @click="incrementBeatAccent(beat.beatIndex);">
+    </button>
+    
+    <!-- Subdivision indicators -->
+    <div v-if="beat.subdivision > 1" class="flex flex-col ml-2 gap-1.5">
+      <div 
+        v-for="i in beat.subdivision - 1" 
+        :key="i" 
+        class="w-2 h-2 rounded-full bg-slate-800 dark:bg-slate-200"
+      ></div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
