@@ -1,7 +1,7 @@
 <template>
-    <BaseCard :isTabbed="true" @activeTab="handleTabChange" :size="'80'"> <!--  -->
+    <BaseCard :isTabbed="true" @activeTab="handleTabChange" :size="'80'" class="min-w-[280px] w-[280px]"> <!--  -->
         <template #tab1>
-            <div class="flex flex-col w-1/2 h-44 items-center justify-center">
+            <div class="flex flex-col h-44 items-center justify-center">
                 <select class="input input-ghost text-5xl focus:text-primary h-20" v-model.number="numBeats"
                     @change="emitTimeSignatureChange">
                     <option v-for="value in numBeatValues" :key="value" :value="value">{{ value }}</option>
@@ -12,27 +12,30 @@
                     <option v-for="value in beatUnitValues" :key="value" :value="value">{{ value }}</option>
                 </select>
             </div>
-            <div className="w-full max-w-xs">
-                <input type="range" min={1} max="8" value="1" className="range" step="1" />
-                <div className="flex justify-between px-2.5 mt-2 text-xs">
-                    <span>|</span>
-                    <span>|</span>
-                    <span>|</span>
-                    <span>|</span>
-                    <span>|</span>
-                    <span>|</span>
-                    <span>|</span>
-                    <span>|</span>
+            <div class="collapse collapse-arrow bg-base-100 border border-base-300 w-full">
+                <input type="checkbox" class="p-0 m-0 h-0"/>
+                <div class="collapse-title font-medium">
+                    Settings
                 </div>
-                <div className="flex justify-between px-2.5 mt-2 text-xs">
-                    <span>1</span>
-                    <span>2</span>
-                    <span>3</span>
-                    <span>4</span>
-                    <span>5</span>
-                    <span>6</span>
-                    <span>7</span>
-                    <span>8</span>
+                <div class="collapse-content">
+                    <div class="flex justify-between w-full">
+                        <label class="label">
+                            <span class="label-text">Beats per Subdivision</span>
+                        </label>
+                        <select class="select select-bordered" v-model="beatsPerSubdivision">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-control mt-3">
+                        <label class="cursor-pointer label">
+                            <span class="label-text">Add Count-in Bar</span>
+                            <input type="checkbox" class="checkbox checkbox-primary" v-model="countInBar"/>
+                        </label>
+                    </div>
                 </div>
             </div>
         </template>
@@ -43,7 +46,7 @@
                     v-model="inputString" placeholder="Enter a time signature string (eg. 4/4 & 3/8 )"></textarea>
                 <div class="grid mt-2 mb-2">
                     <a v-for="denum in [4, 8]" :key=denum>
-                        <button v-for="num in [2, 3, 4, 5, 6, 7]" :key=num :id="`${num}/${denum}`"
+                        <button v-for="num in [ 3, 4, 5, 6, 7]" :key=num :id="`${num}/${denum}`"
                             @click="AddTimeSig(`${num}/${denum}`)" class="btn btn-xs btn-primary m-1">{{ num }}/{{ denum
                             }}</button>
                     </a>
@@ -85,6 +88,8 @@ const emits = defineEmits(["timeSignatureChange", "multipleTimeSignatureSubmit"]
 const numBeats = ref(4);
 const beatUnit = ref(4);
 const inputString = ref("");
+const beatsPerSubdivision = ref(1);
+const countInBar = ref(false);
 
 const emitTimeSignatureChange = () => {
     emits("timeSignatureChange", `${numBeats.value}/${beatUnit.value}`);

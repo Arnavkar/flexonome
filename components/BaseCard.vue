@@ -6,10 +6,10 @@
         </div> 
         <div class="flex flex-col items-center">
             <SlideTransition>
-                <div class="w-full h-full flex flex-col items-center justify-center" v-if="activeTab === 'tab-1'">
+                <div class="w-full flex flex-col items-center justify-center" v-if="activeTab === 'tab-1'">
                     <slot name="tab1"></slot> 
                 </div>
-                <div class="w-full h-full flex flex-col items-center justify-center" v-else-if="activeTab === 'tab-2'">
+                <div class="w-full flex flex-col items-center justify-center" v-else-if="activeTab === 'tab-2'">
                     <slot name="tab2"></slot> 
                 </div>
             </SlideTransition>

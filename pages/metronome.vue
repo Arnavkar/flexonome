@@ -1,24 +1,24 @@
 <template>
   <div>
     <!-- DESKTOP VIEW -->
-    <div v-if="!isMobile" class="flex flex-col h-[100dvh] w-full items-center justify-center gap-4">
+    <div v-if="!isMobile" class="flex flex-col h-[100dvh] w-100% items-center justify-center gap-4">
       <MetronomeBars :beats="metronome.beats" :activeBeat="metronome.activeBeat"/>
-      <div class="grid grid-cols-3 mt-0">
-        <div class="flex flex-col items-end justify-center">
+      <div class="flex flex-wrap items-center justify-center w-full max-w-5xl mx-auto px-4">
           <TimeSignatureInput @timeSignatureChange="(inputStr) => metronome.updateTimeSignature(inputStr)"
             @multipleTimeSignatureSubmit="(inputStr) => metronome.updateTimeSignature(inputStr)" />
-        </div>
         <CircularDial :bpm="metronome.bpm" :acceleratorOptions="metronome.accelerator"
           :progress="metronome.accelerator.progress" @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
           @toggleAccelerator="() => metronome.toggleAccelerator()" />
-        <SlideTransition>
-          <AcceleratorInput v-if="metronome.acceleratorEnabled"
+        <div class="transition-opacity duration-300" :class="metronome.acceleratorEnabled ? 'opacity-100' : 'opacity-0'">
+          <AcceleratorInput
             @acceleratorOptionsSubmit="(options) => metronome.setAccelerator(options)" />
-        </SlideTransition>
+        </div>
       </div>
-      <button class="btn btn-primary btn-outline mt-4 w-60" @click="() => metronome.toggle()">
-        {{ metronome.isRunning ? 'Stop' : 'Start' }}
-      </button>
+      <div class="w-full flex justify-center mt-4">
+        <button class="btn btn-primary btn-outline w-60" @click="() => metronome.toggle()">
+          {{ metronome.isRunning ? 'Stop' : 'Start' }}
+        </button>
+      </div>
     </div>
 
     <!-- MOBILE VIEW -->
@@ -65,7 +65,6 @@ import MetronomeV2 from '../core/MetronomeV2';
 import MetronomeBars from '../components/MetronomeBars.vue';
 import CircularDial from '../components/CircularDial.vue';
 import TimeSignatureInput from '../components/TimeSignatureInput.vue';
-import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
 import { getUniqueBeatUnitValues, showModalById } from '../utils/utils';
 import ModalCard from '../components/ModalCard.vue';

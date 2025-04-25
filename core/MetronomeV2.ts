@@ -111,7 +111,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
     public updateTimeSignature(inputString: string) {
         try {
             this.beats = parseTimeSignature(inputString);
-            this.successCallback("New Time Signature Applied");
+            // this.successCallback("New Time Signature Applied");
         } catch (e) {
             this.errorCallback((e as Error).message);
         }
