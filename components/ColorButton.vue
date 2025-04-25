@@ -16,7 +16,11 @@
       <div 
         v-for="i in beat.subdivision - 1" 
         :key="i" 
-        class="w-2 h-2 rounded-full bg-slate-800 dark:bg-slate-200"
+        class="w-2 h-2 rounded-full cursor-pointer" 
+        :class="[
+          beat.subdivisionEnabled[i-1] ? 'bg-slate-800 dark:bg-slate-200' : 'bg-gray-400 dark:bg-gray-600 opacity-40'
+        ]"
+        @click="toggleSubdivision(i-1)"
       ></div>
     </div>
   </div>
@@ -33,6 +37,7 @@ const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-gray-
 
 const props = defineProps<{beat: Beat}>();
 const incrementBeatAccent = inject('incrementBeatAccent') as (beatIndex: number) => void;
+const emits = defineEmits(['updateSubdivision']);
 
 const isFlashing = ref(false);
 
@@ -40,6 +45,19 @@ const currentBorderColor = computed(() => borderColors[props.beat.accent]);
 const currentBackgroundColor = computed(() => bgColors[props.beat.accent]);
 const currentWidth = computed(() => buttonWidthMap[props.beat.beatUnit]);
 const buttonHeight = computed(() => isMobile.value? 'h-8' : 'h-12');
+
+function toggleSubdivision(index: number) {
+  // Create a copy of the subdivisionEnabled array to avoid direct props mutation
+  const updatedSubdivisions = [...props.beat.subdivisionEnabled];
+  updatedSubdivisions[index] = !updatedSubdivisions[index];
+  console.log(updatedSubdivisions);
+  
+  // Emit event with updated beat
+  emits('updateSubdivision', {
+    ...props.beat,
+    subdivisionEnabled: updatedSubdivisions
+  });
+}
 
 function tic() {
   isFlashing.value = true;

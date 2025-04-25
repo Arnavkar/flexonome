@@ -15,6 +15,7 @@
                 ref="buttons"
                 :id="`beat-${beat.beatIndex}`"
                 class="rounded-lg"
+                @updateSubdivision="handleSubdivisionUpdate"
               />
             </div>
           </div>
@@ -34,6 +35,8 @@ const props = defineProps<{
     activeBeat: number
 }>();
 
+const emits = defineEmits(['updateBeatSubdivision']);
+
 const activeBarRef = ref<HTMLElement | null>(null);
 const buttons = ref();
 const beatUnitList = computed(() => props.beats.map((beat) => beat.beatUnit));
@@ -47,6 +50,10 @@ const currentBar = computed(() => {
 
 function getBeatsForBar(barNumber: number) {
   return props.beats.filter(beat => beat.bar === barNumber);
+}
+
+function handleSubdivisionUpdate(updatedBeat: Beat) {
+  emits('updateBeatSubdivision', updatedBeat);
 }
 
 // Watch for changes in the activeBeat prop and call tic on the corresponding button

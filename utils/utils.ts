@@ -112,7 +112,8 @@ export function parseTimeSignature(input:string): Beat[] {
               beatUnit,
               accent: 3,
               bar: -1,
-              subdivision: subdivision
+              subdivision: subdivision,
+              subdivisionEnabled: Array(Math.max(0, subdivision - 1)).fill(true)
             } as Beat);
           }
         } else {
@@ -122,7 +123,8 @@ export function parseTimeSignature(input:string): Beat[] {
               beatUnit: beatUnit,
               accent: j === 0 ? 1 : 0,
               bar: currentBar,
-              subdivision: subdivision
+              subdivision: subdivision,
+              subdivisionEnabled: Array(Math.max(0, subdivision - 1)).fill(true)
             } as Beat);
           }
           currentBar++;

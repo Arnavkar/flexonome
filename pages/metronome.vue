@@ -2,7 +2,8 @@
   <div>
     <!-- DESKTOP VIEW -->
     <div v-if="!isMobile" class="flex flex-col h-[100dvh] w-100% items-center justify-center gap-4">
-      <MetronomeBars :beats="metronome.beats" :activeBeat="metronome.activeBeat"/>
+      <MetronomeBars :beats="metronome.beats" :activeBeat="metronome.activeBeat"
+                    @updateBeatSubdivision="handleBeatSubdivisionUpdate"/>
       <div class="flex flex-wrap items-center justify-center w-full max-w-5xl mx-auto px-4">
           <TimeSignatureInput @timeSignatureChange="(inputStr) => metronome.updateTimeSignature(inputStr)"
             @multipleTimeSignatureSubmit="(inputStr) => metronome.updateTimeSignature(inputStr)" />
@@ -23,7 +24,8 @@
 
     <!-- MOBILE VIEW -->
     <div v-if="isMobile" class="flex flex-col h-[100dvh] w-full items-center justify-center gap-4">
-      <MetronomeBars :beats="metronome.beats" :activeBeat="metronome.activeBeat"/>
+      <MetronomeBars :beats="metronome.beats" :activeBeat="metronome.activeBeat"
+                    @updateBeatSubdivision="handleBeatSubdivisionUpdate"/>
       <CircularDial :bpm="metronome.bpm" :acceleratorOptions="metronome.accelerator"
         :progress="metronome.accelerator.progress" @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
         @toggleAccelerator="() => metronome.toggleAccelerator()" />
@@ -104,6 +106,10 @@ function throwSuccess(message: string) {
 
 function incrementBeatAccent(index: number) {
   metronome.beats[index].accent = (metronome.beats[index].accent + 1) % 4;
+}
+
+function handleBeatSubdivisionUpdate(updatedBeat: Beat) {
+  metronome.updateBeatSubdivision(updatedBeat);
 }
 
 provide('incrementBeatAccent', incrementBeatAccent)

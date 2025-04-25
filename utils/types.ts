@@ -5,6 +5,7 @@ export type Beat = {
     interval?: number;
     bar?: number;
     subdivision: number;
+    subdivisionEnabled: boolean[];
 }
 
 export type Polyrhythm = {

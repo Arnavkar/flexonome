@@ -109,8 +109,11 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
                 
                 // Schedule subdivision notes (skip the first one since we already played the main beat)
                 for (let i = 1; i < beat.subdivision; i++) {
-                    const noteTime = this.nextNoteTime + (i * subdivisionDuration);
-                    playSound(subdivisionBuffer, this.audioContext, noteTime);
+                    // Only play the subdivision if it's enabled
+                    if (beat.subdivisionEnabled && beat.subdivisionEnabled[i-1]) {
+                        const noteTime = this.nextNoteTime + (i * subdivisionDuration);
+                        playSound(subdivisionBuffer, this.audioContext, noteTime);
+                    }
                 }
             }
         }
@@ -208,5 +211,17 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
     public clear() {
         this.stop();
         this.audioContext?.close();
+    }
+
+    // Method to update a beat's subdivision enabled status
+    public updateBeatSubdivision(updatedBeat: Beat) {
+        // Find the beat in our beats array
+        const beatIndex = this.beats.findIndex(beat => 
+            beat.beatIndex === updatedBeat.beatIndex && beat.bar === updatedBeat.bar);
+        
+        if (beatIndex !== -1) {
+            // Update the subdivisionEnabled array
+            this.beats[beatIndex].subdivisionEnabled = updatedBeat.subdivisionEnabled;
+        }
     }
 }
