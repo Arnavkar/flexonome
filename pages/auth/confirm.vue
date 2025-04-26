@@ -11,21 +11,24 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { watch } from 'vue';
+import { useCurrentUser } from '~/composables/useCurrentUser';
 
 defineOptions({
-  name: 'AuthConfirmPage'
+  name: 'CallbackPage',
 });
 
+// eslint-disable-next-line
 definePageMeta({
-  layout: 'auth'
+  layout: 'no-navigation'
 });
 
-// Access the user directly from Supabase
-const user = useSupabaseUser();
+// Use the new composable instead of direct Supabase user
+const { isLoggedIn } = useCurrentUser();
 const router = useRouter();
 
-watch(user, () => {
-  if (user.value) {
+// Watch for user authentication and redirect when logged in
+watch(isLoggedIn, (loggedIn) => {
+  if (loggedIn) {
     // Redirect to metronome if authenticated
     router.push('/metronome');
   }

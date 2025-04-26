@@ -22,7 +22,7 @@
         </div>
         
         <button 
-          @click="signInWithEmail" 
+          @click="handleEmailSignIn" 
           class="btn btn-primary w-full mt-4"
           :disabled="loading"
         >
@@ -37,7 +37,7 @@
       <!-- OAuth Providers -->
       <div class="flex flex-col gap-4">
         <button 
-          @click="signInWithGoogle" 
+          @click="handleGoogleSignIn" 
           class="btn btn-outline"
           :disabled="loading"
         >
@@ -45,7 +45,7 @@
         </button>
         
         <button 
-          @click="signInWithFacebook" 
+          @click="handleFacebookSignIn" 
           class="btn btn-outline"
           :disabled="loading"
         >
@@ -53,7 +53,7 @@
         </button>
       </div>
       
-      <p v-if="errorMessage" class="mt-4 text-error text-center">{{ errorMessage }}</p>
+      <p v-if="error" class="mt-4 text-error text-center">{{ error }}</p>
       <p v-if="emailSent" class="mt-4 text-success text-center">Check your email for the login link!</p>
     </div>
   </div>
@@ -61,22 +61,25 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useAuth } from '~/composables/useAuth';
 
 defineOptions({
-  name: 'LoginAuthPage'
+  name: 'AuthPage',
 });
 
-const supabase = useSupabaseClient();
+// eslint-disable-next-line
+definePageMeta({
+  layout: 'no-navigation'
+});
+
+const { signInWithEmail, signInWithOAuth, loading, error } = useAuth();
 const email = ref('');
-const loading = ref(false);
 const emailError = ref('');
-const errorMessage = ref('');
 const emailSent = ref(false);
 
-const signInWithEmail = async () => {
+const handleEmailSignIn = async () => {
   // Reset states
   emailError.value = '';
-  errorMessage.value = '';
   emailSent.value = false;
   
   // Validate email
@@ -90,64 +93,21 @@ const signInWithEmail = async () => {
     return;
   }
   
-  try {
-    loading.value = true;
-    
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.value,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm`,
-      }
-    });
-    
-    if (error) throw error;
-    
+  const redirectUrl = `${window.location.origin}/auth/confirm`;
+  const { success } = await signInWithEmail(email.value, redirectUrl);
+  
+  if (success) {
     emailSent.value = true;
-  } catch (error: any) {
-    errorMessage.value = error.message || 'An error occurred during sign in';
-    console.error('Error signing in:', error);
-  } finally {
-    loading.value = false;
   }
 };
 
-const signInWithGoogle = async () => {
-  try {
-    loading.value = true;
-    errorMessage.value = '';
-    
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/confirm`,
-      }
-    });
-    
-    if (error) throw error;
-  } catch (error: any) {
-    errorMessage.value = error.message || 'An error occurred during sign in';
-    console.error('Error signing in with Google:', error);
-    loading.value = false;
-  }
+const handleGoogleSignIn = async () => {
+  const redirectUrl = `${window.location.origin}/auth/confirm`;
+  await signInWithOAuth('google', redirectUrl);
 };
 
-const signInWithFacebook = async () => {
-  try {
-    loading.value = true;
-    errorMessage.value = '';
-    
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: {
-        redirectTo: `${window.location.origin}/auth/confirm`,
-      }
-    });
-    
-    if (error) throw error;
-  } catch (error: any) {
-    errorMessage.value = error.message || 'An error occurred during sign in';
-    console.error('Error signing in with Facebook:', error);
-    loading.value = false;
-  }
+const handleFacebookSignIn = async () => {
+  const redirectUrl = `${window.location.origin}/auth/confirm`;
+  await signInWithOAuth('facebook', redirectUrl);
 };
 </script> 

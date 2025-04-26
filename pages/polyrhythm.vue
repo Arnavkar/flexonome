@@ -7,7 +7,7 @@
           <RatioInput @ratio1Change="(newVal: number) => polyrhythm.updateRatio(0, newVal)"
             @ratio2Change="(newVal: number) => polyrhythm.updateRatio(1, newVal)" />
           <CircularDial :bpm="polyrhythm.bpm" :acceleratorOptions="polyrhythm.accelerator"
-            :progress="polyrhythm.accelerator.progress" @updateBpm="(newBpm) => polyrhythm.updateBpm(newBpm)"
+            :progress="polyrhythm.accelerator.progress" @updateBpm="(newBpm: number) => polyrhythm.updateBpm(newBpm)"
             @toggleAccelerator="() => polyrhythm.toggleAccelerator()" />
         </div>
         <PolyrhythmCircles :beats_1="polyrhythm.beats_1" :beats_2="polyrhythm.beats_2"
@@ -16,7 +16,7 @@
         <div class="flex flex-col items-start justify-center">
           <SlideTransition>
             <AcceleratorInput v-if="polyrhythm.acceleratorEnabled"
-              @acceleratorOptionsSubmit="(options) => polyrhythm.setAccelerator(options)" />
+              @acceleratorOptionsSubmit="(options: Accelerator) => polyrhythm.setAccelerator(options)" />
           </SlideTransition>
         </div>
       </div>
@@ -30,7 +30,7 @@
         :activeCircles_1="polyrhythm.activeCircles[0]" :activeCircles_2="polyrhythm.activeCircles[1]"
         :isMobile="true" />
       <CircularDial :bpm="polyrhythm.bpm" :acceleratorOptions="polyrhythm.accelerator"
-        :progress="polyrhythm.accelerator.progress" @updateBpm="(newBpm) => polyrhythm.updateBpm(newBpm)"
+        :progress="polyrhythm.accelerator.progress" @updateBpm="(newBpm: number) => polyrhythm.updateBpm(newBpm)"
         @toggleAccelerator="() => polyrhythm.toggleAccelerator()" />
       <div class="flex justify-around items-center">
         <RatioInput :isMobile="true" @ratio1Change="(newVal: number) => polyrhythm.updateRatio(0, newVal)"
@@ -46,7 +46,7 @@
           </template>
           <template #modal>
             <AcceleratorInput v-if="polyrhythm.acceleratorEnabled"
-              @acceleratorOptionsSubmit="(options) => polyrhythm.setAccelerator(options)" />
+              @acceleratorOptionsSubmit="(options: Accelerator) => polyrhythm.setAccelerator(options)" />
           </template>
         </ModalCard>
       </div>
@@ -56,6 +56,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, provide, computed, inject, onUnmounted } from 'vue';
+import type { Accelerator } from '../utils/types';
 import CircularDial from '../components/CircularDial.vue';
 import SlideTransition from '../components/SlideTransition.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
@@ -63,9 +64,8 @@ import PolyRhythmV2 from '../core/PolyRhythmV2';
 import PolyrhythmCircles from '~/components/PolyrhythmCircles.vue';
 import { showModalById } from '../utils/utils';
 
-// Add auth middleware to protect this route
-definePageMeta({
-  middleware: ['auth']
+defineOptions({
+  name: 'PolyrhythmPage'
 });
 
 //eslint-disable-next-line

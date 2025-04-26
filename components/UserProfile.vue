@@ -20,22 +20,26 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useAuth } from '~/composables/useAuth';
+import { useCurrentUser } from '~/composables/useCurrentUser';
 
 defineOptions({
   name: 'UserProfile'
 });
 
 const auth = useAuth();
+const { user } = useCurrentUser();
 
 // Default avatar
 const avatarUrl = computed(() => {
-  return auth.user.value?.user_metadata?.avatar_url || 
+  if (!user.value) return 'https://ui-avatars.com/api/?name=User&background=random';
+  
+  return user.value.user_metadata?.avatar_url || 
     `https://ui-avatars.com/api/?name=${encodeURIComponent(userEmail.value)}&background=random`;
 });
 
 // Get user email
 const userEmail = computed(() => {
-  return auth.user.value?.email || 'User';
+  return user.value?.email || 'User';
 });
 
 const signOut = async () => {

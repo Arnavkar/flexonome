@@ -18,7 +18,12 @@ import { onMounted, ref, type Ref } from 'vue';
 import FlexonomeTitle from '~/components/FlexonomeTitle.vue';
 
 defineOptions({
-  name: 'IntroPage'
+  name: 'IntroPage',
+});
+
+// eslint-disable-next-line
+definePageMeta({
+  layout: 'no-navigation'
 });
 
 const intro: Ref<boolean> = ref(false);

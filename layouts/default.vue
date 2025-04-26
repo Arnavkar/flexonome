@@ -1,16 +1,17 @@
 <template>
   <div class="relative flex flex-col justify-center items-center">
+    <h1>Default Layout</h1>
     <div class="fixed top-0 w-full pl-4 pr-4 z-50">
-      <NavBar :class="{ 'opacity-0': isIntro, 'transition-opacity duration-500': true }" />
+      <NavBar />
     </div>
     <slot/>
     <NuxtSnackbar />
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { computed, provide} from 'vue';
+import { provide } from 'vue';
 import NavBar from '~/components/NavBar.vue';
 import { useDevice } from '~/composables/useDevice';
 
@@ -20,12 +21,6 @@ defineOptions({
 
 const { isMobile } = useDevice();
 provide('isMobile', isMobile); // Make isMobile available to all child components
-
-const isIntro = computed(() => {
-  const route = useRoute().path;
-  return route === '/';
-});
-
 </script>
 
 <style>

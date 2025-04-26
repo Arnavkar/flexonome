@@ -2,13 +2,9 @@ import { ref } from 'vue';
 
 export const useAuth = () => {
   const supabase = useSupabaseClient();
-  const user = useSupabaseUser();
   const loading = ref(false);
   const error = ref<string | null>(null);
 
-  /**
-   * Sign in with email magic link (passwordless)
-   */
   const signInWithEmail = async (email: string, redirectTo?: string) => {
     loading.value = true;
     error.value = null;
@@ -80,7 +76,6 @@ export const useAuth = () => {
   };
 
   return {
-    user,
     loading,
     error,
     signInWithEmail,

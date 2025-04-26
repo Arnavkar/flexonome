@@ -7,19 +7,15 @@ export default defineNuxtPlugin({
   async setup() {
     // Extra safety check to ensure this only runs on client
     if (typeof window === 'undefined') {
-      console.log('Skipping auth.client.ts plugin on server side');
       return;
     }
     
     // Get access to the Supabase client and router
     const supabase = useSupabaseClient();
     const router = useRouter();
-    
-    console.log('Auth client plugin initialized on client side');
-    
+        
     // Set up auth state change listener
     supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, !!session);
       
       // When the user signs in
       if (event === 'SIGNED_IN' && session) {

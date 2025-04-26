@@ -5,14 +5,14 @@
       <MetronomeBars :beats="metronome.beats" :activeBeat="metronome.activeBeat"
                     @updateBeatSubdivision="handleBeatSubdivisionUpdate"/>
       <div class="flex flex-wrap items-center justify-center w-full max-w-5xl mx-auto px-4">
-          <TimeSignatureInput @timeSignatureChange="(inputStr) => metronome.updateTimeSignature(inputStr)"
-            @multipleTimeSignatureSubmit="(inputStr) => metronome.updateTimeSignature(inputStr)" />
+          <TimeSignatureInput @timeSignatureChange="(inputStr: string) => metronome.updateTimeSignature(inputStr)"
+            @multipleTimeSignatureSubmit="(inputStr: string) => metronome.updateTimeSignature(inputStr)" />
         <CircularDial :bpm="metronome.bpm" :acceleratorOptions="metronome.accelerator"
-          :progress="metronome.accelerator.progress" @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
+          :progress="metronome.accelerator.progress" @updateBpm="(newBpm: number) => metronome.updateBpm(newBpm)"
           @toggleAccelerator="() => metronome.toggleAccelerator()" />
         <div class="transition-opacity duration-300" :class="metronome.acceleratorEnabled ? 'opacity-100' : 'opacity-0'">
           <AcceleratorInput
-            @acceleratorOptionsSubmit="(options) => metronome.setAccelerator(options)" />
+            @acceleratorOptionsSubmit="(options: Accelerator) => metronome.setAccelerator(options)" />
         </div>
       </div>
       <div class="w-full flex justify-center mt-4">
@@ -27,7 +27,7 @@
       <MetronomeBars :beats="metronome.beats" :activeBeat="metronome.activeBeat"
                     @updateBeatSubdivision="handleBeatSubdivisionUpdate"/>
       <CircularDial :bpm="metronome.bpm" :acceleratorOptions="metronome.accelerator"
-        :progress="metronome.accelerator.progress" @updateBpm="(newBpm) => metronome.updateBpm(newBpm)"
+        :progress="metronome.accelerator.progress" @updateBpm="(newBpm: number) => metronome.updateBpm(newBpm)"
         @toggleAccelerator="() => metronome.toggleAccelerator()" />
       <div class="flex justify-around items-center gap-2">
         <ModalCard :modal-id="timeSignatureModalId" @click="showModalById(timeSignatureModalId)">
@@ -38,8 +38,8 @@
               }}</label>
           </template>
           <template #modal>
-            <TimeSignatureInput @timeSignatureChange="(inputStr) => metronome.updateTimeSignature(inputStr)"
-              @multipleTimeSignatureSubmit="(inputStr) => metronome.updateTimeSignature(inputStr)" />
+            <TimeSignatureInput @timeSignatureChange="(inputStr: string) => metronome.updateTimeSignature(inputStr)"
+              @multipleTimeSignatureSubmit="(inputStr: string) => metronome.updateTimeSignature(inputStr)" />
           </template>
         </ModalCard>
         <button class="btn btn-primary btn-outline w-24 h-24" @click="() => metronome.toggle()">
@@ -53,7 +53,7 @@
           </template>
           <template #modal>
             <AcceleratorInput v-if="metronome.acceleratorEnabled"
-              @acceleratorOptionsSubmit="(options) => metronome.setAccelerator(options)" />
+              @acceleratorOptionsSubmit="(options: Accelerator) => metronome.setAccelerator(options)" />
           </template>
         </ModalCard>
       </div>
@@ -70,11 +70,10 @@ import TimeSignatureInput from '../components/TimeSignatureInput.vue';
 import AcceleratorInput from '../components/AcceleratorInput.vue';
 import { getUniqueBeatUnitValues, showModalById } from '../utils/utils';
 import ModalCard from '../components/ModalCard.vue';
-import type { Beat } from '../utils/types'
+import type { Beat, Accelerator } from '../utils/types';
 
-// Add auth middleware to protect this route
-definePageMeta({
-  middleware: ['auth']
+defineOptions({
+  name: 'MetronomePage'
 });
 
 //eslint-disable-next-line

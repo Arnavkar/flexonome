@@ -29,7 +29,7 @@
             <h1 class = "font-orbitron [&::selection]:text-base-content bg-[linear-gradient(90deg,theme(colors.error)_0%,theme(colors.secondary)_9%,theme(colors.secondary)_42%,theme(colors.primary)_47%,theme(colors.accent)_100%)] bg-clip-text [-webkit-text-fill-color:transparent] [&::selection]:bg-blue-700/20 [@supports(color:oklch(0%_0_0))]:bg-[linear-gradient(90deg,oklch(var(--s))_4%,color-mix(in_oklch,oklch(var(--s)),oklch(var(--er)))_22%,oklch(var(--p))_45%,color-mix(in_oklch,oklch(var(--p)),oklch(var(--a)))_67%,oklch(var(--a))_100.2%)]">
                 <a href="/">Flexonome </a></h1>
         </div>
-        <div class="navbar-end gap-2">
+        <div class="navbar-end gap-7">
             <a 
                 href="https://tally.so/r/wLopVl" 
                 target="_blank" 
@@ -39,7 +39,7 @@
                 <span class="relative z-10">Submit Feedback</span>
             </a>
             <ThemeController />
-            <UserProfile v-if="auth.user.value" />
+            <UserProfile v-if="user" />
         </div>
     </div>
 </template>
@@ -47,10 +47,10 @@
 <script setup lang="ts">
 import ThemeController from './ThemeController.vue';
 import UserProfile from './UserProfile.vue';
-import { useAuth } from '~/composables/useAuth';
+import { useCurrentUser } from '~/composables/useCurrentUser';
 
 // Get the current user
-const auth = useAuth();
+const { user } = useCurrentUser();
 
 const closeDropdown = () => {
     const dropdown = document.querySelector('.menu') as HTMLElement;

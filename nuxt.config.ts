@@ -9,7 +9,6 @@ export default defineNuxtConfig({
   modules: ['nuxt-snackbar', 'nuxt-mdi', '@nuxtjs/supabase'],
 
   supabase: {
-    useSsrCookies: false,  // Try disabling this to see if it helps
     redirect:false,
     redirectOptions: {
       login: '/auth/login',
