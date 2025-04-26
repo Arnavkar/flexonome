@@ -72,8 +72,9 @@ import { getUniqueBeatUnitValues, showModalById } from '../utils/utils';
 import ModalCard from '../components/ModalCard.vue';
 import type { Beat } from '../utils/types'
 
-defineOptions({
-  name: 'MetronomePage'
+// Add auth middleware to protect this route
+definePageMeta({
+  middleware: ['auth']
 });
 
 //eslint-disable-next-line

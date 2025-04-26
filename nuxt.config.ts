@@ -6,7 +6,17 @@ export default defineNuxtConfig({
     '@fortawesome/fontawesome-free/css/all.css'
   ],
 
-  modules: ['nuxt-snackbar', 'nuxt-mdi'],
+  modules: ['nuxt-snackbar', 'nuxt-mdi', '@nuxtjs/supabase'],
+
+  supabase: {
+    useSsrCookies: false,  // Try disabling this to see if it helps
+    redirect:false,
+    redirectOptions: {
+      login: '/auth/login',
+      callback: '/auth/confirm',
+      exclude: ['/', '/auth/login', '/auth/confirm'],
+    },
+  },
 
   snackbar: {
     bottom: true,

@@ -14,8 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import type { Ref } from 'vue';
+import { onMounted, ref, type Ref } from 'vue';
 import FlexonomeTitle from '~/components/FlexonomeTitle.vue';
 
 defineOptions({

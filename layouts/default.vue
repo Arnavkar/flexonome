@@ -18,13 +18,14 @@ defineOptions({
   name: 'DefaultLayout'
 });
 
-const { isMobile }= useDevice();
+const { isMobile } = useDevice();
 provide('isMobile', isMobile); // Make isMobile available to all child components
 
 const isIntro = computed(() => {
   const route = useRoute().path;
   return route === '/';
 });
+
 </script>
 
 <style>

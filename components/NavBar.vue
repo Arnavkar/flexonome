@@ -24,27 +24,33 @@
                 <li><NuxtLink to="/phaser" @click="closeDropdown">Phaser</NuxtLink></li>
                 </ul>
             </div>
-            <a 
-                href="https://tally.so/r/wLopVl" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="btn btn-sm feedback-btn sparkle-btn relative group"
-            >
-                <span class="relative z-10">Feedback</span>
-            </a>
         </div>
         <div class="navbar-center">
             <h1 class = "font-orbitron [&::selection]:text-base-content bg-[linear-gradient(90deg,theme(colors.error)_0%,theme(colors.secondary)_9%,theme(colors.secondary)_42%,theme(colors.primary)_47%,theme(colors.accent)_100%)] bg-clip-text [-webkit-text-fill-color:transparent] [&::selection]:bg-blue-700/20 [@supports(color:oklch(0%_0_0))]:bg-[linear-gradient(90deg,oklch(var(--s))_4%,color-mix(in_oklch,oklch(var(--s)),oklch(var(--er)))_22%,oklch(var(--p))_45%,color-mix(in_oklch,oklch(var(--p)),oklch(var(--a)))_67%,oklch(var(--a))_100.2%)]">
                 <a href="/">Flexonome </a></h1>
         </div>
         <div class="navbar-end gap-2">
+            <a 
+                href="https://tally.so/r/wLopVl" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="btn btn-sm feedback-btn sparkle-btn relative group"
+            >
+                <span class="relative z-10">Submit Feedback</span>
+            </a>
             <ThemeController />
+            <UserProfile v-if="auth.user.value" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import ThemeController from './ThemeController.vue';
+import UserProfile from './UserProfile.vue';
+import { useAuth } from '~/composables/useAuth';
+
+// Get the current user
+const auth = useAuth();
 
 const closeDropdown = () => {
     const dropdown = document.querySelector('.menu') as HTMLElement;

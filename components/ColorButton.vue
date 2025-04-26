@@ -50,7 +50,6 @@ function toggleSubdivision(index: number) {
   // Create a copy of the subdivisionEnabled array to avoid direct props mutation
   const updatedSubdivisions = [...props.beat.subdivisionEnabled];
   updatedSubdivisions[index] = !updatedSubdivisions[index];
-  console.log(updatedSubdivisions);
   
   // Emit event with updated beat
   emits('updateSubdivision', {

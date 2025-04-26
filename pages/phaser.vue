@@ -52,8 +52,9 @@ const width: Ref<number> = ref(0);
 const phaserModalId = 'phaserModal';
 const isMobile = inject('isMobile');
 
-defineOptions({
-  name: 'PhaserPage'
+// Add auth middleware to protect this route
+definePageMeta({
+  middleware: ['auth']
 });
 
 function throwError(message: string) {

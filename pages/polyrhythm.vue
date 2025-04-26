@@ -62,8 +62,10 @@ import AcceleratorInput from '../components/AcceleratorInput.vue';
 import PolyRhythmV2 from '../core/PolyRhythmV2';
 import PolyrhythmCircles from '~/components/PolyrhythmCircles.vue';
 import { showModalById } from '../utils/utils';
-defineOptions({
-  name: 'PolyrhythmPage'
+
+// Add auth middleware to protect this route
+definePageMeta({
+  middleware: ['auth']
 });
 
 //eslint-disable-next-line
