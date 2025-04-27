@@ -10,9 +10,9 @@
         v-for="(beat,index) in beats_2"
           :key="index"
           ref=circleRefs2
-          :beat = "beat"
-          class = "border-4 rounded-full"
-          :style="getCircleStyle(1, index, beats_2.length)"
+          :beat="beat"
+          :isCircle="true"
+          :style="getCirclePosition(1, index, beats_2.length)"
         ></ColorButton>
       </TransitionGroup>
     </div>
@@ -25,9 +25,9 @@
         v-for="(beat,index) in beats_1"
         :key="index"
         ref=circleRefs1
-        :beat = "beat"
-        class = "border-4 rounded-full"
-        :style="getCircleStyle(0, index, beats_1.length)"
+        :beat="beat"
+        :isCircle="true"
+        :style="getCirclePosition(0, index, beats_1.length)"
       ></ColorButton>
       </TransitionGroup>
     </div>
@@ -56,8 +56,8 @@ const ringSize = props.isMobile? 250: 350;
 
 const radii = computed(() => {
   if (!props.isMobile) {
-    const maxRadius = ringSize / 2 - 10; // Leave some padding
-    const minRadius = maxRadius * 0.5+30;
+    const maxRadius = ringSize * 0.5; // Leave some padding
+    const minRadius = maxRadius * 0.75
     return [minRadius, maxRadius];
   } else {
     const maxRadius = ringSize / 3 ; // Leave some padding
@@ -66,7 +66,7 @@ const radii = computed(() => {
   }
 });
 
-const getCircleStyle = (index: number, i: number, count: number) => {
+const getCirclePosition = (index: number, i: number, count: number) => {
   const angle = (i * 2 * Math.PI) / count - Math.PI / 2;
   const radius = radii.value[index];
   const circleDiameter = props.isMobile? 20: 30

@@ -19,10 +19,7 @@
             <IconAudioWaveform class="text-accent"/> <span>Phaser</span>
           </NuxtLink>
         </li>
-        <div class="divider"></div>
       </ul>
-
-      <span class="text-lg font-montserrat">Saved Presets</span>
       
       <!-- Footer with User Profile and Feedback Button -->
       <div class="p-4">

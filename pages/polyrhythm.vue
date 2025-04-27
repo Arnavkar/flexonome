@@ -2,7 +2,7 @@
   <div>
     <!-- DESKTOP VIEW -->
     <div v-if="!isMobile" class="flex flex-col h-[100dvh] w-full items-center justify-center gap-4">
-      <div class="grid grid-cols-3 mt-8">
+      <div class="grid grid-cols-[3fr_4fr_3fr] mt-8">
         <div class="flex flex-col items-end justify-center">
           <RatioInput @ratio1Change="(newVal: number) => polyrhythm.updateRatio(0, newVal)"
             @ratio2Change="(newVal: number) => polyrhythm.updateRatio(1, newVal)" />

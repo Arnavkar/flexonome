@@ -41,6 +41,10 @@ export const useAuth = () => {
         provider,
         options: {
           redirectTo: redirectTo || window.location.origin + '/auth/confirm',
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
       

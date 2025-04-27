@@ -6,14 +6,20 @@
   import { ref, onMounted, onUnmounted } from 'vue';
   import { gsap } from 'gsap';
   
+  // Add p5 to the window object type
+  declare global {
+    interface Window {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      p5: any;
+    }
+  }
+  
   const p5Container = ref<HTMLElement | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let p5Instance: any;
   
-  const initP5 = async () => {
-    if (typeof window !== 'undefined' && p5Container.value) {
-      const p5 = (await import('p5')).default;
-      
+  const initP5 = () => {
+    if (typeof window !== 'undefined' && p5Container.value && typeof window.p5 !== 'undefined') {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sketch = (p: any) => {
         const ranges = 100;
@@ -49,7 +55,8 @@
         };
       };
   
-      p5Instance = new p5(sketch, p5Container.value);
+      // Use the global p5 object from CDN
+      p5Instance = new window.p5(sketch, p5Container.value);
     }
   };
   
@@ -64,7 +71,14 @@
   };
   
   onMounted(() => {
-    initP5();
+    // Load p5.min.js from CDN
+    const p5Script = document.createElement('script');
+    p5Script.src = 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js';
+    p5Script.onload = () => {
+      // Initialize p5 after the script has loaded
+      initP5();
+    };
+    document.head.appendChild(p5Script);
   });
   
   onUnmounted(() => {

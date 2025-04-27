@@ -3,27 +3,30 @@ import { themes } from './constants.ts'
 
 export default {
   content: [
-    "./components/**/*.{js,vue,ts}",
-    "./layouts/**/*.vue",
-    "./pages/**/*.vue",
-    "./plugins/**/*.{js,ts}",
-    "./app.vue",
-    "./error.vue",
+    './components/**/*.{vue,js,ts}',
+    './layouts/**/*.vue',
+    './pages/**/*.vue',
+    './plugins/**/*.{js,ts}',
+    './nuxt.config.{js,ts}'
   ],
   theme: {
     extend: {},
   },
   plugins: [
+    // eslint-disable-next-line
     require("@tailwindcss/typography"),
+    // eslint-disable-next-line
     require('daisyui')
   ],
   daisyui: {
     themes: themes
   },
-  safelist: [
-    {
-      pattern: /w-.+/,
-    }
-  ],
+  corePlugins: {
+    float: false,
+    container: false,
+    aspectRatio: false
+  },
+  safelist: [],
   darkMode: ['class', `[data-theme=${themes[0]}]`]
 }
+

@@ -1,9 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { visualizer } from 'rollup-plugin-visualizer'
+import analyzer from 'rollup-plugin-analyzer'
+
 export default defineNuxtConfig({
-  devtools: { enabled: true },
   css: [
     '~/assets/css/main.css',
-    '@fortawesome/fontawesome-free/css/all.css'
   ],
 
   modules: ['nuxt-snackbar', '@nuxtjs/supabase', 'nuxt-lucide-icons'],
@@ -55,6 +56,29 @@ export default defineNuxtConfig({
           tagPosition: 'head'
         }
       ]
+    }
+  },
+
+  vite: {
+    // 1) Add the Visualizer as a Vite plugin
+    plugins: [
+      visualizer({
+        filename: 'stats.html',  // output file (project root)
+        open: true,              // launch in browser when build finishes
+        gzipSize: true,          // include gzipped sizes in the report
+        brotliSize: true         // include brotli sizes too
+      })
+    ],
+    // 2) Hook the Analyzer into Rollup’s build step
+    build: {
+      rollupOptions: {
+        plugins: [
+          analyzer({
+            summaryOnly: true,   // just totals per chunk
+            limit: 10            // top 10 largest modules
+          })
+        ]
+      }
     }
   },
 
