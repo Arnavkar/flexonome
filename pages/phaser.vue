@@ -23,7 +23,6 @@
       <div class="flex items-center">
         <ModalCard :modal-id="phaserModalId" @click="showModalById(phaserModalId)">
           <template #buttonui>
-            <MdiIcon icon="mdiCog" class="text-primary" />
           </template>
           <template #modal>
             <BpmListInput :beats="phaser.beats" :bpmList="phaser.bpmList" :addBpm="phaser.addBpm"
@@ -47,6 +46,11 @@ import PhaserV2 from '~/core/PhaserV2';
 
 defineOptions({
   name: 'PhaserPage'
+});
+
+//eslint-disable-next-line
+definePageMeta({
+  middleware: ['auth']
 });
 
 //eslint-disable-next-line

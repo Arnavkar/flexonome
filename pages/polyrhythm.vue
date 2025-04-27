@@ -41,7 +41,6 @@
         <ModalCard :modal-id="acceleratorModalId"
           @click="polyrhythm.acceleratorEnabled ? showModalById(acceleratorModalId) : null">
           <template #buttonui>
-            <MdiIcon icon="mdiFastForward" :class="IconStyle" />
             <label :class="IconStyle" class="text-xs text-center p-0 m-0"> settings </label>
           </template>
           <template #modal>
@@ -66,6 +65,11 @@ import { showModalById } from '../utils/utils';
 
 defineOptions({
   name: 'PolyrhythmPage'
+});
+
+//eslint-disable-next-line
+definePageMeta({
+  middleware: ['auth']
 });
 
 //eslint-disable-next-line

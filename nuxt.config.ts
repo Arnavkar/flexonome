@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     '@fortawesome/fontawesome-free/css/all.css'
   ],
 
-  modules: ['nuxt-snackbar', 'nuxt-mdi', '@nuxtjs/supabase'],
+  modules: ['nuxt-snackbar', '@nuxtjs/supabase', 'nuxt-lucide-icons'],
 
   supabase: {
     redirect:false,
@@ -17,15 +17,14 @@ export default defineNuxtConfig({
     },
   },
 
+  lucide: {
+    namePrefix: 'Icon'
+  },
+
   snackbar: {
     bottom: true,
     right: true,
     duration: 5000
-  },
-
-  mdi: {
-    componentName: 'MdiIcon',
-    defaultSize: '5em'
   },
   
   pages: true,

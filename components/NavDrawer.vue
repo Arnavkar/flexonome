@@ -3,30 +3,34 @@
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <div class="flex flex-col justify-between min-h-full w-80 bg-base-200 text-base-content">
       <!-- Navigation Menu -->
-      <ul class="menu p-4">
+      <ul class="menu p-4 text-lg font-montserrat">
         <li>
           <NuxtLink to="/metronome" :class="{ 'active': isActive('/metronome') }" @click="closeDrawer">
-            Metronome
+            <IconClock class="text-primary"/> <span>Metronome</span>
           </NuxtLink>
         </li>
         <li>
           <NuxtLink to="/polyrhythm" :class="{ 'active': isActive('/polyrhythm') }" @click="closeDrawer">
-            Polyrhythm
+            <IconBlend class="text-secondary"/> <span>Polyrhythm</span>
           </NuxtLink>
         </li>
         <li>
           <NuxtLink to="/phaser" :class="{ 'active': isActive('/phaser') }" @click="closeDrawer">
-            Phaser
+            <IconAudioWaveform class="text-accent"/> <span>Phaser</span>
           </NuxtLink>
         </li>
+        <div class="divider"></div>
       </ul>
+
+      <span class="text-lg font-montserrat">Saved Presets</span>
       
       <!-- Footer with User Profile and Feedback Button -->
-      <div class="p-4 border-t border-base-300">
+      <div class="p-4">
+        <div class="divider"></div>
         <!-- User Profile Section -->
-        <div v-if="user" class="mb-4 p-2">
+        <div v-if="user" class="p-2">
           <!-- Avatar and Email on one line -->
-          <div class="flex items-center gap-3 mb-2">
+          <div class="flex items-center gap-2 ml-2 mb-2">
             <div class="avatar">
               <div class="w-10 rounded-full">
                 <img :src="avatarUrl" alt="User Avatar" />
@@ -36,11 +40,8 @@
           </div>
           
           <!-- Logout button on second line -->
-          <button @click="handleSignOut" class="btn btn-sm btn-ghost w-full justify-start mt-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Logout
+          <button @click="handleSignOut" class="btn btn btn-ghost w-full justify-start mt-1">
+            <IconLogOut/> Logout
           </button>
         </div>
         
@@ -51,7 +52,7 @@
           rel="noopener noreferrer"
           class="btn btn-sm w-full feedback-btn sparkle-btn relative group"
         >
-          <span class="relative z-10">Submit Feedback</span>
+          <span class="relative flex items-center gap-2 z-10"> <IconSend :size="16"/> Submit Feedback</span>
         </a>
       </div>
     </div>

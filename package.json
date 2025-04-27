@@ -17,7 +17,7 @@
     "daisyui": "^4.12.2",
     "gsap": "^3.12.7",
     "nuxt": "^3.12.1",
-    "nuxt-mdi": "^2.1.1",
+    "nuxt-lucide-icons": "^1.0.5",
     "nuxt-snackbar": "^1.1.2",
     "p5": "^1.11.3",
     "tailwindcss": "^3.4.4",
@@ -39,8 +39,8 @@
     "prettier": "^3.4.2",
     "tailwindcss": "^3.4.4",
     "typescript-eslint": "^8.18.0"
-  },  
+  },
   "resolutions": {
-	  "cookie": "0.7.2"
+    "cookie": "0.7.2"
   }
 }

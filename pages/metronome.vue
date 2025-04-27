@@ -48,7 +48,6 @@
         <ModalCard :modal-id="acceleratorModalId" 
           @click="metronome.acceleratorEnabled ? showModalById(acceleratorModalId) : null">
           <template #buttonui>
-            <MdiIcon icon="mdiFastForward" :class="IconStyle" />
             <label :class="IconStyle" class="text-xs text-center p-0 m-0"> settings </label>
           </template>
           <template #modal>
@@ -74,6 +73,11 @@ import type { Beat, Accelerator } from '../utils/types';
 
 defineOptions({
   name: 'MetronomePage'
+});
+
+//eslint-disable-next-line
+definePageMeta({
+  middleware: ['auth']
 });
 
 //eslint-disable-next-line
