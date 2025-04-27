@@ -13,7 +13,6 @@ export default defineNuxtPlugin({
     // Get access to the Supabase client and router
     const supabase = useSupabaseClient();
     const router = useRouter();
-        
     // Set up auth state change listener
     supabase.auth.onAuthStateChange(async (event, session) => {
       

@@ -16,7 +16,8 @@
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue';
 import FlexonomeTitle from '~/components/FlexonomeTitle.vue';
-
+import { useRouter } from 'vue-router';
+import { useAuth } from '~/composables/useAuth';
 defineOptions({
   name: 'IntroPage',
 });
@@ -26,9 +27,18 @@ definePageMeta({
   layout: 'no-navigation'
 });
 
+const { user } = useAuth();
 const intro: Ref<boolean> = ref(false);
+const router = useRouter();
 
 onMounted(() => {
+  // If user is already authenticated, redirect to the app
+  if (user.value) {
+    router.push('/metronome');
+    return;
+  }
+  
+  // Otherwise show the intro
   window.setTimeout(() => {
     intro.value = true;
   }, 1000);

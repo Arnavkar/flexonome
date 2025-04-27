@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { watch } from 'vue';
-import { useCurrentUser } from '~/composables/useCurrentUser';
+import { useAuth } from '~/composables/useAuth';  
 
 defineOptions({
   name: 'CallbackPage',
@@ -22,13 +22,12 @@ definePageMeta({
   layout: 'no-navigation'
 });
 
-// Use the new composable instead of direct Supabase user
-const { isLoggedIn } = useCurrentUser();
+const { user } = useAuth();
 const router = useRouter();
 
 // Watch for user authentication and redirect when logged in
-watch(isLoggedIn, (loggedIn) => {
-  if (loggedIn) {
+watch(user, (user) => {
+  if (user) {
     // Redirect to metronome if authenticated
     router.push('/metronome');
   }

@@ -5,10 +5,6 @@
       <div class="chat-content">
         <span ref="typingText" class="typing-text"></span>
         <span class="cursor">|</span>
-        <button v-if="showSubmit" @click="handleSubmit"
-          class="submit-btn btn btn-primary absolute -bottom-14 left-1/2 transform -translate-x-1/2 w-4 text-white ">
-          Submit
-        </button>
       </div>
     </div>
     <h1 class="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-orbitron">
@@ -36,6 +32,7 @@ import { ref, onMounted, onUnmounted, reactive } from 'vue';
 import MetronomeV2 from '../core/MetronomeV2';
 import gsap from 'gsap';
 import P5Background from './p5Background.vue';
+import { useAuth } from '~/composables/useAuth';
 
 // Props and emits
 const props = defineProps({
@@ -67,14 +64,20 @@ metronome.updateBpm(props.bpm);
 const beatDuration = 60 / props.bpm;
 
 const isAccent = (index: number) => [0, 4, 6].includes(index);
-const showSubmit = ref(false);
+
+// Get authentication state
+const { user } = useAuth();
 
 const goToMetronome = () => {
-  window.location.href = "/metronome";
+  // Redirect to metronome if user is logged in, otherwise to login page
+  if (user) {
+    window.location.href = "/metronome";
+  } else {
+    window.location.href = "/auth/login";
+  }
 };
 
 const handleSubmit = () => {
-  showSubmit.value = false;
   gsap.to(chatBoxRef.value, {
     top: '20%',
     duration: 0.8,
@@ -85,16 +88,7 @@ const handleSubmit = () => {
   });
 };
 
-// Ensure handleSubmit is triggered on both click and touch events
-const handleSubmitWrapper = () => {
-  handleSubmit();
-};
-
-chatBoxRef.value?.addEventListener('click', handleSubmitWrapper);
-chatBoxRef.value?.addEventListener('touchend', handleSubmitWrapper);
-
 const typeText = async () => {
-  
   if (!typingText.value || !chatBoxRef.value) return;
 
   for (let i = 0; i < text.length; i++) {
@@ -102,10 +96,9 @@ const typeText = async () => {
     await new Promise(resolve => setTimeout(resolve, 200));
   }
 
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  // Show the submit button instead of immediately animating
-  showSubmit.value = true;
+  // Wait for 1 second after typing completes, then proceed automatically
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  handleSubmit();
 };
 
 const animateLanding = () => {
@@ -176,8 +169,6 @@ onUnmounted(() => {
   metronome.clear();
 });
 </script>
-
-
 
 <style scoped>
 .flexonome-animated-title {
@@ -265,44 +256,6 @@ onUnmounted(() => {
   
   .chat-box {
     padding: 0.5rem 1rem;
-  }
-}
-
-.submit-btn {
-  opacity: 0;
-  animation: fadeIn 0.5s ease-out forwards;
-  background: rgba(0, 0, 0, 0.3) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  transform-style: preserve-3d;
-  perspective: 1000px;
-  transition: all 0.3s ease;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-  min-width: 120px;
-}
-
-.submit-btn:hover {
-  transform: translate(-50%, -2px) scale(1.05) rotateX(10deg);
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 
-    0 10px 20px rgba(0, 0, 0, 0.2),
-    0 0 15px rgba(103, 232, 249, 0.2);
-}
-
-.submit-btn:active {
-  transform: translate(-50%, 0) scale(0.95) rotateX(0deg);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 20px) rotateX(-20deg);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0) rotateX(0deg);
   }
 }
 </style>

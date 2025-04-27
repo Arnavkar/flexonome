@@ -44,13 +44,13 @@
           <i class="fab fa-google mr-2"></i> Continue with Google
         </button>
         
-        <button 
+        <!-- <button 
           @click="handleFacebookSignIn" 
           class="btn btn-outline"
           :disabled="loading"
         >
           <i class="fab fa-facebook-f mr-2"></i> Continue with Facebook
-        </button>
+        </button> -->
       </div>
       
       <p v-if="error" class="mt-4 text-error text-center">{{ error }}</p>
@@ -106,8 +106,8 @@ const handleGoogleSignIn = async () => {
   await signInWithOAuth('google', redirectUrl);
 };
 
-const handleFacebookSignIn = async () => {
-  const redirectUrl = `${window.location.origin}/auth/confirm`;
-  await signInWithOAuth('facebook', redirectUrl);
-};
+// const handleFacebookSignIn = async () => {
+//   const redirectUrl = `${window.location.origin}/auth/confirm`;
+//   await signInWithOAuth('facebook', redirectUrl);
+// };
 </script> 

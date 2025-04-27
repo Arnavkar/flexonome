@@ -45,16 +45,16 @@ import BpmListInput from '~/components/BpmListInput.vue';
 import BaseCard from '~/components/BaseCard.vue';
 import PhaserV2 from '~/core/PhaserV2';
 
+defineOptions({
+  name: 'PhaserPage'
+});
+
 //eslint-disable-next-line
 const snackbar = useSnackbar();
 const phaser = reactive(new PhaserV2());
 const width: Ref<number> = ref(0);
 const phaserModalId = 'phaserModal';
 const isMobile = inject('isMobile');
-
-defineOptions({
-  name: 'PhaserPage'
-});
 
 function throwError(message: string) {
   if (!snackbar) return;

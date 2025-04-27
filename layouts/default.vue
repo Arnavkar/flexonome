@@ -19,6 +19,11 @@ defineOptions({
   name: 'DefaultLayout'
 });
 
+//eslint-disable-next-line
+definePageMeta({
+  middleware: ['auth']
+});
+
 const { isMobile } = useDevice();
 provide('isMobile', isMobile); // Make isMobile available to all child components
 </script>

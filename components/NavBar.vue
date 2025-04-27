@@ -1,61 +1,41 @@
 <template>
-    <div class="navbar bg-base-100">
-        <div class="navbar-start">
-            <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-7 w-7"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h7" />
-                </svg>
+    <div class="drawer">
+        <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content">
+            <!-- Page content here -->
+            <div class="navbar bg-base-100">
+                <div class="navbar-start">
+                    <label for="my-drawer" class="btn btn-ghost btn-circle">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-7 w-7"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h7" />
+                        </svg>
+                    </label>
                 </div>
-                <ul
-                tabindex="0"
-                class="menu menu-sm dropdown-content bg-base-300 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                <li><NuxtLink to="/metronome" @click="closeDropdown">Metronome</NuxtLink></li>
-                <li><NuxtLink to="/polyrhythm" @click="closeDropdown">Polyrhythm</NuxtLink></li>
-                <li><NuxtLink to="/phaser" @click="closeDropdown">Phaser</NuxtLink></li>
-                </ul>
+                <div class="navbar-center">
+                    <h1 class="title-gradient font-orbitron">
+                        <a href="/">Flexonome </a></h1>
+                </div>
+                <div class="navbar-end">
+                    <ThemeController />
+                </div>
             </div>
         </div>
-        <div class="navbar-center">
-            <h1 class = "font-orbitron [&::selection]:text-base-content bg-[linear-gradient(90deg,theme(colors.error)_0%,theme(colors.secondary)_9%,theme(colors.secondary)_42%,theme(colors.primary)_47%,theme(colors.accent)_100%)] bg-clip-text [-webkit-text-fill-color:transparent] [&::selection]:bg-blue-700/20 [@supports(color:oklch(0%_0_0))]:bg-[linear-gradient(90deg,oklch(var(--s))_4%,color-mix(in_oklch,oklch(var(--s)),oklch(var(--er)))_22%,oklch(var(--p))_45%,color-mix(in_oklch,oklch(var(--p)),oklch(var(--a)))_67%,oklch(var(--a))_100.2%)]">
-                <a href="/">Flexonome </a></h1>
-        </div>
-        <div class="navbar-end gap-7">
-            <a 
-                href="https://tally.so/r/wLopVl" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="btn btn-sm feedback-btn sparkle-btn relative group"
-            >
-                <span class="relative z-10">Submit Feedback</span>
-            </a>
-            <ThemeController />
-            <UserProfile v-if="user" />
-        </div>
+        <NavDrawer />
     </div>
 </template>
 
 <script setup lang="ts">
 import ThemeController from './ThemeController.vue';
-import UserProfile from './UserProfile.vue';
-import { useCurrentUser } from '~/composables/useCurrentUser';
-
-// Get the current user
-const { user } = useCurrentUser();
-
-const closeDropdown = () => {
-    const dropdown = document.querySelector('.menu') as HTMLElement;
-    if (dropdown) dropdown.blur();
-};
+import NavDrawer from './NavDrawer.vue';
 </script>
 
 <style scoped>

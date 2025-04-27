@@ -2,6 +2,7 @@ import { ref } from 'vue';
 
 export const useAuth = () => {
   const supabase = useSupabaseClient();
+  const user = useSupabaseUser();
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -76,6 +77,7 @@ export const useAuth = () => {
   };
 
   return {
+    user,
     loading,
     error,
     signInWithEmail,

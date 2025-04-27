@@ -13,7 +13,7 @@ export default defineNuxtRouteMiddleware((to) => {
   }
   
   // Check authentication for all other routes
-  const user = useSupabaseUser();
+  const { user } = useAuth();
   if (!user.value) {
     console.log('No authenticated user, redirecting to login');
     return navigateTo('/auth/login');
