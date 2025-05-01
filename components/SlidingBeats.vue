@@ -5,7 +5,7 @@
         :key="index" 
         :beat="beat"
         :buttonStyle="bounceStyle(index,beat.accent)" 
-        :buttonClass="'size-10 rounded-lg bounce bg-border-primary'"
+        :buttonClass="'size-12 rounded-lg bounce bg-border-primary'"
         ref = buttons></ColorButton>
     </div>
   </template>

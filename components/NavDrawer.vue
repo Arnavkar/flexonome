@@ -35,21 +35,28 @@
             </div>
             <p class="font-semibold truncate">{{ userEmail }}</p>
           </div>
-          
-          <!-- Logout button on second line -->
-          <button @click="handleSignOut" class="btn btn btn-ghost w-full justify-start mt-1">
-            <IconLogOut/> Logout
-          </button>
         </div>
         
-        <!-- Feedback Button -->
+        <!-- buttons -->
+                  
+        <button @click="handleSignOut" class="btn btn-sm w-full logout-btn relative group mb-2">
+          <span class="relative flex items-center gap-2 z-10"> <IconLogOut :size="16"/> Logout</span>
+        </button>
         <a 
           href="https://tally.so/r/wLopVl" 
           target="_blank" 
           rel="noopener noreferrer"
-          class="btn btn-sm w-full feedback-btn sparkle-btn relative group"
+          class="btn btn-sm w-full feedback-btn relative group"
         >
           <span class="relative flex items-center gap-2 z-10"> <IconSend :size="16"/> Submit Feedback</span>
+        </a>
+        <a 
+          href="https://tally.so/r/nGkP4O" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="btn btn-sm w-full bug-btn relative group mt-2"
+        >
+          <span class="relative flex items-center gap-2 z-10"> <IconBug :size="16"/> Report Bug</span>
         </a>
       </div>
     </div>
@@ -118,11 +125,35 @@ const handleSignOut = async () => {
   transition: all 0.3s;
 }
 
-.feedback-btn:hover {
+.bug-btn {
+  background: linear-gradient(to right, #a855f7, #e9d5ff);
+  color: #333;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logout-btn {
+  background: linear-gradient(to right, #60a5fa, #93c5fd);
+  color: #333;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
   transform: translateY(-2px);
 }
 
-.feedback-btn:active {
+button:active {
+  transform: translateY(0);
+}
+
+a:hover {
+  transform: translateY(-2px);
+}
+
+a:active {
   transform: translateY(0);
 }
 </style> 
