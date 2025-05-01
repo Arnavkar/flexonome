@@ -77,7 +77,6 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
             // For negative indices, find the count-in beat
             const countInIndex = this.countInBeats.findIndex(beat => beat.beatIndex === beatIndex);
             if (countInIndex === -1) {
-                console.error(`Count-in beat with index ${beatIndex} not found`);
                 return;
             }
             beatIndex = countInIndex;
@@ -88,17 +87,19 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
                 
         // Make sure the beat exists before accessing it
         if (beatIndex < 0 || beatIndex >= this.beats.length) {
-            console.error(`Beat index ${beatIndex} out of bounds (0-${this.beats.length-1})`);
             return;
         }
         
         const beat = this.beats[beatIndex];
         const bufferIndex = beat.accent;
-        const buffer = bufferIndex >= 0 ? this.audioBuffers[bufferIndex] : undefined;
+        const buffer = bufferIndex >= 0? this.audioBuffers[bufferIndex] : undefined;
         if (!buffer) return;
         
-        // Play the main beat
-        playSound(buffer, this.audioContext, this.nextNoteTime);
+        if (bufferIndex == 3) {
+            //Don't play sound 
+        } else {
+            playSound(buffer, this.audioContext, this.nextNoteTime);
+        }
         
         // Schedule subdivision notes if subdivision > 1
         if (beat.subdivision > 1 && this.audioContext) {

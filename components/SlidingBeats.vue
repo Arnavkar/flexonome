@@ -4,8 +4,8 @@
         v-for="(beat, index) in beats" 
         :key="index" 
         :beat="beat"
-        :style="bounceStyle(index,beat.accent)" 
-        class="size-10 rounded-lg bounce bg-bor"
+        :buttonStyle="bounceStyle(index,beat.accent)" 
+        :buttonClass="'size-10 rounded-lg bounce bg-border-primary'"
         ref = buttons></ColorButton>
     </div>
   </template>
@@ -42,20 +42,20 @@
         break;
     }
 
-    return({
-      '--bounce-duration': `${durations.value[index]}s`,
-      '--animation-state': props.isRunning? 'running' : 'start',
-      '--full-width': `${props.width-55}px`,
-      '--mid-width': `${(props.width-55)/2}px`,
-      '--base-opacity':0.1,
-      '--flash-opacity':1,
-      '--color-var':color_var
-    });
-  };
+    return `
+      --bounce-duration: ${durations.value[index]}s;
+      --animation-state: ${props.isRunning ? 'running' : 'start'};
+      --full-width: ${props.width - 55}px;
+      --mid-width: ${(props.width - 55) / 2}px;
+      --base-opacity: 0.1;
+      --flash-opacity: 1;
+      --color-var: ${color_var};
+    `;
+  }
 
   </script>
   
-  <style scoped>
+  <style>
   .bounce {
     animation: left-right var(--bounce-duration) var(--animation-state) infinite;
     animation-timing-function: linear;

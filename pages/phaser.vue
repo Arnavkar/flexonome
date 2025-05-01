@@ -23,6 +23,7 @@
       <div class="flex items-center">
         <ModalCard :modal-id="phaserModalId" @click="showModalById(phaserModalId)">
           <template #buttonui>
+            <IconSettings class="w-20 h-20 text-primary"/>
           </template>
           <template #modal>
             <BpmListInput :beats="phaser.beats" :bpmList="phaser.bpmList" :addBpm="phaser.addBpm"

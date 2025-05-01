@@ -14,8 +14,9 @@
                 :beat="beat"
                 ref="buttons"
                 :id="`beat-${beat.beatIndex}`"
-                class="rounded-lg"
                 @updateSubdivision="handleSubdivisionUpdate"
+                :buttonClass="buttonClass"
+                :buttonStyle="calculateButtonWidth(beat.beatUnit)"
               />
             </div>
           </div>
@@ -28,6 +29,7 @@
 import { ref, watch, nextTick, computed, inject, type Ref } from 'vue';
 import type { Beat } from '../utils/types';
 import ColorButton from './ColorButton.vue';
+import { calculateButtonWidth } from '../utils/utils';
 
 // Define props
 const props = defineProps<{
@@ -39,13 +41,17 @@ const emits = defineEmits(['updateBeatSubdivision']);
 
 const activeBarRef = ref<HTMLElement | null>(null);
 const buttons = ref();
-const beatUnitList = computed(() => props.beats.map((beat) => beat.beatUnit));
 const maxBar = computed(() => Math.max(...props.beats.filter(beat => beat.bar !== -1).map(beat => beat.bar || 1)));
 const isMobile = inject('isMobile') as Ref<boolean>;
 
 const currentBar = computed(() => {
   const currentBeat = props.beats[props.activeBeat];
   return currentBeat?.bar === -1 ? 1 : (currentBeat?.bar || 1);
+});
+
+const buttonClass = computed(() => {
+  const height = isMobile.value ? 'h-8' : 'h-12';
+  return `${height} rounded-lg`;
 });
 
 function getBeatsForBar(barNumber: number) {
@@ -85,14 +91,6 @@ watch(activeBarRef, async () => {
       block: 'center'
     });
   }
-});
-
-//If beats changes - update the width of the buttons accordingly
-watch(() => beatUnitList, async(newBeatUnitList) => {
-  await nextTick();
-  buttons.value.forEach((button:typeof ColorButton, index:number) => {
-    button.updateWidth(newBeatUnitList.value[index]);
-  });
 });
 </script>
 

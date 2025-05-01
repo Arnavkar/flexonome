@@ -41,7 +41,7 @@
         <ModalCard :modal-id="acceleratorModalId"
           @click="polyrhythm.acceleratorEnabled ? showModalById(acceleratorModalId) : null">
           <template #buttonui>
-            <label :class="IconStyle" class="text-xs text-center p-0 m-0"> settings </label>
+            <IconFastForward :class="IconStyle" class="w-14 h-14"/>
           </template>
           <template #modal>
             <AcceleratorInput v-if="polyrhythm.acceleratorEnabled"

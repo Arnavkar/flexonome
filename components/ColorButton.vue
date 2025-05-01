@@ -3,12 +3,11 @@
     <button 
       class="border-2 relative"
       :class="[
-        buttonHeight, 
         currentBorderColor, 
         isFlashing ? currentBackgroundColor : 'dark:bg-slate-800 bg-slate-200',
-        isCircle ? 'rounded-full' : 'rounded-lg'
+        buttonClass
       ]"
-      :style="currentWidth"
+      :style="buttonStyle"
       @click="incrementBeatAccent(beat.beatIndex);">
     </button>
     
@@ -28,18 +27,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, inject, type Ref } from 'vue';
+import { ref, computed, inject} from 'vue';
 import type { Beat } from '../utils/types';
-import { calculateButtonWidth } from '../utils/utils';
 
-const isMobile = inject('isMobile') as Ref<boolean>;
 const borderColors: string[] = ['border-primary', 'border-secondary', 'border-accent', 'border-gray-400'];
 const bgColors: string[] = ['bg-primary', 'bg-secondary', 'bg-accent', 'bg-gray-400'];
 
 const props = defineProps<{
   beat: Beat;
-  isCircle?: boolean;
+  buttonClass?: string;
+  buttonStyle?: string;
 }>();
+
 const incrementBeatAccent = inject('incrementBeatAccent') as (beatIndex: number) => void;
 const emits = defineEmits(['updateSubdivision']);
 
@@ -47,8 +46,6 @@ const isFlashing = ref(false);
 
 const currentBorderColor = computed(() => borderColors[props.beat.accent]);
 const currentBackgroundColor = computed(() => bgColors[props.beat.accent]);
-const currentWidth = computed(() => calculateButtonWidth(props.beat.beatUnit));
-const buttonHeight = computed(() => isMobile.value || props.isCircle ? 'h-8' : 'h-12');
 
 function toggleSubdivision(index: number) {
   const updatedSubdivisions = [...props.beat.subdivisionEnabled];

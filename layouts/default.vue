@@ -13,13 +13,13 @@
 <script setup lang="ts">
 import { provide } from 'vue';
 import NavBar from '~/components/NavBar.vue';
-import { useDevice } from '~/composables/useDevice';
+import { useMobileView } from '~/composables/useMobileView';
 
 defineOptions({
   name: 'DefaultLayout'
 });
 
-const { isMobile } = useDevice();
+const { isMobile } = useMobileView();
 provide('isMobile', isMobile); // Make isMobile available to all child components
 </script>
 

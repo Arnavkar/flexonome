@@ -11,8 +11,8 @@
           :key="index"
           ref=circleRefs2
           :beat="beat"
-          :isCircle="true"
-          :style="getCirclePosition(1, index, beats_2.length)"
+          :buttonClass="'w-12 h-12 rounded-full'"
+          :buttonStyle="getCirclePosition(1, index, beats_2.length)"
         ></ColorButton>
       </TransitionGroup>
     </div>
@@ -26,8 +26,8 @@
         :key="index"
         ref=circleRefs1
         :beat="beat"
-        :isCircle="true"
-        :style="getCirclePosition(0, index, beats_1.length)"
+        :buttonClass="'w-12 h-12 rounded-full'"
+        :buttonStyle="getCirclePosition(0, index, beats_1.length)"
       ></ColorButton>
       </TransitionGroup>
     </div>
@@ -73,13 +73,7 @@ const getCirclePosition = (index: number, i: number, count: number) => {
   const x = radius * Math.cos(angle) - circleDiameter / 2;
   const y = radius * Math.sin(angle) - circleDiameter / 2;
 
-  return {
-    position: 'absolute',
-    top: `calc(50% + ${y}px)`,
-    left: `calc(50% + ${x}px)`,
-    width: `${circleDiameter}px`,
-    height: `${circleDiameter}px`,
-  };
+  return `position: absolute; top: calc(50% + ${y}px); left: calc(50% + ${x}px); width: ${circleDiameter}px; height: ${circleDiameter}px;`;
 };
 
 watch(()=> props.activeCircles_1, async(newVal) => {
