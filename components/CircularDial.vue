@@ -1,23 +1,16 @@
 <template>
     <BaseCard :isTabbed="true" :size="'80'" firstTab="Standard" secondTab="Accelerator" @activeTab="getActiveTab">
         <template #tab1>
-        <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 ">
+        <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 touch-none">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
-                <input 
-                    type="number" 
-                    v-model="bpm" 
-                    class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold bg-transparent remove-arrow"
-                    min="20"
-                    max="300"
-                    @change="validateBpm"
-                />
+                <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
                 <div class="text-lg">
                     BPM (♩)
                 </div>
             </div>
             <div class="absolute w-6 h-6 rounded-full cursor-pointer bg-gray-700 dark:bg-white" :style="knobStyle"
                 @mousedown="startDrag"
-                @touchstart="startDragMobile">
+                @touchstart.prevent="startDragMobile">
             </div>
             <ul v-for="i in 12" :key="i">
                 <div 
@@ -35,17 +28,10 @@
         </template>
 
         <template #tab2>
-            <div class="radial-progress mt-2 dark:text-gray-700 text-gray-200" role="progressbar" style="--value:100; --size:15rem; --thickness: 4px; ">
+            <div class="radial-progress mt-2 dark:text-gray-700 text-gray-200 touch-none" role="progressbar" style="--value:100; --size:15rem; --thickness: 4px; ">
                 <div class="radial-progress text-secondary" role="progressbar"  style=" --size:15rem; --thickness: 4px;" :style="{'--value':progress}">
                     <div class="absolute inset-0 flex flex-col justify-center items-center">
-                        <input 
-                            type="number" 
-                            v-model="bpm" 
-                            class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold bg-transparent remove-arrow"
-                            min="20"
-                            max="300"
-                            @change="validateBpm"
-                        />
+                        <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
                         <div class="text-lg dark:text-white text-black">
                             BPM (♩)
                         </div>
@@ -76,39 +62,31 @@ const dragging:Ref<boolean>= ref(false);
 const bpm:Ref<number> = ref(props.bpm);
 const dial:Ref<HTMLElement|null> = ref(null);
 const isAccelerator:Ref<boolean> = ref(false);
-let debounceTimeout: number | null = null;
-const debounceTime = 600;
-
-function validateBpm() {
-    if (bpm.value < 20) bpm.value = 20;
-    if (bpm.value > 300) bpm.value = 300;
-    updateAngleFromBpm();
-}
-
-function updateAngleFromBpm() {
-    // Map BPM to angle (20-300 BPM to 0-360 degrees)
-    const normalizedBpm = (bpm.value - 20) / (300 - 20);
-    angle.value = normalizedBpm * 360;
-}
 
 function startDrag(event: MouseEvent){
     event.preventDefault(); //Prevents highlighting etc.
     dragging.value = true;
     //Once the drag has started
-    dial.value?.addEventListener('mousemove', onDrag);
-    dial.value?.addEventListener('mouseup', stopDrag);
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', stopDrag);
 };
 
 function startDragMobile(event: TouchEvent){
     event.preventDefault(); //Prevents highlighting etc.
     dragging.value = true;
     //Once the drag has started
-    dial.value?.addEventListener('touchmove', onDrag);
-    dial.value?.addEventListener('touchup', stopDrag);
+    document.addEventListener('touchmove', onDrag, { passive: false });
+    document.addEventListener('touchend', stopDragMobile);
 };
 
 function onDrag(event: MouseEvent | TouchEvent){
     if (!dragging.value || !dial.value) return; //Make sure dial is rendered and draggin is true
+    
+    // Always prevent default for touch events to stop scrolling
+    if (event.type === 'touchmove') {
+        event.preventDefault();
+    }
+    
     const rect = dial.value.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -134,15 +112,20 @@ function onDrag(event: MouseEvent | TouchEvent){
     } else if (delta < 0) {
         bpm.value = Math.max(20, bpm.value - 1);
     }
-    event.preventDefault();
 };
 
 function stopDrag(){
+    if (!dragging.value) return;
     dragging.value = false;
-    dial.value?.removeEventListener('mousemove', onDrag);
-    dial.value?.removeEventListener('mouseup', stopDrag);
-    dial.value?.removeEventListener('touchmove', onDrag);
-    dial.value?.removeEventListener('touchup', stopDrag);
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', stopDrag);
+};
+
+function stopDragMobile(){
+    if (!dragging.value) return;
+    dragging.value = false;
+    document.removeEventListener('touchmove', onDrag);
+    document.removeEventListener('touchend', stopDragMobile);
 };
 
 const knobStyle = computed(() => {
@@ -167,31 +150,24 @@ function getActiveTab(tab: string){
 }
 
 onMounted(() => {
-    dial.value?.addEventListener('mouseup', stopDrag);
-    updateAngleFromBpm();
+    // Ensure any ongoing interactions are cleaned up when component unmounts
+    window.addEventListener('touchcancel', stopDragMobile);
 });
 
 onUnmounted(() => {
-    dial.value?.removeEventListener('mouseup', stopDrag);
-    if (debounceTimeout) {
-        clearTimeout(debounceTimeout);
-    }
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', stopDrag);
+    document.removeEventListener('touchmove', onDrag);
+    document.removeEventListener('touchend', stopDragMobile);
+    window.removeEventListener('touchcancel', stopDragMobile);
 });
-
 //Mainly to update internal state when prop changes
 watch(props, (newProps) => {
     bpm.value = newProps.bpm;
-    updateAngleFromBpm();
 });
 
-// Debounced BPM update
 watch(bpm, (newBpm) => {
-    if (debounceTimeout) {
-        clearTimeout(debounceTimeout);
-    }
-    debounceTimeout = window.setTimeout(() => {
-        emits('updateBpm', newBpm);
-    }, debounceTime); // 150ms debounce
+    emits('updateBpm', newBpm);
 });
 
 watch(isAccelerator, () => {
@@ -203,27 +179,14 @@ watch(isAccelerator, () => {
 <style scoped>
 .radial-progress::after{
     content: none;
+    
 }
-
 .remove-arrow::-webkit-inner-spin-button,
 .remove-arrow::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-
 .remove-arrow {
     -moz-appearance: textfield;
-}
-
-input[type="number"] {
-    border: none;
-    background: transparent;
-    width: 100%;
-    text-align: center;
-}
-
-input[type="number"]:focus {
-    outline: none;
-    box-shadow: none;
 }
 </style>
