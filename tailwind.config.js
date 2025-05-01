@@ -1,6 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-import { themes } from './constants.ts'
-
 export default {
   content: [
     './components/**/*.{vue,js,ts}',
@@ -9,9 +7,6 @@ export default {
     './plugins/**/*.{js,ts}',
     './nuxt.config.{js,ts}'
   ],
-  theme: {
-    extend: {},
-  },
   plugins: [
     // eslint-disable-next-line
     require("@tailwindcss/typography"),
@@ -19,14 +14,13 @@ export default {
     require('daisyui')
   ],
   daisyui: {
-    themes: themes
+    themes: ['night', 'winter']
   },
   corePlugins: {
     float: false,
     container: false,
     aspectRatio: false
   },
-  safelist: [],
-  darkMode: ['class', `[data-theme=${themes[0]}]`]
+  darkMode: ['class', `[data-theme="night"]`]
 }
 

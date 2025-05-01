@@ -10,12 +10,16 @@ export default defineNuxtConfig({
   modules: ['nuxt-snackbar', '@nuxtjs/supabase', 'nuxt-lucide-icons'],
 
   supabase: {
-    redirect:false,
     redirectOptions: {
       login: '/auth/login',
       callback: '/auth/confirm',
       exclude: ['/', '/auth/login', '/auth/confirm'],
     },
+    cookieOptions: {
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      sameSite: 'none',
+      secure: true
+    }
   },
 
   lucide: {
@@ -48,8 +52,7 @@ export default defineNuxtConfig({
         {
           innerHTML: `
             (function() {
-              const theme = localStorage.getItem('theme') || 'dark';
-              document.documentElement.setAttribute('data-theme', theme);
+              document.documentElement.setAttribute('data-theme', 'night');
             })();
           `,
           type: 'text/javascript',
@@ -60,22 +63,20 @@ export default defineNuxtConfig({
   },
 
   vite: {
-    // 1) Add the Visualizer as a Vite plugin
     plugins: [
       visualizer({
-        filename: 'stats.html',  // output file (project root)
-        open: true,              // launch in browser when build finishes
-        gzipSize: true,          // include gzipped sizes in the report
-        brotliSize: true         // include brotli sizes too
+        filename: 'stats.html',
+        open: true,
+        gzipSize: true,
+        brotliSize: true
       })
     ],
-    // 2) Hook the Analyzer into Rollup’s build step
     build: {
       rollupOptions: {
         plugins: [
           analyzer({
-            summaryOnly: true,   // just totals per chunk
-            limit: 10            // top 10 largest modules
+            summaryOnly: true,
+            limit: 10
           })
         ]
       }

@@ -2,7 +2,7 @@
 <template>
   <div>
     <!-- <Transition name="fade-slide"> -->
-      <div v-if="intro" class="hero min-h-screen">
+      <div v-if="intro" class="hero min-h-dvh">
         <div class="hero-content text-center flex flex-col items-center">
           <div class="max-w mx-4">
             <FlexonomeTitle :auto-start="true" />

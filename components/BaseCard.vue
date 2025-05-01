@@ -1,5 +1,5 @@
 <template>
-      <div v-if="isTabbed" class = "shadow-md shadow-neutral dark:shadow-black border-blue-200 dark:border-blue-950 border-2 rounded-2xl p-4 m-2" :class="BaseCardSize">
+      <div v-if="isTabbed" class = "shadow-md shadow-neutral dark:shadow-black  dark:border-blue-950 border-2 rounded-2xl p-4 m-2" :class="BaseCardSize">
         <div role="tablist" class="tabs tabs-boxed">
             <a role="tab" class="tab" @click="switchToTab1" :class="{'tab-active': activeTab === 'tab-1'}">{{ firstTab}} </a>
             <a role="tab" class="tab" @click="switchToTab2" :class="{'tab-active': activeTab === 'tab-2'}">{{ secondTab }}</a>

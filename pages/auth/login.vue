@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen w-1/2 flex items-center justify-center">
+  <div class="min-h-dvh w-10/12 flex items-center justify-center">
     <div class="max-w-md w-full bg-base-200 shadow-lg rounded-lg p-8">   
       <h2 class="text-2xl font-bold text-center mb-6 font-orbitron">Sign In to Flexonome</h2>   
       <!-- Email Sign In -->
@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useAuth } from '~/composables/useAuth';
+import { useSupabaseClient } from '#imports';
 
 defineOptions({
   name: 'AuthPage',
@@ -74,42 +74,68 @@ definePageMeta({
   layout: 'no-navigation'
 });
 
-const { signInWithEmail, signInWithOAuth, loading, error } = useAuth();
+const supabase = useSupabaseClient();
 const email = ref('');
 const emailError = ref('');
 const emailSent = ref(false);
+const loading = ref(false);
+const error = ref('');
 
 const handleEmailSignIn = async () => {
   // Reset states
   emailError.value = '';
   emailSent.value = false;
+  error.value = '';
+  loading.value = true;
   
-  // Validate email
-  if (!email.value) {
-    emailError.value = 'Email is required';
-    return;
-  }
-  
-  if (!email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-    emailError.value = 'Please enter a valid email address';
-    return;
-  }
-  
-  const redirectUrl = `${window.location.origin}/auth/confirm`;
-  const { success } = await signInWithEmail(email.value, redirectUrl);
-  
-  if (success) {
+  try {
+    // Validate email
+    if (!email.value) {
+      emailError.value = 'Email is required';
+      return;
+    }
+    
+    if (!email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      emailError.value = 'Please enter a valid email address';
+      return;
+    }
+    
+    const { error: signInError } = await supabase.auth.signInWithOtp({
+      email: email.value,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm`
+      }
+    });
+
+    if (signInError) throw signInError;
+    
     emailSent.value = true;
+  } catch (err) {
+    console.error('Sign in error:', err);
+    error.value = 'Failed to send magic link. Please try again.';
+  } finally {
+    loading.value = false;
   }
 };
 
 const handleGoogleSignIn = async () => {
-  const redirectUrl = `${window.location.origin}/auth/confirm`;
-  await signInWithOAuth('google', redirectUrl);
-};
+  loading.value = true;
+  error.value = '';
+  
+  try {
+    const { error: signInError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/confirm`
+      }
+    });
 
-// const handleFacebookSignIn = async () => {
-//   const redirectUrl = `${window.location.origin}/auth/confirm`;
-//   await signInWithOAuth('facebook', redirectUrl);
-// };
+    if (signInError) throw signInError;
+  } catch (err) {
+    console.error('Google sign in error:', err);
+    error.value = 'Failed to sign in with Google. Please try again.';
+  } finally {
+    loading.value = false;
+  }
+};
 </script> 
