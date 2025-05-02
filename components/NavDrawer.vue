@@ -3,7 +3,7 @@
     <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
     <div class="flex flex-col justify-between min-h-full w-80 bg-base-200 text-base-content">
       <!-- Navigation Menu -->
-      <ul class="menu p-4 text-lg font-montserrat">
+      <ul class="menu p-4 mt-4 text-lg font-montserrat">
         <li>
           <NuxtLink to="/metronome" :class="{ 'active': isActive('/metronome') }" @click="closeDrawer">
             <IconClock class="text-primary"/> <span>Metronome</span>
