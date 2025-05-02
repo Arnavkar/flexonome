@@ -174,7 +174,6 @@ export function parseTimeSignature(input:string): Beat[] {
     // Prepend count-in beats to the main beats array
     beats.unshift(...countInBeats);
   }
-
   return beats;
 }
 

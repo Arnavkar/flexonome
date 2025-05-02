@@ -84,7 +84,6 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
             // For regular indices, offset by the count-in beats count
             beatIndex = this.countInBeats.length + beatIndex;
         }
-                
         // Make sure the beat exists before accessing it
         if (beatIndex < 0 || beatIndex >= this.beats.length) {
             return;
@@ -95,15 +94,20 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
         const buffer = bufferIndex >= 0? this.audioBuffers[bufferIndex] : undefined;
         if (!buffer) return;
         
-        if (bufferIndex == 3) {
-            //Don't play sound 
-        } else {
+        // Conditional sound playing based on bufferIndex and beat type
+        let playMainBeatSound = true;
+        if (bufferIndex === 3) {
+            // If bufferIndex is 3, only play sound for count-in beats (bar === -1)
+            playMainBeatSound = (beat.bar === -1);
+        }
+        
+        if (playMainBeatSound) {
             playSound(buffer, this.audioContext, this.nextNoteTime);
         }
         
         // Schedule subdivision notes if subdivision > 1
         if (beat.subdivision > 1 && this.audioContext) {
-            const subdivisionBuffer = this.audioBuffers[2]; // Use bufferIndex 2 for subdivisions
+            const subdivisionBuffer = this.audioBuffers[3]; // Use bufferIndex 3for subdivisions
             if (subdivisionBuffer) {
                 const beatDuration = (60 / this.bpm) / (beat.beatUnit / 4);
                 const subdivisionDuration = beatDuration / beat.subdivision;

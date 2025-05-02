@@ -59,13 +59,46 @@
             </div>
             <!-- Open the modal using ID.showModal() method -->
             <dialog id="help_modal" class="modal modal-bottom sm:modal-middle">
-                <div class="modal-box">
-                    <h3 class="text-lg font-bold">Multiple Time Signatures</h3>
-                    <ul class="mt-4 ml-4 list-disc">
-                        <li>Input Time signatures by clicking the provided buttons</li>
-                        <li>Manually Time Signature values in the textbox, separated '&' </li>
-                        <li> <span>If you want multiple bars of the same time signature, you can enclose the value in
-                                brackets and multiply by the desired number of bars <i>(Eg. (2/4)*2)</i></span></li>
+                <div class="modal-box max-w-2xl">
+                    <h3 class="text-lg font-bold">Time Signature String Syntax</h3>
+                    <ul class="mt-4 ml-4 list-disc space-y-3">
+                        <li>
+                            <span>Use <code>&</code> to separate different time signature sections.</span>
+                            <ul class="list-inside ml-4">
+                                <li>e.g., <code>4/4 & 3/8</code></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span>Basic format: <code>num/den</code>.</span>
+                            <ul class="list-inside ml-4">
+                                <li>e.g., <code>4/4</code></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span>Specify subdivisions per beat: <code>num[sub]/den</code>.</span>
+                            <ul class="list-inside ml-4">
+                                <li>e.g., <code>4[3]/4</code>, or 4/4 time with triplet subdivisions</li>
+                                <li class="text-sm italic">Note: You can also click subdivision dots to toggle them!</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span>Repeat a section: <code>n*(...)</code>.</span>
+                             <ul class="list-inside ml-4">
+                                <li>e.g., <code>2*(3/8)</code></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span>Add a count-in bar: <code>ci(...)</code>.</span>
+                             <ul class="list-inside ml-4">
+                                <li>e.g., <code>ci(4/4)</code></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span>Combine formats.</span>
+                             <ul class="list-inside ml-4">
+                                <li>e.g., <code>ci(2/4) & 4/4 & 2*(3/8) & 5[3]/8</code></li>
+                            </ul>
+                        </li>
                     </ul>
                     <div class="modal-action">
                         <form method="dialog">

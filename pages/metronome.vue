@@ -108,8 +108,15 @@ function throwSuccess(message: string) {
   })
 }
 
-function incrementBeatAccent(index: number) {
-  metronome.beats[index].accent = (metronome.beats[index].accent + 1) % 4;
+function incrementBeatAccent(targetBeatIndex: number) {
+  // Find the actual index in the beats array using the targetBeatIndex
+  const actualIndex = metronome.beats.findIndex(beat => beat.beatIndex === targetBeatIndex);
+  
+  if (actualIndex !== -1) {
+    metronome.beats[actualIndex].accent = (metronome.beats[actualIndex].accent + 1) % 4;
+  } else {
+    console.error(`Beat with index ${targetBeatIndex} not found.`);
+  }
 }
 
 function handleBeatSubdivisionUpdate(updatedBeat: Beat) {
