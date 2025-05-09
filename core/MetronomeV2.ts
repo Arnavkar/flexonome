@@ -2,9 +2,13 @@ import { playSound } from '~/utils/utils';
 import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
 import type { IAcceleratorMetronome } from '~/interfaces/IAcceleratorMetronome';
+import { loadMetronomeSettings, saveMetronomeSettings } from '~/utils/storage';
 import BaseMetronome from './BaseMetronome';
 export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMetronome {
-    public beats: Beat[] = parseTimeSignature('4/4');
+    public timeSignatureString: string = '4/4';
+    public get beats(): Beat[] {
+        return parseTimeSignature(this.timeSignatureString);
+    }
     public activeBeat: number = -1 - this.countInBeats.length;
 
     public get countInBeats(): Beat[] {
@@ -38,6 +42,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
     public async setup() {
         this.audioContext = new AudioContext();
         this.audioBuffers = await setUpAudioBuffers(this.audioContext, audioPaths);
+        this.init();
         //this.setUpWorker()
     }
 
@@ -188,9 +193,9 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
 
     public updateTimeSignature(inputString: string) {
         try {
-            this.beats = parseTimeSignature(inputString);
+            this.timeSignatureString = inputString;
             this.activeBeat = -1 - this.countInBeats.length;
-            // this.successCallback("New Time Signature Applied");
+            this.saveSettings(); // Save settings after update
         } catch (e) {
             this.errorCallback((e as Error).message);
         }
@@ -202,7 +207,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
 
     public toggleAccelerator() {
         this.acceleratorEnabled = !this.acceleratorEnabled;
-        this.stop()
+        this.saveSettings(); // Save settings after update
     }
 
     public setAccelerator(accelerator: Accelerator) {
@@ -210,6 +215,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
         this.stop();
         this.accelerator = accelerator;
         this.updateBpm(accelerator.startBPM);
+        this.saveSettings(); // Save settings after update
         this.successCallback("Accelerator Settings Applied");
     }
 
@@ -228,5 +234,39 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
             // Update the subdivisionEnabled array
             this.beats[beatIndex].subdivisionEnabled = updatedBeat.subdivisionEnabled;
         }
+    }
+
+    // Method to serialize metronome settings to localStorage
+    public override saveSettings(): void {
+        // Create a settings object with current state
+        const settings = {
+            bpm: this.bpm,
+            timeSignature: this.timeSignatureString,
+            accelerator: this.accelerator,
+            acceleratorEnabled: this.acceleratorEnabled
+        };
+        
+        // Save to localStorage
+        saveMetronomeSettings(settings);
+    }
+
+    // Method to deserialize metronome settings from localStorage
+    public override loadSettings(): void {
+        // Default settings to use if nothing is stored
+        const defaultSettings = {
+            bpm: 120,
+            timeSignature: '4/4',
+            accelerator: defaultAccelerator,
+            acceleratorEnabled: false
+        };
+        
+        // Load settings from localStorage
+        const settings = loadMetronomeSettings(defaultSettings);
+        
+        // Apply loaded settings
+        this.bpm = settings.bpm;
+        this.timeSignatureString = settings.timeSignature;
+        this.accelerator = settings.accelerator;
+        this.acceleratorEnabled = settings.acceleratorEnabled;
     }
 }

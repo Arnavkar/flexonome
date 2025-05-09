@@ -13,6 +13,21 @@ export default class BaseMetronome implements IBaseMetronome{
     this.errorCallback = errorCallback;
   }
 
+  // Initialize the metronome by loading settings from localStorage
+  public init(): void {
+    this.loadSettings();
+  }
+
+  // Method to save settings to localStorage - to be overridden by subclasses
+  public saveSettings(): void {
+    // Base implementation - subclasses should override this
+  }
+
+  // Method to load settings from localStorage - to be overridden by subclasses
+  public loadSettings(): void {
+    // Base implementation - subclasses should override this
+  }
+
   public start(){
     if (this.isRunning) return;
     this.isRunning = true;
@@ -44,5 +59,6 @@ export default class BaseMetronome implements IBaseMetronome{
   public updateBpm(newBpm: number) {
     if (!validateBPM(newBpm, this.errorCallback)) return;
     this.bpm = newBpm;
+    this.saveSettings(); // Save settings after BPM update
   }
 }

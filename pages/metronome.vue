@@ -127,7 +127,6 @@ provide('incrementBeatAccent', incrementBeatAccent)
 
 onMounted(() => {
   metronome.addCallbacks(throwSuccess, throwError);
-
   if (metronome instanceof MetronomeV2) metronome.setup();
 });
 

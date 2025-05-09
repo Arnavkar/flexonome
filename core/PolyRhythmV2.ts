@@ -2,6 +2,7 @@ import { playSound } from '~/utils/utils';
 import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
 import type { IAcceleratorMetronome } from '~/interfaces/IAcceleratorMetronome';
+import { loadPolyrhythmSettings, savePolyrhythmSettings } from '~/utils/storage';
 import BaseMetronome from './BaseMetronome';
 import { validateBPM } from '~/utils/utils';
 
@@ -139,11 +140,13 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
     public updateRatio(index:number ,value: number) {
         this.ratios[index] = value;
         this.beats = this.constructBeats();
+        this.saveSettings(); // Save settings after update
     }
 
     public toggleAccelerator() {
         this.acceleratorEnabled = !this.acceleratorEnabled;
-        this.stop()
+        this.stop();
+        this.saveSettings(); // Save settings after update
     }
 
     public setAccelerator(accelerator: Accelerator) {
@@ -151,6 +154,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
         this.stop();
         this.accelerator = accelerator;
         this.updateBpm(accelerator.startBPM);
+        this.saveSettings(); // Save settings after update
         this.successCallback("Accelerator Settings Applied");
     }
 
@@ -163,7 +167,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
         if (!validateBPM(newBpm, this.errorCallback)) return;
 
         if (this.acceleratorEnabled) { // if accelerator is enabled, don't debounce
-            super.updateBpm(newBpm)
+            super.updateBpm(newBpm);
             return;
         }
         
@@ -176,13 +180,49 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
             this.stop();
             this.isRunning = true; // hack to get the bpm to update since wasRunning checks against isRunning
         }
-
+        
         this.debounceTimeout = window.setTimeout(() => {
             this.bpm = newBpm;
+            this.saveSettings(); // Save settings after update
             if (wasRunning) {
                 this.start();
             }
             this.debounceTimeout = null
         }, this.debounceDelay);
+    }
+
+    // Method to serialize polyrhythm settings to localStorage
+    public override saveSettings(): void {
+        // Create a settings object with current state
+        const settings = {
+            bpm: this.bpm,
+            ratios: this.ratios,
+            accelerator: this.accelerator,
+            acceleratorEnabled: this.acceleratorEnabled
+        };
+        
+        // Save to localStorage
+        savePolyrhythmSettings(settings);
+    }
+
+    // Method to deserialize polyrhythm settings from localStorage
+    public override loadSettings(): void {
+        // Default settings to use if nothing is stored
+        const defaultSettings = {
+            bpm: 120,
+            ratios: [3, 4],
+            accelerator: defaultAccelerator,
+            acceleratorEnabled: false
+        };
+        
+        // Load settings from localStorage
+        const settings = loadPolyrhythmSettings(defaultSettings);
+        
+        // Apply loaded settings
+        this.bpm = settings.bpm;
+        this.ratios = settings.ratios;
+        this.beats = this.constructBeats();
+        this.accelerator = settings.accelerator;
+        this.acceleratorEnabled = settings.acceleratorEnabled;
     }
 }
