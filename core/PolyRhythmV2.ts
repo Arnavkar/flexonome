@@ -3,6 +3,7 @@ import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
 import type { IAcceleratorMetronome } from '~/interfaces/IAcceleratorMetronome';
 import BaseMetronome from './BaseMetronome';
+import { validateBPM } from '~/utils/utils';
 
 export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorMetronome {
     public ratios: number[] = [3, 4];
@@ -21,6 +22,9 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
     public nextNoteTimes: number[] = [0,0]; // Next note's scheduled time
     public scheduleAheadTime: number = 0.1; // How far ahead to schedule (in seconds)
     public timerInterval: number = 25;
+    
+    public debounceTimeout: number | null = null;
+    public debounceDelay: number = 300; // 300ms debounce delay
 
     public beats: Beat[] = this.constructBeats();
 
@@ -125,6 +129,13 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
         this.activeCircles = [-1, -1];
     }
 
+    public pause() {
+        this.numBeatsBeforeIncrement = 1000;
+        this.currentBeatInAcceleratorLoop = 1;
+        this.accelerator.progress = 0;
+        this.activeCircles = [-1, -1];
+    }
+
     public updateRatio(index:number ,value: number) {
         this.ratios[index] = value;
         this.beats = this.constructBeats();
@@ -146,5 +157,32 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
     public clear() {
         this.stop();
         this.audioContext?.close();
+    }
+
+    public override updateBpm(newBpm: number) {
+        if (!validateBPM(newBpm, this.errorCallback)) return;
+
+        if (this.acceleratorEnabled) { // if accelerator is enabled, don't debounce
+            super.updateBpm(newBpm)
+            return;
+        }
+        
+        if (this.debounceTimeout) {
+            window.clearTimeout(this.debounceTimeout);
+        }
+        
+        const wasRunning = this.isRunning;
+        if (wasRunning) {
+            this.stop();
+            this.isRunning = true; // hack to get the bpm to update since wasRunning checks against isRunning
+        }
+
+        this.debounceTimeout = window.setTimeout(() => {
+            this.bpm = newBpm;
+            if (wasRunning) {
+                this.start();
+            }
+            this.debounceTimeout = null
+        }, this.debounceDelay);
     }
 }
