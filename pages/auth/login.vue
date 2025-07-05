@@ -1,10 +1,14 @@
 <template>
   <div class="min-h-dvh w-10/12 flex items-center justify-center">
     <div class="max-w-md w-full bg-base-200 shadow-lg rounded-lg p-8">   
-      <h2 class="text-2xl font-bold text-center mb-6 font-orbitron">Sign In to Flexonome</h2>   
-      <!-- Email Sign In -->
-      <div class="mb-8">
-        <div class="form-control">
+      <h2 class="text-2xl font-bold text-center mb-6 font-orbitron">
+        {{ currentMode === 'signin' ? 'Sign In to Flexonome' : 
+           currentMode === 'signup' ? 'Create Account' : 'Reset Password' }}
+      </h2>   
+      
+      <!-- Sign In / Sign Up Form -->
+      <div v-if="currentMode !== 'reset'" class="mb-8">
+        <div class="form-control mb-4">
           <input
             v-model="email"
             type="email"
@@ -17,21 +21,85 @@
           </label>
         </div>
         
+        <div class="form-control mb-4">
+          <input
+            v-model="password"
+            type="password"
+            placeholder="Password"
+            class="input input-bordered w-full"
+            :class="{'input-error': passwordError}"
+          />
+          <label v-if="passwordError" class="label">
+            <span class="label-text-alt text-error">{{ passwordError }}</span>
+          </label>
+        </div>
+        
+        <div v-if="currentMode === 'signup'" class="form-control mb-4">
+          <input
+            v-model="confirmPassword"
+            type="password"
+            placeholder="Confirm Password"
+            class="input input-bordered w-full"
+            :class="{'input-error': confirmPasswordError}"
+          />
+          <label v-if="confirmPasswordError" class="label">
+            <span class="label-text-alt text-error">{{ confirmPasswordError }}</span>
+          </label>
+        </div>
+        
         <button 
-          @click="handleEmailSignIn" 
-          class="btn btn-primary w-full mt-4"
+          @click="handleEmailAuth" 
+          class="btn btn-primary w-full mb-4"
           :disabled="loading"
         >
           <span v-if="loading" class="loading loading-spinner loading-xs mr-2"></span>
-          <IconWand/> Sign In with Magic Link <IconWand/>
+          {{ currentMode === 'signin' ? 'Sign In' : 'Create Account' }}
+        </button>
+        
+        <div v-if="currentMode === 'signin'" class="text-center mb-4">
+          <button 
+            @click="currentMode = 'reset'" 
+            class="link link-primary text-sm"
+          >
+            Forgot your password?
+          </button>
+        </div>
+      </div>
+      
+      <!-- Reset Password Form -->
+      <div v-if="currentMode === 'reset'" class="mb-8">
+        <p class="text-sm text-base-content/70 mb-4">
+          Enter your email address and we'll send you a link to reset your password.
+        </p>
+        
+        <div class="form-control mb-4">
+          <input
+            v-model="resetEmail"
+            type="email"
+            placeholder="your@email.com"
+            class="input input-bordered w-full"
+            :class="{'input-error': resetEmailError}"
+          />
+          <label v-if="resetEmailError" class="label">
+            <span class="label-text-alt text-error">{{ resetEmailError }}</span>
+          </label>
+        </div>
+        
+        <button 
+          @click="handlePasswordReset" 
+          class="btn btn-primary w-full mb-4"
+          :disabled="loading"
+        >
+          <span v-if="loading" class="loading loading-spinner loading-xs mr-2"></span>
+          Send Reset Link
         </button>
       </div>
       
       <!-- Divider -->
-      <div class="divider">OR</div>
+      <div v-if="currentMode !== 'reset'" class="divider">OR</div>
       
       <!-- OAuth Providers -->
-      <div class="flex flex-col gap-4">
+      <div v-if="currentMode !== 'reset'" class="flex flex-col gap-4 mb-6">
         <button 
           @click="handleGoogleSignIn" 
           class="btn btn-outline"
@@ -45,25 +113,39 @@
           </svg>
           Sign in with Google
         </button>
-        
-        <!-- <button 
-          @click="handleFacebookSignIn" 
-          class="btn btn-outline"
-          :disabled="loading"
-        >
-          <i class="fab fa-facebook-f mr-2"></i> Continue with Facebook
-        </button> -->
       </div>
       
-      <p v-if="error" class="mt-4 text-error text-center">{{ error }}</p>
-      <p v-if="emailSent" class="mt-4 text-success text-center">Check your email for the login link!</p>
+      <!-- Mode Toggle -->
+      <div class="text-center">
+        <div v-if="currentMode === 'signin'">
+          <span class="text-sm text-base-content/70">Don't have an account? </span>
+          <button @click="switchMode('signup')" class="link link-primary text-sm">
+            Sign up
+          </button>
+        </div>
+        <div v-else-if="currentMode === 'signup'">
+          <span class="text-sm text-base-content/70">Already have an account? </span>
+          <button @click="switchMode('signin')" class="link link-primary text-sm">
+            Sign in
+          </button>
+        </div>
+        <div v-else>
+          <button @click="switchMode('signin')" class="link link-primary text-sm">
+            Back to sign in
+          </button>
+        </div>
+      </div>
+      
+      <!-- Messages -->
+      <div v-if="error" class="mt-4 text-error text-center text-sm">{{ error }}</div>
+      <div v-if="successMessage" class="mt-4 text-success text-center text-sm">{{ successMessage }}</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useSupabaseClient } from '#imports';
+import { useAuth } from '#imports';
 
 defineOptions({
   name: 'AuthPage',
@@ -74,63 +156,164 @@ definePageMeta({
   layout: 'no-navigation'
 });
 
-const supabase = useSupabaseClient();
-const email = ref('');
-const emailError = ref('');
-const emailSent = ref(false);
-const loading = ref(false);
-const error = ref('');
+const { signUpWithEmail, signInWithEmail, signInWithOAuth, resetPassword } = useAuth();
 
-const handleEmailSignIn = async () => {
-  // Reset states
+// Form state
+const currentMode = ref<'signin' | 'signup' | 'reset'>('signin');
+const email = ref('');
+const password = ref('');
+const confirmPassword = ref('');
+const resetEmail = ref('');
+
+// Error states
+const emailError = ref('');
+const passwordError = ref('');
+const confirmPasswordError = ref('');
+const resetEmailError = ref('');
+const error = ref('');
+const successMessage = ref('');
+
+// Loading state
+const loading = ref(false);
+
+// Validation functions
+const validateEmail = (emailValue: string) => {
+  if (!emailValue) {
+    return 'Email is required';
+  }
+  if (!emailValue.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    return 'Please enter a valid email address';
+  }
+  return '';
+};
+
+const validatePassword = (passwordValue: string) => {
+  if (!passwordValue) {
+    return 'Password is required';
+  }
+  if (passwordValue.length < 6) {
+    return 'Password must be at least 6 characters';
+  }
+  return '';
+};
+
+const validateConfirmPassword = (passwordValue: string, confirmValue: string) => {
+  if (!confirmValue) {
+    return 'Please confirm your password';
+  }
+  if (passwordValue !== confirmValue) {
+    return 'Passwords do not match';
+  }
+  return '';
+};
+
+// Clear all errors and messages
+const clearMessages = () => {
   emailError.value = '';
-  emailSent.value = false;
+  passwordError.value = '';
+  confirmPasswordError.value = '';
+  resetEmailError.value = '';
   error.value = '';
+  successMessage.value = '';
+};
+
+// Switch between modes
+const switchMode = (mode: 'signin' | 'signup' | 'reset') => {
+  currentMode.value = mode;
+  clearMessages();
+  
+  // Clear form fields when switching modes
+  if (mode === 'reset') {
+    resetEmail.value = email.value;
+  }
+};
+
+// Handle email/password authentication
+const handleEmailAuth = async () => {
+  clearMessages();
   loading.value = true;
   
   try {
-    // Validate email
-    if (!email.value) {
-      emailError.value = 'Email is required';
+    // Validate inputs
+    emailError.value = validateEmail(email.value);
+    passwordError.value = validatePassword(password.value);
+    
+    if (currentMode.value === 'signup') {
+      confirmPasswordError.value = validateConfirmPassword(password.value, confirmPassword.value);
+    }
+    
+    // Stop if validation failed
+    if (emailError.value || passwordError.value || confirmPasswordError.value) {
       return;
     }
     
-    if (!email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      emailError.value = 'Please enter a valid email address';
-      return;
+    let result;
+    if (currentMode.value === 'signin') {
+      result = await signInWithEmail(email.value, password.value);
+    } else {
+      result = await signUpWithEmail(email.value, password.value);
     }
     
-    const { error: signInError } = await supabase.auth.signInWithOtp({
-      email: email.value,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/confirm`
-      }
-    });
-
-    if (signInError) throw signInError;
-    
-    emailSent.value = true;
+         if (result.success) {
+       if (currentMode.value === 'signup') {
+         successMessage.value = 'Account created! Please check your email to verify your account.';
+       } else {
+         // Redirect will happen automatically via auth state change
+         successMessage.value = 'Successfully signed in! Redirecting...';
+       }
+     } else {
+      error.value = result.error || 'An error occurred. Please try again.';
+    }
   } catch (err) {
-    console.error('Sign in error:', err);
-    error.value = 'Failed to send magic link. Please try again.';
+    console.error('Auth error:', err);
+    error.value = 'An unexpected error occurred. Please try again.';
   } finally {
     loading.value = false;
   }
 };
 
+// Handle password reset
+const handlePasswordReset = async () => {
+  clearMessages();
+  loading.value = true;
+  
+  try {
+    resetEmailError.value = validateEmail(resetEmail.value);
+    
+    if (resetEmailError.value) {
+      return;
+    }
+    
+    const result = await resetPassword(resetEmail.value);
+    
+    if (result.success) {
+      successMessage.value = 'Password reset link sent! Check your email.';
+      // Switch back to signin mode after a delay
+      setTimeout(() => {
+        switchMode('signin');
+      }, 3000);
+    } else {
+      error.value = result.error || 'Failed to send reset email. Please try again.';
+    }
+  } catch (err) {
+    console.error('Reset error:', err);
+    error.value = 'An unexpected error occurred. Please try again.';
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Handle Google sign in
 const handleGoogleSignIn = async () => {
   loading.value = true;
   error.value = '';
   
   try {
-    const { error: signInError } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/confirm`
-      }
-    });
-
-    if (signInError) throw signInError;
+    const result = await signInWithOAuth('google');
+    
+    if (!result.success) {
+      error.value = result.error || 'Failed to sign in with Google. Please try again.';
+    }
   } catch (err) {
     console.error('Google sign in error:', err);
     error.value = 'Failed to sign in with Google. Please try again.';
