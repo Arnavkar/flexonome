@@ -7,7 +7,7 @@ export interface IBaseMetronome {
     
     successCallback: (message: string) => void;
     errorCallback: (message: string) => void;
-    addCallbacks(successCallback: (message: string) => void, errorCallback: (message: string) => void): void;
+    registerCallbacks(successCallback: (message: string) => void, errorCallback: (message: string) => void): void;
     start:() => void;
     stop:() => void;
     toggle:() => void;

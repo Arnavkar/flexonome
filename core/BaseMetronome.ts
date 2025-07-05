@@ -8,24 +8,21 @@ export default class BaseMetronome implements IBaseMetronome{
   public successCallback:(message:string) => void = (message:string) => console.log(message);
   public errorCallback: (message:string) => void = (message:string) => console.error(message);
 
-  public addCallbacks(successCallback: (message:string) => void, errorCallback: (message:string) => void) {
+  public registerCallbacks(successCallback: (message:string) => void, errorCallback: (message:string) => void) {
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
   }
 
-  // Initialize the metronome by loading settings from localStorage
   public init(): void {
     this.loadSettings();
   }
 
-  // Method to save settings to localStorage - to be overridden by subclasses
   public saveSettings(): void {
-    // Base implementation - subclasses should override this
+    //subclasses should override this
   }
 
-  // Method to load settings from localStorage - to be overridden by subclasses
   public loadSettings(): void {
-    // Base implementation - subclasses should override this
+    //subclasses should override this
   }
 
   public start(){
@@ -35,6 +32,7 @@ export default class BaseMetronome implements IBaseMetronome{
 
   public stop() {
     if (!this.isRunning) return;
+    //clear all timeouts
     if (this.timeoutIds.length > 0) {
       this.timeoutIds.forEach(id => clearTimeout(id));
       this.timeoutIds = [];

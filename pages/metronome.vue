@@ -126,7 +126,7 @@ function handleBeatSubdivisionUpdate(updatedBeat: Beat) {
 provide('incrementBeatAccent', incrementBeatAccent)
 
 onMounted(() => {
-  metronome.addCallbacks(throwSuccess, throwError);
+  metronome.registerCallbacks(throwSuccess, throwError);
   if (metronome instanceof MetronomeV2) metronome.setup();
 });
 

@@ -94,7 +94,7 @@ provide('incrementBeatAccent', incrementBeatAccent)
 
 onMounted(() => {
   getWidth();
-  phaser.addCallbacks(throwSuccess, throwError);
+  phaser.registerCallbacks(throwSuccess, throwError);
 
   if (phaser instanceof PhaserV2) phaser.setup();
 });

@@ -104,7 +104,7 @@ function incrementBeatAccent(index: number) {
 provide('incrementBeatAccent', incrementBeatAccent)
 
 onMounted(() => {
-  polyrhythm.addCallbacks(throwSuccess, throwError);
+  polyrhythm.registerCallbacks(throwSuccess, throwError);
 
   if (polyrhythm instanceof PolyRhythmV2) polyrhythm.setup();
 });
