@@ -1,4 +1,5 @@
 // import { useAuth } from "~/composables/useAuth";
+//Not being used right now
 
 export default defineNuxtRouteMiddleware((to) => {
   // Skip middleware for the landing page and auth pages

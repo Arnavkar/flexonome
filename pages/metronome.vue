@@ -76,11 +76,6 @@ defineOptions({
 });
 
 //eslint-disable-next-line
-definePageMeta({
-  middleware: ['auth']
-});
-
-//eslint-disable-next-line
 const snackbar = useSnackbar();
 const timeSignatureModalId = "timeSignatureModal";
 const acceleratorModalId = "acceleratorModal";

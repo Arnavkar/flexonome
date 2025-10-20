@@ -50,11 +50,6 @@ defineOptions({
 });
 
 //eslint-disable-next-line
-definePageMeta({
-  middleware: ['auth']
-});
-
-//eslint-disable-next-line
 const snackbar = useSnackbar();
 const phaser = reactive(new PhaserV2());
 const width: Ref<number> = ref(0);

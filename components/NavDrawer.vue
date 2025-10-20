@@ -38,10 +38,17 @@
         </div>
         
         <!-- buttons -->
-                  
-        <button @click="handleSignOut" class="btn btn-sm w-full logout-btn relative group mb-2">
-          <span class="relative flex items-center gap-2 z-10"> <IconLogOut :size="16"/> Logout</span>
-        </button>
+
+        <div v-if="user">
+          <button @click="handleSignOut" class="btn btn-sm w-full logout-btn relative group mb-2">
+            <span class="relative flex items-center gap-2 z-10"> <IconLogOut :size="16"/> Logout</span>
+          </button>
+        </div>
+        <div v-else>
+          <NuxtLink to="/auth/login" class="btn btn-sm w-full login-btn relative group mb-2" @click="closeDrawer">
+            <span class="relative flex items-center gap-2 z-10">Login / Sign up</span>
+          </NuxtLink>
+        </div>
         <a 
           href="https://tally.so/r/wLopVl" 
           target="_blank" 

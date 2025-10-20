@@ -68,11 +68,6 @@ defineOptions({
 });
 
 //eslint-disable-next-line
-definePageMeta({
-  middleware: ['auth']
-});
-
-//eslint-disable-next-line
 const snackbar = useSnackbar();
 const polyrhythm = reactive(new PolyRhythmV2());
 const isMobile = inject('isMobile');

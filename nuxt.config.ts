@@ -7,13 +7,14 @@ export default defineNuxtConfig({
     '~/assets/css/main.css',
   ],
 
+  //Removed Supabase
   modules: ['nuxt-snackbar', '@nuxtjs/supabase', 'nuxt-lucide-icons'],
 
   supabase: {
     redirectOptions: {
       login: '/auth/login',
       callback: '/auth/confirm',
-      exclude: ['/', '/auth/login', '/auth/confirm'],
+      exclude: ['/**']
     },
     cookieOptions: {
       maxAge: 60 * 60 * 24 * 7, // 1 week
