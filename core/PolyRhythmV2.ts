@@ -18,7 +18,6 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
     public numBeatsBeforeIncrement: number = 0;
     public currentBeatInAcceleratorLoop: number = 1;
     private spacebarHandler: ((event: KeyboardEvent) => void) | null = null;
-    private touchHandler: ((event: TouchEvent) => void) | null = null;
 
     public audioContext: AudioContext | null = null;
     public audioBuffers: AudioBuffer[] = [];
@@ -182,8 +181,6 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
 
     private setupSpacebarListener() {
         this.removeSpacebarListener(); // Remove any existing listener first
-
-        // Keyboard event listener
         this.spacebarHandler = (event: KeyboardEvent) => {
             if (event.key === ' ' || event.code === 'Space') {
                 event.preventDefault();
@@ -193,17 +190,6 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
             }
         };
         window.addEventListener('keydown', this.spacebarHandler);
-
-        // Touch event listener for mobile devices
-        if (this.isMobileDevice()) {
-            this.touchHandler = (event: TouchEvent) => {
-                event.preventDefault();
-                if (this.isRunning && this.acceleratorEnabled && this.accelerator.mode === 'manual') {
-                    this.manualIncrementBpm();
-                }
-            };
-            document.body.addEventListener('touchstart', this.touchHandler, { passive: false });
-        }
     }
 
     private removeSpacebarListener() {
@@ -211,18 +197,6 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
             window.removeEventListener('keydown', this.spacebarHandler);
             this.spacebarHandler = null;
         }
-        if (this.touchHandler) {
-            document.body.removeEventListener('touchstart', this.touchHandler);
-            this.touchHandler = null;
-        }
-    }
-
-    private isMobileDevice(): boolean {
-        // Check user agent for mobile devices
-        const userAgentMobile = /Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        // Also check screen width (similar to the Vue composable breakpoint)
-        const widthMobile = window.innerWidth < 980;
-        return userAgentMobile || widthMobile;
     }
 
     private manualIncrementBpm() {
