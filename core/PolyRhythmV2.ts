@@ -17,6 +17,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
     public acceleratorEnabled: boolean = false;
     public numBeatsBeforeIncrement: number = 0;
     public currentBeatInAcceleratorLoop: number = 1;
+    private spacebarHandler: ((event: KeyboardEvent) => void) | null = null;
 
     public audioContext: AudioContext | null = null;
     public audioBuffers: AudioBuffer[] = [];
@@ -92,7 +93,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
 
         const beatDuration = this.totalTime / this.ratios[index]
         this.nextNoteTimes[index] += beatDuration;
-        if (this.acceleratorEnabled) {
+        if (this.acceleratorEnabled && this.accelerator.mode === 'automatic') {
             if (this.currentBeatInAcceleratorLoop == 0) {
                 this.accelerator.progress = 100;
             } else {
@@ -113,6 +114,9 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
 
         if (this.acceleratorEnabled) {
             this.numBeatsBeforeIncrement = this.ratios[0] * this.accelerator.numBarsToRepeat + this.ratios[1] * this.accelerator.numBarsToRepeat;
+            if (this.accelerator.mode === 'manual') {
+                this.setupSpacebarListener();
+            }
         }
         this.currentBeatInAcceleratorLoop = 1;
         this.nextNoteTimes = [this.audioContext.currentTime, this.audioContext.currentTime];
@@ -124,6 +128,7 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
 
     public override stop() {
         super.stop()
+        this.removeSpacebarListener();
         this.numBeatsBeforeIncrement = 1000;
         this.currentBeatInAcceleratorLoop = 1;
         this.accelerator.progress = 0;
@@ -144,23 +149,61 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
     }
 
     public toggleAccelerator() {
-        this.acceleratorEnabled = !this.acceleratorEnabled;
+        const wasRunning = this.isRunning;
         this.stop();
+        this.acceleratorEnabled = !this.acceleratorEnabled;
         this.saveSettings(); // Save settings after update
+        if (wasRunning && this.acceleratorEnabled && this.accelerator.mode === 'manual') {
+            this.start();
+        } else if (wasRunning) {
+            this.start();
+        }
     }
 
     public setAccelerator(accelerator: Accelerator) {
         if (!validateAccelerator(accelerator, this.errorCallback)) return;
+        const wasRunning = this.isRunning;
         this.stop();
         this.accelerator = accelerator;
         this.updateBpm(accelerator.startBPM);
         this.saveSettings(); // Save settings after update
+        if (wasRunning) {
+            this.start();
+        }
         this.successCallback("Accelerator Settings Applied");
     }
 
     public clear() {
         this.stop();
+        this.removeSpacebarListener();
         this.audioContext?.close();
+    }
+
+    private setupSpacebarListener() {
+        this.removeSpacebarListener(); // Remove any existing listener first
+        this.spacebarHandler = (event: KeyboardEvent) => {
+            if (event.key === ' ' || event.code === 'Space') {
+                event.preventDefault();
+                if (this.isRunning && this.acceleratorEnabled && this.accelerator.mode === 'manual') {
+                    this.manualIncrementBpm();
+                }
+            }
+        };
+        window.addEventListener('keydown', this.spacebarHandler);
+    }
+
+    private removeSpacebarListener() {
+        if (this.spacebarHandler) {
+            window.removeEventListener('keydown', this.spacebarHandler);
+            this.spacebarHandler = null;
+        }
+    }
+
+    private manualIncrementBpm() {
+        if (this.bpm < this.accelerator.maxBpm) {
+            const newBpm = Math.min(this.accelerator.maxBpm, this.bpm + this.accelerator.bpmIncrement);
+            this.updateBpm(newBpm);
+        }
     }
 
     public override updateBpm(newBpm: number) {
@@ -222,7 +265,11 @@ export default class PolyRhythmV2 extends BaseMetronome implements IAcceleratorM
         this.bpm = settings.bpm;
         this.ratios = settings.ratios;
         this.beats = this.constructBeats();
-        this.accelerator = settings.accelerator;
+        // Ensure backward compatibility: if mode is missing, default to 'automatic'
+        this.accelerator = {
+            ...settings.accelerator,
+            mode: settings.accelerator.mode || 'automatic'
+        };
         this.acceleratorEnabled = settings.acceleratorEnabled;
     }
 }

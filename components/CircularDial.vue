@@ -3,7 +3,25 @@
         <template #tab1>
         <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 touch-none">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
-                <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
+                <input 
+                    v-if="editingBpm"
+                    v-model="tempBpm"
+                    type="number"
+                    min="20"
+                    max="300"
+                    class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold bg-transparent border-none remove-arrow"
+                    @blur="handleBpmBlur"
+                    @keyup="handleBpmKeyup"
+                    @mousedown.stop
+                    @touchstart.stop
+                />
+                <label 
+                    v-else
+                    class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold cursor-text"
+                    @click="handleBpmFocus"
+                    @mousedown.stop
+                    @touchstart.stop
+                >{{ bpm }}</label>
                 <div class="text-lg">
                     BPM (♩)
                 </div>
@@ -31,7 +49,25 @@
             <div class="radial-progress mt-2 dark:text-gray-700 text-gray-200 touch-none" role="progressbar" style="--value:100; --size:15rem; --thickness: 4px; ">
                 <div class="radial-progress text-secondary" role="progressbar"  style=" --size:15rem; --thickness: 4px;" :style="{'--value':progress}">
                     <div class="absolute inset-0 flex flex-col justify-center items-center">
-                        <label class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold"> {{ bpm }} </label>
+                        <input 
+                            v-if="editingBpm"
+                            v-model="tempBpm"
+                            type="number"
+                            min="20"
+                            max="300"
+                            class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold bg-transparent border-none remove-arrow"
+                            @blur="handleBpmBlur"
+                            @keyup="handleBpmKeyup"
+                            @mousedown.stop
+                            @touchstart.stop
+                        />
+                        <label 
+                            v-else
+                            class="text-primary focus:outline-none focus:border-0 focus:text-primary text-center w-2/3 max-w-xs text-5xl font-bold cursor-text"
+                            @click="handleBpmFocus"
+                            @mousedown.stop
+                            @touchstart.stop
+                        >{{ bpm }}</label>
                         <div class="text-lg dark:text-white text-black">
                             BPM (♩)
                         </div>
@@ -62,6 +98,8 @@ const dragging:Ref<boolean>= ref(false);
 const bpm:Ref<number> = ref(props.bpm);
 const dial:Ref<HTMLElement|null> = ref(null);
 const isAccelerator:Ref<boolean> = ref(false);
+const editingBpm:Ref<boolean> = ref(false);
+const tempBpm:Ref<string> = ref('');
 
 function startDrag(event: MouseEvent){
     event.preventDefault(); //Prevents highlighting etc.
@@ -173,6 +211,29 @@ watch(bpm, (newBpm) => {
 watch(isAccelerator, () => {
     emits('toggleAccelerator');
 });
+
+function handleBpmFocus() {
+    editingBpm.value = true;
+    tempBpm.value = bpm.value.toString();
+}
+
+function handleBpmBlur() {
+    editingBpm.value = false;
+    const numValue = parseInt(tempBpm.value, 10);
+    if (!isNaN(numValue)) {
+        const clampedValue = Math.max(20, Math.min(300, numValue));
+        bpm.value = clampedValue;
+        tempBpm.value = clampedValue.toString();
+    } else {
+        tempBpm.value = bpm.value.toString();
+    }
+}
+
+function handleBpmKeyup(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+        handleBpmBlur();
+    }
+}
 
 </script>
 

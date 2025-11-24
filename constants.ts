@@ -14,5 +14,6 @@ export const defaultAccelerator:Accelerator = {
     bpmIncrement:5,
     startBPM:120,
     maxBpm:180,
-    progress:0
+    progress:0,
+    mode:'automatic'
 }

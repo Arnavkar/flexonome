@@ -1,13 +1,15 @@
-import { playSound } from '~/utils/utils';
+import { playSound, parseTimeSignature, setUpAudioBuffers, validateAccelerator } from '~/utils/utils';
 import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
 import type { IAcceleratorMetronome } from '~/interfaces/IAcceleratorMetronome';
 import { loadMetronomeSettings, saveMetronomeSettings } from '~/utils/storage';
 import BaseMetronome from './BaseMetronome';
+import type { Beat, Accelerator } from '~/utils/types';
 export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMetronome {
     public timeSignatureString: string = '4/4';
+    private beatsState: Beat[] = parseTimeSignature(this.timeSignatureString);
     public get beats(): Beat[] {
-        return parseTimeSignature(this.timeSignatureString);
+        return this.beatsState;
     }
     public activeBeat: number = -1 - this.countInBeats.length;
 
@@ -23,6 +25,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
     public acceleratorEnabled: boolean = false;
     public numBeatsBeforeIncrement: number = 0;
     public currentBeatInAcceleratorLoop: number = 1;
+    private spacebarHandler: ((event: KeyboardEvent) => void) | null = null;
 
     public audioContext: AudioContext | null = null;
     public audioBuffers: AudioBuffer[] = [];
@@ -37,6 +40,10 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
 
     public get beatUnitList(): number[] {
         return this.mainBeats.map((beat: Beat) => beat.beatUnit);
+    }
+
+    private rebuildBeats() {
+        this.beatsState = parseTimeSignature(this.timeSignatureString);
     }
 
     public async setup() {
@@ -154,7 +161,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
         const beatDuration = (60 / this.bpm) / ((this.beats[beatIndex]).beatUnit / 4);
         this.nextNoteTime += beatDuration;
         
-        if (this.acceleratorEnabled && this.activeBeat >= 0) {
+        if (this.acceleratorEnabled && this.activeBeat >= 0 && this.accelerator.mode === 'automatic') {
             if (this.currentBeatInAcceleratorLoop == 0) {
                 this.accelerator.progress = 100;
             } else {
@@ -174,6 +181,9 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
 
         if (this.acceleratorEnabled) {
             this.numBeatsBeforeIncrement = this.mainBeats.length * this.accelerator.numBarsToRepeat;
+            if (this.accelerator.mode === 'manual') {
+                this.setupSpacebarListener();
+            }
         }
         this.currentBeatInAcceleratorLoop = 1;
         this.nextNoteTime = this.audioContext.currentTime;
@@ -185,6 +195,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
     public override stop() {
         super.stop()
         //timerWorker.postMessage("stop");
+        this.removeSpacebarListener();
         this.numBeatsBeforeIncrement = 1000;
         this.currentBeatInAcceleratorLoop = 1;
         this.accelerator.progress = 0;
@@ -194,6 +205,7 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
     public updateTimeSignature(inputString: string) {
         try {
             this.timeSignatureString = inputString;
+            this.rebuildBeats();
             this.activeBeat = -1 - this.countInBeats.length;
             this.saveSettings(); // Save settings after update
         } catch (e) {
@@ -206,22 +218,61 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
     }
 
     public toggleAccelerator() {
+        const wasRunning = this.isRunning;
+        this.stop();
         this.acceleratorEnabled = !this.acceleratorEnabled;
         this.saveSettings(); // Save settings after update
+        if (wasRunning && this.acceleratorEnabled && this.accelerator.mode === 'manual') {
+            this.start();
+        } else if (wasRunning) {
+            this.start();
+        }
     }
 
     public setAccelerator(accelerator: Accelerator) {
         if (!validateAccelerator(accelerator, this.errorCallback)) return;
+        const wasRunning = this.isRunning;
         this.stop();
         this.accelerator = accelerator;
         this.updateBpm(accelerator.startBPM);
         this.saveSettings(); // Save settings after update
+        if (wasRunning) {
+            this.start();
+        }
         this.successCallback("Accelerator Settings Applied");
     }
 
     public clear() {
         this.stop();
+        this.removeSpacebarListener();
         this.audioContext?.close();
+    }
+
+    private setupSpacebarListener() {
+        this.removeSpacebarListener(); // Remove any existing listener first
+        this.spacebarHandler = (event: KeyboardEvent) => {
+            if (event.key === ' ' || event.code === 'Space') {
+                event.preventDefault();
+                if (this.isRunning && this.acceleratorEnabled && this.accelerator.mode === 'manual') {
+                    this.manualIncrementBpm();
+                }
+            }
+        };
+        window.addEventListener('keydown', this.spacebarHandler);
+    }
+
+    private removeSpacebarListener() {
+        if (this.spacebarHandler) {
+            window.removeEventListener('keydown', this.spacebarHandler);
+            this.spacebarHandler = null;
+        }
+    }
+
+    private manualIncrementBpm() {
+        if (this.bpm < this.accelerator.maxBpm) {
+            const newBpm = Math.min(this.accelerator.maxBpm, this.bpm + this.accelerator.bpmIncrement);
+            this.updateBpm(newBpm);
+        }
     }
 
     // Method to update a beat's subdivision enabled status
@@ -266,7 +317,12 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
         // Apply loaded settings
         this.bpm = settings.bpm;
         this.timeSignatureString = settings.timeSignature;
-        this.accelerator = settings.accelerator;
+        // Ensure backward compatibility: if mode is missing, default to 'automatic'
+        this.accelerator = {
+            ...settings.accelerator,
+            mode: settings.accelerator.mode || 'automatic'
+        };
         this.acceleratorEnabled = settings.acceleratorEnabled;
+        this.rebuildBeats();
     }
 }

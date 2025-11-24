@@ -8,7 +8,7 @@
         buttonClass
       ]"
       :style="buttonStyle"
-      @click="incrementBeatAccent(beat.beatIndex);">
+      @click="() => incrementBeatAccent(beat.beatIndex)">
     </button>
     
     <!-- Subdivision indicators -->
@@ -39,7 +39,9 @@ const props = defineProps<{
   buttonStyle?: string;
 }>();
 
-const incrementBeatAccent = inject('incrementBeatAccent') as (beatIndex: number) => void;
+const incrementBeatAccent = inject<(beatIndex: number) => void>('incrementBeatAccent', () => {
+  console.warn('incrementBeatAccent not provided');
+});
 const emits = defineEmits(['updateSubdivision']);
 
 const isFlashing = ref(false);

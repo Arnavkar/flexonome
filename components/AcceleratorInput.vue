@@ -2,6 +2,13 @@
     <BaseCard :isTabbed="false" :size="'72'">
         <div class="flex flex-col items-center m-2 gap-2">
             <div class = "flex items-center justify-between w-full">
+                <span class="text-md">Mode</span>
+                <select class="input input-primary text-lg focus:text-primary text-center w-32" v-model="acceleratorOptions.mode">
+                    <option value="automatic">Automatic</option>
+                    <option value="manual">Manual</option>
+                </select>
+            </div>
+            <div v-if="acceleratorOptions.mode === 'automatic'" class = "flex items-center justify-between w-full">
                 <span class="text-md">Number of Repeats</span>
                 <select class="input input-primary text-lg focus:text-primary text-center w-16" v-model.number="acceleratorOptions.numBarsToRepeat">
                     <option v-for="i in 16" :key="i" :value="i">{{ i }}</option>

@@ -88,6 +88,20 @@
                             </ul>
                         </li>
                         <li>
+                            <span>Attach tempos with <code>@</code>.</span>
+                             <ul class="list-inside ml-4">
+                                <li><code>(4/4)@60</code> &ndash; fixed tempo for the bar.</li>
+                                <li><code>(4/4)@(60,90)</code> &ndash; ramp from 60 to 90 BPM over 4 bars (default).</li>
+                                <li><code>(4/4)@(60,90,5)</code> &ndash; ramp from 60 to 90 BPM across 5 bars.</li>
+                             </ul>
+                        </li>
+                        <li>
+                            <span>Use metric modulation with <code>@mod(current:previous)</code>.</span>
+                             <ul class="list-inside ml-4">
+                                <li>e.g., after <code>(4/4)@60</code>, <code>(6/4)@mod(6:4)</code> makes six beats take the same time as the previous four.</li>
+                             </ul>
+                        </li>
+                        <li>
                             <span>Add a count-in bar: <code>ci(...)</code>.</span>
                              <ul class="list-inside ml-4">
                                 <li>e.g., <code>ci(4/4)</code></li>
