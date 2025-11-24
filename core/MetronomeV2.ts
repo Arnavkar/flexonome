@@ -2,7 +2,7 @@ import { playSound, parseTimeSignature, setUpAudioBuffers, validateAccelerator }
 import { audioPaths } from "../constants"
 import { defaultAccelerator } from '~/constants';
 import type { IAcceleratorMetronome } from '~/interfaces/IAcceleratorMetronome';
-import { loadMetronomeSettings, saveMetronomeSettings } from '~/utils/storage';
+// import { loadMetronomeSettings, saveMetronomeSettings } from '~/utils/storage';
 import BaseMetronome from './BaseMetronome';
 import type { Beat, Accelerator } from '~/utils/types';
 export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMetronome {
@@ -290,39 +290,39 @@ export default class MetronomeV2 extends BaseMetronome implements IAcceleratorMe
     // Method to serialize metronome settings to localStorage
     public override saveSettings(): void {
         // Create a settings object with current state
-        const settings = {
-            bpm: this.bpm,
-            timeSignature: this.timeSignatureString,
-            accelerator: this.accelerator,
-            acceleratorEnabled: this.acceleratorEnabled
-        };
+        // const settings = {
+        //     bpm: this.bpm,
+        //     timeSignature: this.timeSignatureString,
+        //     accelerator: this.accelerator,
+        //     acceleratorEnabled: this.acceleratorEnabled
+        // };
         
         // Save to localStorage
-        saveMetronomeSettings(settings);
+        // saveMetronomeSettings(settings);
     }
 
     // Method to deserialize metronome settings from localStorage
     public override loadSettings(): void {
         // Default settings to use if nothing is stored
-        const defaultSettings = {
-            bpm: 120,
-            timeSignature: '4/4',
-            accelerator: defaultAccelerator,
-            acceleratorEnabled: false
-        };
+        // const defaultSettings = {
+        //     bpm: 120,
+        //     timeSignature: '4/4',
+        //     accelerator: defaultAccelerator,
+        //     acceleratorEnabled: false
+        // };
         
-        // Load settings from localStorage
-        const settings = loadMetronomeSettings(defaultSettings);
+        // // Load settings from localStorage
+        // const settings = loadMetronomeSettings(defaultSettings);
         
-        // Apply loaded settings
-        this.bpm = settings.bpm;
-        this.timeSignatureString = settings.timeSignature;
-        // Ensure backward compatibility: if mode is missing, default to 'automatic'
-        this.accelerator = {
-            ...settings.accelerator,
-            mode: settings.accelerator.mode || 'automatic'
-        };
-        this.acceleratorEnabled = settings.acceleratorEnabled;
-        this.rebuildBeats();
+        // // Apply loaded settings
+        // this.bpm = settings.bpm;
+        // this.timeSignatureString = settings.timeSignature;
+        // // Ensure backward compatibility: if mode is missing, default to 'automatic'
+        // this.accelerator = {
+        //     ...settings.accelerator,
+        //     mode: settings.accelerator.mode || 'automatic'
+        // };
+        // this.acceleratorEnabled = settings.acceleratorEnabled;
+        // this.rebuildBeats();
     }
 }
