@@ -12,13 +12,13 @@ export function validateBPM(bpm_value:number, errorHandler?: Errorhandler):boole
 
 export function validateAccelerator(accelerator:Accelerator, errorHandler?: Errorhandler):boolean{
   const errorHandlerFunc = errorHandler || console.error;
-  
+
   if (accelerator.startBPM < 20 || accelerator.startBPM > 280){
     errorHandlerFunc("Starting BPM must be between 20 and 280");
     return false;
   }
-  if (accelerator.maxBpm < 40 || accelerator.maxBpm > 300){
-    errorHandlerFunc("Max BPM must be between 40 and 300");
+  if (accelerator.maxBpm < 20 || accelerator.maxBpm > 300){
+    errorHandlerFunc("Max BPM must be between 20 and 300");
     return false;
   }
   if (accelerator.startBPM > accelerator.maxBpm){

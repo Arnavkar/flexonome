@@ -3,7 +3,7 @@
         <template #tab1>
         <div ref="dial" class="relative w-60 h-60 rounded-full mt-2 border-4 border-gray-300 dark:border-gray-600 touch-none">
             <div class="absolute inset-0 flex flex-col justify-center items-center">
-                <input 
+                <input
                     v-if="editingBpm"
                     v-model="tempBpm"
                     type="number"
@@ -49,7 +49,7 @@
             <div class="radial-progress mt-2 dark:text-gray-700 text-gray-200 touch-none" role="progressbar" style="--value:100; --size:15rem; --thickness: 4px; ">
                 <div class="radial-progress text-secondary" role="progressbar"  style=" --size:15rem; --thickness: 4px;" :style="{'--value':progress}">
                     <div class="absolute inset-0 flex flex-col justify-center items-center">
-                        <input 
+                        <input
                             v-if="editingBpm"
                             v-model="tempBpm"
                             type="number"
